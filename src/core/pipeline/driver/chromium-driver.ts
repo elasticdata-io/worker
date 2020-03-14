@@ -44,7 +44,6 @@ export class ChromiumDriver extends Driver {
 
 	async goToUrl(url: string, timeoutSec: number): Promise<void> {
 		await this._currentPage.goto(url, {timeout: timeoutSec * 1000});
-		await this._currentPage.screenshot({path: 'example.png'});
 	}
 
 	hover(selector: string): Promise<void> {

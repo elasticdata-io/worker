@@ -9,7 +9,8 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 	async create(): Promise<Driver> {
 		try {
 			const browser = await puppeteer.launch({
-				ignoreDefaultArgs: ['--enable-automation'],
+				headless: true,
+				ignoreDefaultArgs: ['--enable-automation', '--no-sandbox'],
 			});
 			return new ChromiumDriver(browser);
 		} catch (e) {

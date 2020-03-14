@@ -13,11 +13,12 @@ import { ChromiumPuppeteer } from './browser/provider/chromium-puppeteer';
 import { PipelineIoc } from './pipeline-ioc';
 
 export class PipelineBuilderFactory {
+
 	public async resolve(): Promise<IPipelineBuilder> {
 		const ioc = new Container();
 		ioc
 		  .bind<ICommandFactory>(TYPES.ICommandFactory)
-		  .to(CommandFactory)
+		  .to(CommandFactory);
 		ioc
 		  .bind<IPipelineConfigurationBuilder>(TYPES.IPipelineConfigurationBuilder)
 		  .to(PipelineConfigurationBuilder);
