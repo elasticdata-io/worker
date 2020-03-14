@@ -1,7 +1,7 @@
-import { IDriver } from './i-driver';
+import { Driver } from './driver';
 import { Browser } from 'puppeteer';
 
-export class ChromiumDriver extends IDriver {
+export class ChromiumDriver extends Driver {
 	constructor(private _browser: Browser) {
 		super();
 	}

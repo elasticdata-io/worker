@@ -1,12 +1,12 @@
 import { AbstractBrowser } from '../abstract-browser';
-import { IDriver } from '../../driver/i-driver';
 import * as puppeteer from 'puppeteer';
-import { ChromiumDriver } from '../../driver/chromium-driver';
 import { Injectable } from '@nestjs/common';
+import { Driver } from '../../driver/driver';
+import { ChromiumDriver } from '../../driver/chromium-driver';
 
 @Injectable()
 export class Chromium extends AbstractBrowser {
-	async create(): Promise<IDriver> {
+	async create(): Promise<Driver> {
 		// const args = await puppeteer.defaultArgs()
 		//   .filter(flag => flag !== '--enable-automation')
 		//   .filter(flag => flag !== '--headless');

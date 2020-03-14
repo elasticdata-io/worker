@@ -1,4 +1,4 @@
-export abstract class IDriver {
+export abstract class Driver {
 	abstract pause(seconds: number): Promise<void>;
 	abstract executeAsyncScript(script: string, arg: any): Promise<string>;
 	abstract executeScript(script: string, arg: any): Promise<string>;

@@ -1,4 +1,4 @@
-import { IDriver } from '../driver/i-driver';
+import { Driver } from '../driver/driver';
 
 export abstract class AbstractBrowser {
 	public enableImage = true;
@@ -8,6 +8,6 @@ export abstract class AbstractBrowser {
 	public windowHeight = 1080;
 	public language = 'en';
 
-	public abstract create(): Promise<IDriver>;
+	public abstract create(): Promise<Driver>;
 }
 
