@@ -18,16 +18,24 @@ import { ReplaceTextCommand } from './replace-text.command';
 import { ScrollToCommand } from './scroll-to.command';
 import { OpenUrlCommand } from './open-url.command';
 import { WaitElementCommand } from './wait-element.command';
-import { Injectable } from '@nestjs/common';
-import { IBrowserProvider } from '../../browser/i-browser-provider';
+import { PipelineIoc } from '../../pipeline-ioc';
+import { inject } from 'inversify';
+import { CommandFactoryIoc } from './command-factory-ioc';
+import { TYPES } from './types';
+import { TYPES as ROOT_TYPES } from '../../types';
 
-@Injectable()
 export class CommandFactory extends ICommandFactory {
-	constructor(private _browserProvider: IBrowserProvider) {
+	constructor(@inject(ROOT_TYPES.PipelineIoc) private _pipelineIoc: PipelineIoc) {
 		super();
+		CommandFactoryIoc.registerCommands(this._pipelineIoc);
 	}
 
 	createCommands(commandsJson: string): AbstractCommand[] {
+		const commands = this.getCommands(commandsJson);
+		return commands;
+	}
+
+	private getCommands(commandsJson: string) {
 		const commands = JSON.parse(commandsJson) || [];
 		return commands.map(config => {
 			const cmd = config.cmd;
@@ -35,64 +43,61 @@ export class CommandFactory extends ICommandFactory {
 			let command: AbstractCommand = null;
 			switch (cmd.toLocaleLowerCase()) {
 				case 'gettext':
-					command = new GetTextCommand;
+					command = this._pipelineIoc.get<GetTextCommand>(TYPES.GetTextCommand);
 					break;
 				case 'click':
-					command = new ClickCommand;
+					command = this._pipelineIoc.get<ClickCommand>(TYPES.ClickCommand);
 					break;
 				case 'checkdata':
-					command = new CheckDataCommand;
+					command = this._pipelineIoc.get<CheckDataCommand>(TYPES.CheckDataCommand);
 					break;
 				case 'condition':
-					command = new ConditionCommand;
+					command = this._pipelineIoc.get<ConditionCommand>(TYPES.ConditionCommand);
 					break;
 				case 'gethtml':
-					command = new GetHtmlCommand;
+					command = this._pipelineIoc.get<GetHtmlCommand>(TYPES.GetHtmlCommand);
 					break;
 				case 'getscreenshot':
-					command = new GetScreenshotCommand;
+					command = this._pipelineIoc.get<GetScreenshotCommand>(TYPES.GetScreenshotCommand);
 					break;
 				case 'geturl':
-					command = new GetUrlCommand;
+					command = this._pipelineIoc.get<GetUrlCommand>(TYPES.GetUrlCommand);
 					break;
 				case 'hover':
-					command = new HoverCommand;
+					command = this._pipelineIoc.get<HoverCommand>(TYPES.HoverCommand);
 					break;
 				case 'import':
-					command = new ImportCommand;
+					command = this._pipelineIoc.get<ImportCommand>(TYPES.ImportCommand);
 					break;
 				case 'js':
-					command = new JsCommand;
+					command = this._pipelineIoc.get<JsCommand>(TYPES.JsCommand);
 					break;
 				case 'loop':
-					command = new LoopCommand;
+					command = this._pipelineIoc.get<LoopCommand>(TYPES.LoopCommand);
 					break;
 				case 'nativeclick':
-					command = new NativeClickCommand;
+					command = this._pipelineIoc.get<NativeClickCommand>(TYPES.NativeClickCommand);
 					break;
 				case 'pause':
-					command = new PauseCommand;
+					command = this._pipelineIoc.get<PauseCommand>(TYPES.PauseCommand);
 					break;
 				case 'puttext':
-					command = new PutTextCommand;
+					command = this._pipelineIoc.get<PutTextCommand>(TYPES.PutTextCommand);
 					break;
 				case 'replacetext':
-					command = new ReplaceTextCommand;
+					command = this._pipelineIoc.get<ReplaceTextCommand>(TYPES.ReplaceTextCommand);
 					break;
 				case 'scrollto':
-					command = new ScrollToCommand;
+					command = this._pipelineIoc.get<ScrollToCommand>(TYPES.ScrollToCommand);
 					break;
 				case 'openurl':
-					command = new OpenUrlCommand;
+					command = this._pipelineIoc.get<OpenUrlCommand>(TYPES.OpenUrlCommand);
 					break;
 				case 'waitelement':
-					command = new WaitElementCommand;
+					command = this._pipelineIoc.get<WaitElementCommand>(TYPES.WaitElementCommand);
 					break;
 				default:
 					throw new Error(`command: ${cmd} not supported`)
-			}
-			if (command) {
-				command.setDependencies(this._browserProvider);
 			}
 			if (command) {
 				for(const [key, value] of Object.entries(config)) {

@@ -1,17 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import { IPipelineConfigurationBuilder } from '../../configuration/i-pipeline-configuration-builder';
 import { ICommandFactory } from '../../command/i-command-factory';
 import { SettingsConfiguration } from '../../configuration/settings-configuration';
 import { AbstractCommand } from '../../command/abstract-command';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../types';
 
-@Injectable()
-export class PipelineConfigurationBuilder extends IPipelineConfigurationBuilder {
+@injectable()
+export class PipelineConfigurationBuilder implements IPipelineConfigurationBuilder {
   private _json: any;
 
-  constructor(private _moduleRef: ModuleRef,
-              private _commandFactory: ICommandFactory) {
-    super();
+  constructor(@inject(TYPES.ICommandFactory) private _commandFactory: ICommandFactory) {
   }
 
   public commands: any[];

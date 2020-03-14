@@ -5,7 +5,7 @@ import { Driver } from '../../driver/driver';
 import { ChromiumDriver } from '../../driver/chromium-driver';
 
 @Injectable()
-export class Chromium extends AbstractBrowser {
+export class ChromiumPuppeteer extends AbstractBrowser {
 	async create(): Promise<Driver> {
 		// const args = await puppeteer.defaultArgs()
 		//   .filter(flag => flag !== '--enable-automation')

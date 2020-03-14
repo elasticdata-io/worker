@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { PipelineBuilder } from './core/pipeline/pipeline-builder';
+import { PipelineBuilderFactory } from './core/pipeline/pipeline-builder-factory';
 
 @Injectable()
 export class AppService {
-  private pipelineBuilder: PipelineBuilder;
+	constructor(private _pipelineBuilderFactory: PipelineBuilderFactory) {}
 
-  constructor(pipelineBuilder: PipelineBuilder) {
-    this.pipelineBuilder = pipelineBuilder;
-  }
-
-  runPipeline(json: string): void {
-    const pipelineProcess = this.pipelineBuilder
-      .setPipelineJson(JSON.stringify(json))
-      .build();
-    pipelineProcess.run();
-  }
+	async runPipeline(json: string): Promise<void> {
+		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
+		const pipelineProcess = await pipelineBuilder
+		  .setPipelineJson(JSON.stringify(json))
+		  .build();
+		await pipelineProcess.run();
+	}
 }

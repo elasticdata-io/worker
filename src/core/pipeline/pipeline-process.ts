@@ -1,23 +1,20 @@
 import { BrowserProvider } from './browser/browser-provider';
 import { AbstractCommand } from './command/abstract-command';
-import { AbstractBrowser } from './browser/abstract-browser';
+import { PipelineIoc } from './pipeline-ioc';
 
 export class PipelineProcess {
-	constructor(private _browser: AbstractBrowser,
-				private _commands: AbstractCommand[],
-				private _browserProvider: BrowserProvider) {}
+	constructor(private _commands: AbstractCommand[],
+				private _browserProvider: BrowserProvider,
+				private _pipelineIoc: PipelineIoc) {}
 
-	run(): void {
-		// todo: need implement
-		this._browser.create();
+	async run(): Promise<void> {
 		try {
 			if (this._commands.length === 0) {
 				console.warn(`commands is empty list`);
 				return;
 			}
 			const command = this._commands[0];
-			console.log(command);
-			this._browserProvider.execute(command);
+			await this._browserProvider.execute(command);
 			this.stop();
 		} catch (e) {
 			console.error(e);
@@ -26,5 +23,6 @@ export class PipelineProcess {
 
 	stop(): void {
 		// todo: need implement
+		this._pipelineIoc.unbindAll();
 	}
 }

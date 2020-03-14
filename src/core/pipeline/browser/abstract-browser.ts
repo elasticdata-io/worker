@@ -1,5 +1,7 @@
 import { Driver } from '../driver/driver';
+import { injectable } from 'inversify';
 
+@injectable()
 export abstract class AbstractBrowser {
 	public enableImage = true;
 	public isDebugMode = false;

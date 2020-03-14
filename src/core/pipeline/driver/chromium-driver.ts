@@ -1,9 +1,17 @@
 import { Driver } from './driver';
-import { Browser } from 'puppeteer';
+import { Browser, Page } from 'puppeteer';
+import { injectable } from 'inversify';
 
+@injectable()
 export class ChromiumDriver extends Driver {
+	private _currentPage: Page;
+
 	constructor(private _browser: Browser) {
 		super();
+	}
+
+	async init() {
+		this._currentPage = await this._browser.newPage();
 	}
 
 	domClick(selector: string): Promise<void> {
@@ -34,8 +42,9 @@ export class ChromiumDriver extends Driver {
 		return undefined;
 	}
 
-	goToUrl(url: string, timeoutSec: number): Promise<void> {
-		return undefined;
+	async goToUrl(url: string, timeoutSec: number): Promise<void> {
+		await this._currentPage.goto(url, {timeout: timeoutSec * 1000});
+		await this._currentPage.screenshot({path: 'example.png'});
 	}
 
 	hover(selector: string): Promise<void> {

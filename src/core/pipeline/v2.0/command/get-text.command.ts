@@ -4,5 +4,4 @@ export class GetTextCommand extends AbstractCommand {
 	execute(): Promise<void> {
 		return Promise.resolve();
 	}
-
 }
