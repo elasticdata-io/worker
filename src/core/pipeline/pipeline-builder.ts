@@ -1,5 +1,4 @@
 import { Environment } from './Environment';
-import { ModuleRef } from '@nestjs/core';
 import { IPipelineConfigurationBuilder } from './configuration/i-pipeline-configuration-builder';
 import { IPipelineLogger } from './log/i-pipeline-logger';
 import { BrowserProvider } from './browser/browser-provider';

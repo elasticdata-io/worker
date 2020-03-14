@@ -7,16 +7,14 @@ import { ChromiumDriver } from '../../driver/chromium-driver';
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {
 	async create(): Promise<Driver> {
-		// const args = await puppeteer.defaultArgs()
-		//   .filter(flag => flag !== '--enable-automation')
-		//   .filter(flag => flag !== '--headless');
-		// const browser: Browser = await puppeteer.launch({
-		// 	headless: false,
-		// 	defaultViewport: null,
-		// 	ignoreDefaultArgs: true,
-		// 	args: args,
-		// });
-		const browser = await puppeteer.launch();
-		return new ChromiumDriver(browser);
+		try {
+			const browser = await puppeteer.launch({
+				ignoreDefaultArgs: ['--enable-automation'],
+			});
+			return new ChromiumDriver(browser);
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
 	}
 }
