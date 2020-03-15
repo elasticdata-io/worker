@@ -26,7 +26,6 @@
     "@nestjs/platform-express": "^7.0.0",
     "@types/puppeteer": "^2.0.1",
     "axios": "^0.19.2",
-    "flat": "^5.0.0",
     "inversify": "^5.0.1",
     "puppeteer": "^2.1.1",
     "puppeteer-tsd": "0.0.2",
