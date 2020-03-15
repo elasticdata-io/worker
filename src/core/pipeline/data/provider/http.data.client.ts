@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { inject, injectable } from 'inversify';
-import { KeyValueData } from '../../../../data-store/dto/key.value.data';
 import { TYPES } from '../../types';
+import { KeyValueData } from '../dto/key.value.data';
 
 @injectable()
 export class HttpDataClient {
@@ -21,5 +21,10 @@ export class HttpDataClient {
 			throw res.data.message;
 		}
 		console.log(data);
+	}
+
+	async getDocument(storeId: string): Promise<any> {
+		const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`);
+		return res.data;
 	}
 }
