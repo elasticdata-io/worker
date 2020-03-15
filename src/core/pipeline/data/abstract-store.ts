@@ -15,4 +15,5 @@ export abstract class AbstractStore {
 	}
 
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
+	abstract getDocument(): Promise<any>;
 }

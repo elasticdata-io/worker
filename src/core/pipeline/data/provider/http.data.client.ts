@@ -20,7 +20,6 @@ export class HttpDataClient {
 		if (!res.data.success) {
 			throw res.data.message;
 		}
-		console.log(data);
 	}
 
 	async getDocument(storeId: string): Promise<any> {

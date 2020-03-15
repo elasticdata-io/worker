@@ -25,4 +25,8 @@ export class HttpDataStore extends AbstractStore {
 			id: this.id,
 		});
 	}
+
+	async getDocument(): Promise<any>  {
+		return this.httpDataClient.getDocument(this.id);
+	}
 }

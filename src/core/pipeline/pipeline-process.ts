@@ -1,11 +1,18 @@
 import { BrowserProvider } from './browser/browser-provider';
 import { AbstractCommand } from './command/abstract-command';
 import { PipelineIoc } from './pipeline-ioc';
+import { AbstractStore } from './data/abstract-store';
+import { TYPES } from './types';
 
 export class PipelineProcess {
+
+	protected store: AbstractStore;
+
 	constructor(private _commands: AbstractCommand[],
 				private _browserProvider: BrowserProvider,
-				private _pipelineIoc: PipelineIoc) {}
+				private _ioc: PipelineIoc) {
+		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
+	}
 
 	async run(): Promise<void> {
 		try {
@@ -15,6 +22,8 @@ export class PipelineProcess {
 			}
 			const command = this._commands[0];
 			await this._browserProvider.execute(command);
+			const document = await this.store.getDocument();
+			console.log(document);
 			this.stop();
 		} catch (e) {
 			console.error(e);
@@ -23,6 +32,6 @@ export class PipelineProcess {
 
 	stop(): void {
 		// todo: need implement
-		this._pipelineIoc.unbindAll();
+		this._ioc.unbindAll();
 	}
 }
