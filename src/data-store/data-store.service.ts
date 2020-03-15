@@ -19,6 +19,12 @@ export class DataStoreService {
 		const storage = await this.resolveStorage(storageId);
 		return storage.getDocument();
 	}
+	public async count(): Promise<number> {
+		return Object.keys(this._storages).length;
+	}
+	public async keys(): Promise<string[]> {
+		return Object.keys(this._storages);
+	}
 
 	private async resolveStorage(id: string): Promise<StorageService> {
 		let storage = this._storages[id];

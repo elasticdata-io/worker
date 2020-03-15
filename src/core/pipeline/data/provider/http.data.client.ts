@@ -6,7 +6,7 @@ import { KeyValueData } from '../dto/key.value.data';
 @injectable()
 export class HttpDataClient {
 
-	private readonly _servicePath = '/store/v1';
+	private readonly _servicePath = '/v1/store';
 	private readonly _serviceUrl: string;
 
 	constructor(@inject(TYPES.ServiceUrl) serviceUrl: string) {

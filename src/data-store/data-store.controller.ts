@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { DataStoreService } from './data-store.service';
 import { KeyValueData } from './dto/key.value.data';
 
-@Controller('/store/v1')
+@Controller('/v1/store')
 export class DataStoreController {
 	constructor(private readonly dataStoreService: DataStoreService) {
 	}
@@ -22,6 +22,15 @@ export class DataStoreController {
 		}
 	}
 
+	@Get('keys')
+	async keys(): Promise<string[]> {
+		return this.dataStoreService.keys();
+	}
+
+	@Get('count')
+	async count(): Promise<number> {
+		return this.dataStoreService.count();
+	}
 
 	@Get(':storageId')
 	async getDocument(@Param('storageId') storageId): Promise<void> {
