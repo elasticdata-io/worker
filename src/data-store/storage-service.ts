@@ -37,7 +37,10 @@ export class StorageService {
 		if (isRoot) {
 			return;
 		}
-		let correct = /[a-zа-я0-9_\-.]/gi.test(context);
+		let correct = /^root\./gi.test(context);
+		if (correct) {
+			correct = /[a-zа-я0-9_\-.]/gi.test(context);
+		}
 		if (!correct) {
 			throw `value of the context: '${context}' is incorrect`;
 		}
