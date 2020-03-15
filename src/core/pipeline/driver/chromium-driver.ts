@@ -14,8 +14,10 @@ export class ChromiumDriver extends Driver {
 		this._page = await this._browser.newPage();
 	}
 
-	domClick(selector: string): Promise<void> {
-		return undefined;
+	async domClick(command): Promise<void> {
+		const queryProvider = command.getQueryProvider();
+		const getElFn = queryProvider.getSelectionElFn(command, `.click()`);
+		await this._page.evaluate(getElFn);
 	}
 
 	executeAsyncScript(script: string, arg: any): Promise<string> {
@@ -26,21 +28,23 @@ export class ChromiumDriver extends Driver {
 		return undefined;
 	}
 
-	getCurrentUrl(): Promise<string> {
-		return undefined;
+	async getCurrentUrl(): Promise<string> {
+		return this._page.url();
 	}
 
-	getElAttribute(command: any, attributeName: string): Promise<string> {
-		return undefined;
+	async getElAttribute(command, attributeName: string): Promise<string> {
+		const queryProvider = command.getQueryProvider();
+		const getElFn = queryProvider.getSelectionElFn(command, `.getAttribute(${attributeName})`);
+		return await this._page.evaluate(getElFn) as Promise<string>;
 	}
 
-	async getElText(command): Promise<any> {
+	async getElText(command): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getSelectionElFn(command, '.innerText');
-		return await this._page.evaluate(getElFn);
+		return await this._page.evaluate(getElFn) as Promise<string>;
 	}
 
-	getElementsCount(command: any): Promise<number> {
+	getElementsCount(command): Promise<number> {
 		return undefined;
 	}
 
@@ -48,19 +52,19 @@ export class ChromiumDriver extends Driver {
 		await this._page.goto(url, {timeout: timeoutSec * 1000});
 	}
 
-	hover(selector: string): Promise<void> {
+	hover(command): Promise<void> {
 		return undefined;
 	}
 
-	nativeClick(selector: string): Promise<void> {
+	nativeClick(command): Promise<void> {
 		return undefined;
 	}
 
-	newgetElHash(command: any): Promise<string> {
+	getElHash(command): Promise<string> {
 		return undefined;
 	}
 
-	newgetElHtml(command: any): Promise<string> {
+	getElHtml(command): Promise<string> {
 		return undefined;
 	}
 
@@ -68,15 +72,15 @@ export class ChromiumDriver extends Driver {
 		return undefined;
 	}
 
-	setElValue(command: any, value: string): Promise<void> {
+	setElValue(command, value: string): Promise<void> {
 		return undefined;
 	}
 
-	switchToFrame(command: any): Promise<void> {
+	switchToFrame(command): Promise<void> {
 		return undefined;
 	}
 
-	waitElement(command: any): Promise<void> {
+	waitElement(command): Promise<void> {
 		return undefined;
 	}
 

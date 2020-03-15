@@ -6,16 +6,16 @@ export abstract class Driver {
 	abstract executeAsyncScript(script: string, arg: any): Promise<string>;
 	abstract executeScript(script: string, arg: any): Promise<string>;
 	abstract goToUrl(url: string, timeoutSec?: number): Promise<void>;
-	abstract domClick(selector: string): Promise<void>;
-	abstract nativeClick(selector: string): Promise<void>;
-	abstract hover(selector: string): Promise<void>;
-	abstract waitElement(command: any): Promise<void>;
+	abstract domClick(command: AbstractCommand): Promise<void>;
+	abstract nativeClick(command: AbstractCommand): Promise<void>;
+	abstract hover(command: AbstractCommand): Promise<void>;
+	abstract waitElement(command: AbstractCommand): Promise<void>;
 	abstract getElText(command: AbstractCommand): Promise<string>;
-	abstract newgetElHtml(command: any): Promise<string>;
-	abstract newgetElHash(command: any): Promise<string>;
-	abstract getElAttribute(command: any, attributeName: string): Promise<string>;
-	abstract getElementsCount(command: any): Promise<number>;
-	abstract setElValue(command: any, value: string): Promise<void>;
+	abstract getElHtml(command: AbstractCommand): Promise<string>;
+	abstract getElHash(command: AbstractCommand): Promise<string>;
+	abstract getElAttribute(command: AbstractCommand, attributeName: string): Promise<string>;
+	abstract getElementsCount(command: AbstractCommand): Promise<number>;
+	abstract setElValue(command: AbstractCommand, value: string): Promise<void>;
 	abstract getCurrentUrl(): Promise<string>;
-	abstract switchToFrame(command: any): Promise<void>;
+	abstract switchToFrame(command: AbstractCommand): Promise<void>;
 }
