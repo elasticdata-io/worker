@@ -23,7 +23,7 @@ export class PipelineProcess {
 			const command = this._commands[0];
 			await this._browserProvider.execute(command);
 			const document = await this.store.getDocument();
-			console.log(document);
+			console.log(document.length);
 			this.stop();
 		} catch (e) {
 			console.error(e);

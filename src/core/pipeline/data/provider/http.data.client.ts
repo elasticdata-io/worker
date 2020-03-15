@@ -32,7 +32,7 @@ export class HttpDataClient {
 		const form = new FormData();
 		const file = data.file;
 		form.append('file', file, {filename: 'file'});
-		const req = await request(
+		const req = request(
 		  {
 			  protocol: url.protocol,
 			  host: url.hostname,
@@ -40,12 +40,10 @@ export class HttpDataClient {
 			  port: url.port,
 			  method: 'POST',
 			  headers: form.getHeaders(),
-		  }, response => {
-			  console.log(response.statusCode);
 		  }
 		);
-		console.log(form.getHeaders());
 		form.pipe(req);
+		await req;
 	}
 
 	async getDocument(storeId: string): Promise<any> {
