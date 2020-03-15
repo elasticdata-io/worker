@@ -1,6 +1,7 @@
 import { Driver } from './driver';
 import { Browser, Page } from 'puppeteer';
 import { injectable } from 'inversify';
+import { Duplex, Readable, Stream } from 'stream';
 
 @injectable()
 export class ChromiumDriver extends Driver {
@@ -82,6 +83,13 @@ export class ChromiumDriver extends Driver {
 
 	waitElement(command): Promise<void> {
 		return undefined;
+	}
+
+	async getScreenshot(command): Promise<Buffer> {
+		const base64 = await this._page.screenshot({
+			encoding: 'base64',
+		});
+		return Buffer.from(base64, 'base64');
 	}
 
 }

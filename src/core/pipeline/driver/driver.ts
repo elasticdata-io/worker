@@ -1,4 +1,5 @@
 import { AbstractCommand } from '../command/abstract-command';
+import { Stream } from 'stream';
 
 export abstract class Driver {
 	abstract async init();
@@ -7,6 +8,7 @@ export abstract class Driver {
 	abstract executeScript(script: string, arg: any): Promise<string>;
 	abstract goToUrl(url: string, timeoutSec?: number): Promise<void>;
 	abstract domClick(command: AbstractCommand): Promise<void>;
+	abstract getScreenshot(command: AbstractCommand): Promise<Buffer>;
 	abstract nativeClick(command: AbstractCommand): Promise<void>;
 	abstract hover(command: AbstractCommand): Promise<void>;
 	abstract waitElement(command: AbstractCommand): Promise<void>;

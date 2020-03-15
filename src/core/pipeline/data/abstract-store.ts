@@ -2,6 +2,7 @@ import { AbstractCommand } from '../command/abstract-command';
 import { injectable } from 'inversify';
 import { DataContextResolver } from './data-context-resolver';
 import { StringGenerator } from '../util/string.generator';
+import { Stream } from 'stream';
 
 @injectable()
 export abstract class AbstractStore {
@@ -15,5 +16,6 @@ export abstract class AbstractStore {
 	}
 
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
+	abstract putFile(key: string, file: Buffer, command: AbstractCommand): Promise<void>;
 	abstract getDocument(): Promise<any>;
 }
