@@ -1,6 +1,3 @@
-import { IPipelineConfigurationBuilder } from './configuration/i-pipeline-configuration-builder';
-import { AbstractBrowser } from './browser/abstract-browser';
-
 const TYPES = {
 	IPipelineBuilder: Symbol.for("IPipelineBuilder"),
 	ICommandFactory: Symbol.for("ICommandFactory"),
