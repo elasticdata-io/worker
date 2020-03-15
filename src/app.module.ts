@@ -4,10 +4,13 @@ import { AppService } from './app.service';
 import { PipelineModule } from './core/pipeline/pipeline.module';
 
 @Module({
-  imports: [PipelineModule],
-  controllers: [AppController],
-  providers: [
-    AppService,
-  ],
+	imports: [
+	  	PipelineModule,
+	],
+	controllers: [AppController],
+	providers: [
+		AppService,
+	],
 })
-export class AppModule {}
+export class AppModule {
+}

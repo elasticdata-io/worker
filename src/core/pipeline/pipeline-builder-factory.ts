@@ -17,10 +17,16 @@ import { HttpDataStore } from './data/provider/http-data-store';
 import { AbstractStore } from './data/abstract-store';
 import { DataContextResolver } from './data/data-context-resolver';
 import { HttpDataClient } from './data/provider/http.data.client';
+import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PipelineBuilderFactory {
 
+	constructor(private configService: ConfigService) {}
+
 	public async resolve(): Promise<IPipelineBuilder> {
+		const dataServiceUrl = this.configService.get<string>('DATA_SERVICE_URL');
 		const ioc = new Container();
 		ioc
 		  .bind<ICommandFactory>(TYPES.ICommandFactory)
@@ -64,7 +70,7 @@ export class PipelineBuilderFactory {
 		  .inSingletonScope();
 		ioc
 		  .bind<string>(TYPES.ServiceUrl)
-		  .toConstantValue('http://localhost:3000');
+		  .toConstantValue(dataServiceUrl);
 		ioc
 		  .bind<PipelineIoc>(TYPES.PipelineIoc)
 		  .toConstantValue(ioc);
