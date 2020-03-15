@@ -8,8 +8,15 @@ export class DataStoreController {
 	}
 
 	@Post()
-	async put(@Body() data: KeyValueData): Promise<void> {
-		return this.dataStoreService.put(data);
+	async put(@Body() data: KeyValueData): Promise<any> {
+		try {
+			await this.dataStoreService.put(data);
+		} catch (e) {
+			return {
+				success: false,
+				message: e
+			}
+		}
 	}
 
 
