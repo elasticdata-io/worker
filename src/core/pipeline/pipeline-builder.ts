@@ -1,4 +1,3 @@
-import { Environment } from './Environment';
 import { IPipelineConfigurationBuilder } from './configuration/i-pipeline-configuration-builder';
 import { BrowserProvider } from './browser/browser-provider';
 import { PipelineProcess } from './pipeline-process';
@@ -9,6 +8,7 @@ import { TYPES as ROOT_TYPES, TYPES } from './types';
 import { Driver } from './driver/driver';
 import { PipelineIoc } from './pipeline-ioc';
 import { PipelineLogger } from './logger/pipeline-logger';
+import { Environment } from './environment';
 
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
