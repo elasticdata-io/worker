@@ -24,6 +24,9 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          env:
+            - name: DATA_SERVICE_URL
+              value: {{ .Values.env.DATA_SERVICE_URL }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
