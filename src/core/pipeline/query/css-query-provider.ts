@@ -5,11 +5,11 @@ import { injectable } from 'inversify';
 @injectable()
 export class CssQueryProvider extends AbstractQueryProvider {
 
-	protected getDomSelector(selector: string) {
-		return `document.querySelector(\`${selector}\`)`;
+	protected getSelectionFn(selector: string, suffix: string) {
+		return new Function(`return document.querySelector(\`${selector}\`)${suffix}`);
 	}
 
-	isCompatibilitySelector(command: AbstractCommand): boolean {
+	isSupporting(command: AbstractCommand): boolean {
 		const selector = command.getSelector();
 		const isXpath = selector.startsWith('//') || selector.startsWith('(');
 		return isXpath === false;

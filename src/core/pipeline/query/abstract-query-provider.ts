@@ -3,13 +3,13 @@ import { AbstractCommand } from '../command/abstract-command';
 
 export abstract class AbstractQueryProvider implements QueryProvider {
 
-	protected abstract getDomSelector(selector: string);
+	protected abstract getSelectionFn(selector: string, suffix: string): Function;
 
-	getLoopElementSelector(command: AbstractCommand): string {
+	getSelectionElFn(command: AbstractCommand, suffix: string): Function {
 		const selector = command.getSelector();
 		// todo: replace with loop
-		return this.getDomSelector(selector);
+		return this.getSelectionFn(selector, suffix);
 	}
 
-	abstract isCompatibilitySelector(command: AbstractCommand): boolean;
+	abstract isSupporting(command: AbstractCommand): boolean;
 }

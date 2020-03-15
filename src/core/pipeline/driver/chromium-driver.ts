@@ -34,12 +34,10 @@ export class ChromiumDriver extends Driver {
 		return undefined;
 	}
 
-	getElText(command): Promise<string> {
+	async getElText(command): Promise<any> {
 		const queryProvider = command.getQueryProvider();
-		const selector = queryProvider.getLoopElementSelector(command);
-		return this._page.evaluate((s) => {
-			return eval(s);
-		}, `${selector}.innerText`);
+		const getElFn = queryProvider.getSelectionElFn(command, '.innerText');
+		return await this._page.evaluate(getElFn);
 	}
 
 	getElementsCount(command: any): Promise<number> {

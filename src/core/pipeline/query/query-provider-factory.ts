@@ -11,10 +11,10 @@ const xpath = new XpathQueryProvider();
 export class QueryProviderFactory {
 
 	resolve(command: AbstractCommand): QueryProvider {
-		if (css.isCompatibilitySelector(command)) {
+		if (css.isSupporting(command)) {
 			return css;
 		}
-		if (xpath.isCompatibilitySelector(command)) {
+		if (xpath.isSupporting(command)) {
 			return xpath;
 		}
 	}

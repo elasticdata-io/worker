@@ -1,6 +1,6 @@
 import { AbstractCommand } from '../command/abstract-command';
 
 export interface QueryProvider {
-	getLoopElementSelector(command: AbstractCommand): string;
-	isCompatibilitySelector(command: AbstractCommand): boolean;
+	getSelectionElFn(command: AbstractCommand, suffix: string): Function;
+	isSupporting(command: AbstractCommand): boolean;
 }
