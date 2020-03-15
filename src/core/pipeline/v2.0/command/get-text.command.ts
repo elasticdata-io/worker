@@ -6,7 +6,7 @@ export class GetTextCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		const text = await this.driver.getElText(this);
-		console.log(text);
+		await this.store.put(this.key, text, this);
 		super.execute();
 	}
 }

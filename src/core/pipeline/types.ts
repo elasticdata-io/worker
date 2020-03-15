@@ -9,6 +9,7 @@ const TYPES = {
 	Environment: Symbol.for("Environment"),
 	Driver: Symbol.for("Driver"),
 	IBrowserProvider: Symbol.for("IBrowserProvider"),
+	AbstractStore: Symbol.for("AbstractStore"),
 	IPipelineConfigurationBuilder: Symbol.for("IPipelineConfigurationBuilder"),
 	QueryProviderFactory: Symbol.for("QueryProviderFactory"),
 	PipelineIoc: Symbol.for("PipelineIoc"),

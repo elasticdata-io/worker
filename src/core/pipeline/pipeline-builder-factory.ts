@@ -13,6 +13,8 @@ import { PipelineIoc } from './pipeline-ioc';
 import { QueryProviderFactory } from './query/query-provider-factory';
 import { BrowserProvider } from './browser/browser-provider';
 import { IBrowserProvider } from './browser/i-browser-provider';
+import { HttpDataStore } from './data/provider/http-data-store';
+import { AbstractStore } from './data/abstract-store';
 
 export class PipelineBuilderFactory {
 
@@ -39,6 +41,9 @@ export class PipelineBuilderFactory {
 		ioc
 		  .bind<QueryProviderFactory>(TYPES.QueryProviderFactory)
 		  .to(QueryProviderFactory);
+		ioc
+		  .bind<AbstractStore>(TYPES.AbstractStore)
+		  .to(HttpDataStore);
 		ioc
 		  .bind<PipelineIoc>(TYPES.PipelineIoc)
 		  .toConstantValue(ioc);
