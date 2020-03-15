@@ -1,6 +1,5 @@
 import { Environment } from './Environment';
 import { IPipelineConfigurationBuilder } from './configuration/i-pipeline-configuration-builder';
-import { IPipelineLogger } from './log/i-pipeline-logger';
 import { BrowserProvider } from './browser/browser-provider';
 import { PipelineProcess } from './pipeline-process';
 import { AbstractBrowser } from './browser/abstract-browser';
@@ -9,6 +8,7 @@ import { IPipelineBuilder } from './i-pipeline-builder';
 import { TYPES as ROOT_TYPES, TYPES } from './types';
 import { Driver } from './driver/driver';
 import { PipelineIoc } from './pipeline-ioc';
+import { PipelineLogger } from './logger/pipeline-logger';
 
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
@@ -16,7 +16,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 
 	constructor(
 	  @inject(TYPES.IPipelineConfigurationBuilder) private _pipelineConfigurationBuilder: IPipelineConfigurationBuilder,
-	  @inject(TYPES.IPipelineLogger) private _logger: IPipelineLogger,
+	  @inject(TYPES.PipelineLogger) private _logger: PipelineLogger,
 	  @inject(ROOT_TYPES.PipelineIoc) private _pipelineIoc: PipelineIoc,
 	  @inject(TYPES.AbstractBrowser) private _browser: AbstractBrowser) {
 	}

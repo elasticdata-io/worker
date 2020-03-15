@@ -30,9 +30,19 @@ export class CommandFactory extends ICommandFactory {
 		CommandFactoryIoc.registerCommands(this._pipelineIoc);
 	}
 
-	createCommands(commandsJson: string): AbstractCommand[] {
+	createChainCommands(commandsJson: string): AbstractCommand[] {
 		const commands = this.getCommands(commandsJson);
+		this.linksCommands(commands);
 		return commands;
+	}
+
+	private linksCommands(commands: AbstractCommand[]) {
+		commands.forEach((command, index) => {
+			const nextCommand = commands[index + 1];
+			if (nextCommand) {
+				command.setNextCommand(nextCommand);
+			}
+		});
 	}
 
 	private getCommands(commandsJson: string) {

@@ -1,24 +1,36 @@
 import { BrowserProvider } from '../browser/browser-provider';
-import { Driver } from '../driver/driver';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
+import { Selectable } from '../query/selectable';
+import { QueryProvider } from '../query/query-provider';
+import { QueryProviderFactory } from '../query/query-provider-factory';
 
 @injectable()
-export abstract class AbstractCommand {
-	protected driver: Driver;
-	protected browserProvider: BrowserProvider;
-	protected nextCommand: AbstractCommand;
+export abstract class AbstractCommand implements Selectable {
 
-	afterExecute(): Promise<void> {
-		if (this.nextCommand) {
-			return this.browserProvider.execute(this.nextCommand);
+	protected selector: string;
+	protected queryProviderFactory: QueryProviderFactory;
+	protected browserProvider: BrowserProvider;
+	private _nextCommand: AbstractCommand;
+
+	public setNextCommand(nextCommand: AbstractCommand): void {
+		this._nextCommand = nextCommand;
+	}
+
+	public async execute(): Promise<void> {
+		await this.afterExecute();
+	}
+
+	protected async afterExecute(): Promise<void> {
+		if (this._nextCommand) {
+			return this.browserProvider.execute(this._nextCommand);
 		}
 	}
 
-	public abstract execute(): Promise<void>;
+	getSelector(): string {
+		return this.selector;
+	}
 
-	public setDependencies(browserProvider: BrowserProvider,
-						   driver: Driver): void {
-		this.browserProvider = browserProvider;
-		this.driver = driver;
+	getQueryProvider(): QueryProvider {
+		return this.queryProviderFactory.resolve(this);
 	}
 }

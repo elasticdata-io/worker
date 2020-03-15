@@ -1,3 +1,5 @@
+import { AbstractCommand } from '../command/abstract-command';
+
 export abstract class Driver {
 	abstract async init();
 	abstract pause(seconds: number): Promise<void>;
@@ -8,7 +10,7 @@ export abstract class Driver {
 	abstract nativeClick(selector: string): Promise<void>;
 	abstract hover(selector: string): Promise<void>;
 	abstract waitElement(command: any): Promise<void>;
-	abstract getElText(command): Promise<string>;
+	abstract getElText(command: AbstractCommand): Promise<string>;
 	abstract newgetElHtml(command: any): Promise<string>;
 	abstract newgetElHash(command: any): Promise<string>;
 	abstract getElAttribute(command: any, attributeName: string): Promise<string>;

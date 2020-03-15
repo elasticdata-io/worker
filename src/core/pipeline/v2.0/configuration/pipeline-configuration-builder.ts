@@ -19,7 +19,7 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
   buildCommands(): AbstractCommand[] {
     const pipeline = JSON.parse(this._json);
     const commandsJson = JSON.stringify(pipeline.commands);
-    this.commands = this._commandFactory.createCommands(commandsJson);
+    this.commands = this._commandFactory.createChainCommands(commandsJson);
     return this.commands;
   }
 

@@ -4,14 +4,14 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class ChromiumDriver extends Driver {
-	private _currentPage: Page;
+	private _page: Page;
 
 	constructor(private _browser: Browser) {
 		super();
 	}
 
 	async init() {
-		this._currentPage = await this._browser.newPage();
+		this._page = await this._browser.newPage();
 	}
 
 	domClick(selector: string): Promise<void> {
@@ -35,7 +35,11 @@ export class ChromiumDriver extends Driver {
 	}
 
 	getElText(command): Promise<string> {
-		return undefined;
+		const queryProvider = command.getQueryProvider();
+		const selector = queryProvider.getLoopElementSelector(command);
+		return this._page.evaluate((s) => {
+			return eval(s);
+		}, `${selector}.innerText`);
 	}
 
 	getElementsCount(command: any): Promise<number> {
@@ -43,7 +47,7 @@ export class ChromiumDriver extends Driver {
 	}
 
 	async goToUrl(url: string, timeoutSec: number): Promise<void> {
-		await this._currentPage.goto(url, {timeout: timeoutSec * 1000});
+		await this._page.goto(url, {timeout: timeoutSec * 1000});
 	}
 
 	hover(selector: string): Promise<void> {
