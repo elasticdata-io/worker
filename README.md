@@ -30,10 +30,61 @@ BODY:
 		},
 		{
 			"cmd": "gettext",
-			"selector": ".answercell.post-layout--right"
+			"selector": ".answercell.post-layout--right",
+			"key": "key1"
 		},
 		{
 			"cmd": "geturl"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key2"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key3"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key4"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key5"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key6"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key7"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key8"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key9"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key10"
+		},
+		{
+			"cmd": "gettext",
+			"selector": ".answercell.post-layout--right",
+			"key": "key11"
 		}
 	]
 }
