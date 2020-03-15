@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { DataStoreService } from './data-store.service';
-import { KeyValueData } from './dto/key-value-data';
+import { KeyValueData } from './dto/key.value.data';
 
-@Controller('store')
+@Controller('/store/v1')
 export class DataStoreController {
 	constructor(private readonly dataStoreService: DataStoreService) {
 	}
@@ -16,6 +16,9 @@ export class DataStoreController {
 				success: false,
 				message: e
 			}
+		}
+		return {
+			success: true
 		}
 	}
 

@@ -16,6 +16,7 @@ import { IBrowserProvider } from './browser/i-browser-provider';
 import { HttpDataStore } from './data/provider/http-data-store';
 import { AbstractStore } from './data/abstract-store';
 import { DataContextResolver } from './data/data-context-resolver';
+import { HttpDataClient } from './data/provider/http.data.client';
 
 export class PipelineBuilderFactory {
 
@@ -57,6 +58,13 @@ export class PipelineBuilderFactory {
 		  .bind<AbstractStore>(TYPES.AbstractStore)
 		  .to(HttpDataStore)
 		  .inSingletonScope();
+		ioc
+		  .bind<HttpDataClient>(TYPES.HttpDataClient)
+		  .to(HttpDataClient)
+		  .inSingletonScope();
+		ioc
+		  .bind<string>(TYPES.ServiceUrl)
+		  .toConstantValue('http://localhost:3000');
 		ioc
 		  .bind<PipelineIoc>(TYPES.PipelineIoc)
 		  .toConstantValue(ioc);

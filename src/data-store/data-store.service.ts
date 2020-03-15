@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { KeyValueData } from './dto/key-value-data';
+import { KeyValueData } from './dto/key.value.data';
 import { StorageService } from './storage-service';
 
 @Injectable()

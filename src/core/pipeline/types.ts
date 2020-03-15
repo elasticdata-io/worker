@@ -13,7 +13,9 @@ const TYPES = {
 	IPipelineConfigurationBuilder: Symbol.for("IPipelineConfigurationBuilder"),
 	QueryProviderFactory: Symbol.for("QueryProviderFactory"),
 	DataContextResolver: Symbol.for("DataContextResolver"),
+	HttpDataClient: Symbol.for("HttpDataClient"),
 	PipelineIoc: Symbol.for("PipelineIoc"),
+	ServiceUrl: Symbol.for("ServiceUrl"),
 };
 
 export { TYPES };
