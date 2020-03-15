@@ -1,5 +1,4 @@
 import { BrowserProvider } from '../browser/browser-provider';
-import { inject, injectable } from 'inversify';
 import { Selectable } from '../query/selectable';
 import { QueryProvider } from '../query/query-provider';
 import { QueryProviderFactory } from '../query/query-provider-factory';
@@ -7,24 +6,21 @@ import { TYPES as ROOT_TYPES } from '../types';
 import { Driver } from '../driver/driver';
 import { IBrowserProvider } from '../browser/i-browser-provider';
 import { AbstractStore } from '../data/abstract-store';
+import { PipelineIoc } from '../pipeline-ioc';
 
-@injectable()
 export abstract class AbstractCommand implements Selectable {
 	private _nextCommand: AbstractCommand;
 
 	protected store: AbstractStore;
 	protected driver: Driver;
 	protected queryProviderFactory: QueryProviderFactory;
-	protected browserProvider: BrowserProvider;
+	protected browserProvider: IBrowserProvider;
 
-	constructor(@inject(ROOT_TYPES.Driver) driver: Driver,
-				@inject(ROOT_TYPES.IBrowserProvider) browserProvider: IBrowserProvider,
-				@inject(ROOT_TYPES.AbstractStore) store: AbstractStore,
-				@inject(ROOT_TYPES.QueryProviderFactory) queryProviderFactory: QueryProviderFactory) {
-		this.driver = driver;
-		this.store = store;
-		this.browserProvider = browserProvider;
-		this.queryProviderFactory = queryProviderFactory;
+	constructor(ioc: PipelineIoc) {
+		this.driver = ioc.get<Driver>(ROOT_TYPES.Driver);
+		this.store = ioc.get<AbstractStore>(ROOT_TYPES.AbstractStore);
+		this.browserProvider = ioc.get<BrowserProvider>(ROOT_TYPES.IBrowserProvider);
+		this.queryProviderFactory = ioc.get<QueryProviderFactory>(ROOT_TYPES.QueryProviderFactory);
 	}
 
 	public selector: string;

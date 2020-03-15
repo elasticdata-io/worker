@@ -20,14 +20,11 @@ import { OpenUrlCommand } from './open-url.command';
 import { WaitElementCommand } from './wait-element.command';
 import { PipelineIoc } from '../../pipeline-ioc';
 import { inject } from 'inversify';
-import { CommandFactoryIoc } from './command-factory-ioc';
-import { TYPES } from './types';
 import { TYPES as ROOT_TYPES } from '../../types';
 
 export class CommandFactory extends ICommandFactory {
-	constructor(@inject(ROOT_TYPES.PipelineIoc) private _pipelineIoc: PipelineIoc) {
+	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {
 		super();
-		CommandFactoryIoc.registerCommands(this._pipelineIoc);
 	}
 
 	createChainCommands(commandsJson: string): AbstractCommand[] {
@@ -51,60 +48,61 @@ export class CommandFactory extends ICommandFactory {
 			const cmd = config.cmd;
 			delete config.cmd;
 			let command: AbstractCommand = null;
+			const ioc = this._ioc;
 			switch (cmd.toLocaleLowerCase()) {
 				case 'gettext':
-					command = this._pipelineIoc.get<GetTextCommand>(TYPES.GetTextCommand);
+					command = new GetTextCommand(ioc);
 					break;
 				case 'click':
-					command = this._pipelineIoc.get<ClickCommand>(TYPES.ClickCommand);
+					command = new ClickCommand(ioc);
 					break;
 				case 'checkdata':
-					command = this._pipelineIoc.get<CheckDataCommand>(TYPES.CheckDataCommand);
+					command = new CheckDataCommand(ioc);
 					break;
 				case 'condition':
-					command = this._pipelineIoc.get<ConditionCommand>(TYPES.ConditionCommand);
+					command = new ConditionCommand(ioc);
 					break;
 				case 'gethtml':
-					command = this._pipelineIoc.get<GetHtmlCommand>(TYPES.GetHtmlCommand);
+					command = new GetHtmlCommand(ioc);
 					break;
 				case 'getscreenshot':
-					command = this._pipelineIoc.get<GetScreenshotCommand>(TYPES.GetScreenshotCommand);
+					command = new GetScreenshotCommand(ioc);
 					break;
 				case 'geturl':
-					command = this._pipelineIoc.get<GetUrlCommand>(TYPES.GetUrlCommand);
+					command = new GetUrlCommand(ioc);
 					break;
 				case 'hover':
-					command = this._pipelineIoc.get<HoverCommand>(TYPES.HoverCommand);
+					command = new HoverCommand(ioc);
 					break;
 				case 'import':
-					command = this._pipelineIoc.get<ImportCommand>(TYPES.ImportCommand);
+					command = new ImportCommand(ioc);
 					break;
 				case 'js':
-					command = this._pipelineIoc.get<JsCommand>(TYPES.JsCommand);
+					command = new JsCommand(ioc);
 					break;
 				case 'loop':
-					command = this._pipelineIoc.get<LoopCommand>(TYPES.LoopCommand);
+					command = new LoopCommand(ioc);
 					break;
 				case 'nativeclick':
-					command = this._pipelineIoc.get<NativeClickCommand>(TYPES.NativeClickCommand);
+					command = new NativeClickCommand(ioc);
 					break;
 				case 'pause':
-					command = this._pipelineIoc.get<PauseCommand>(TYPES.PauseCommand);
+					command = new PauseCommand(ioc);
 					break;
 				case 'puttext':
-					command = this._pipelineIoc.get<PutTextCommand>(TYPES.PutTextCommand);
+					command = new PutTextCommand(ioc);
 					break;
 				case 'replacetext':
-					command = this._pipelineIoc.get<ReplaceTextCommand>(TYPES.ReplaceTextCommand);
+					command = new ReplaceTextCommand(ioc);
 					break;
 				case 'scrollto':
-					command = this._pipelineIoc.get<ScrollToCommand>(TYPES.ScrollToCommand);
+					command = new ScrollToCommand(ioc);
 					break;
 				case 'openurl':
-					command = this._pipelineIoc.get<OpenUrlCommand>(TYPES.OpenUrlCommand);
+					command = new OpenUrlCommand(ioc);
 					break;
 				case 'waitelement':
-					command = this._pipelineIoc.get<WaitElementCommand>(TYPES.WaitElementCommand);
+					command = new WaitElementCommand(ioc);
 					break;
 				default:
 					throw new Error(`command: ${cmd} not supported`)

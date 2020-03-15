@@ -15,6 +15,7 @@ import { BrowserProvider } from './browser/browser-provider';
 import { IBrowserProvider } from './browser/i-browser-provider';
 import { HttpDataStore } from './data/provider/http-data-store';
 import { AbstractStore } from './data/abstract-store';
+import { DataContextResolver } from './data/data-context-resolver';
 
 export class PipelineBuilderFactory {
 
@@ -22,28 +23,40 @@ export class PipelineBuilderFactory {
 		const ioc = new Container();
 		ioc
 		  .bind<ICommandFactory>(TYPES.ICommandFactory)
-		  .to(CommandFactory);
+		  .to(CommandFactory)
+		  .inSingletonScope();
 		ioc
 		  .bind<IPipelineConfigurationBuilder>(TYPES.IPipelineConfigurationBuilder)
-		  .to(PipelineConfigurationBuilder);
+		  .to(PipelineConfigurationBuilder)
+		  .inSingletonScope();
 		ioc
 		  .bind<IPipelineBuilder>(TYPES.IPipelineBuilder)
-		  .to(PipelineBuilder);
+		  .to(PipelineBuilder)
+		  .inSingletonScope();
 		ioc
 		  .bind<PipelineLogger>(TYPES.PipelineLogger)
-		  .to(PipelineLogger);
+		  .to(PipelineLogger)
+		  .inSingletonScope();
 		ioc
 		  .bind<AbstractBrowser>(TYPES.AbstractBrowser)
-		  .to(ChromiumPuppeteer);
+		  .to(ChromiumPuppeteer)
+		  .inSingletonScope();
 		ioc
 		  .bind<IBrowserProvider>(TYPES.IBrowserProvider)
-		  .to(BrowserProvider);
+		  .to(BrowserProvider)
+		  .inSingletonScope();
 		ioc
 		  .bind<QueryProviderFactory>(TYPES.QueryProviderFactory)
-		  .to(QueryProviderFactory);
+		  .to(QueryProviderFactory)
+		  .inSingletonScope();
+		ioc
+		  .bind<DataContextResolver>(TYPES.DataContextResolver)
+		  .to(DataContextResolver)
+		  .inSingletonScope();
 		ioc
 		  .bind<AbstractStore>(TYPES.AbstractStore)
-		  .to(HttpDataStore);
+		  .to(HttpDataStore)
+		  .inSingletonScope();
 		ioc
 		  .bind<PipelineIoc>(TYPES.PipelineIoc)
 		  .toConstantValue(ioc);

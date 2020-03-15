@@ -12,6 +12,7 @@ const TYPES = {
 	AbstractStore: Symbol.for("AbstractStore"),
 	IPipelineConfigurationBuilder: Symbol.for("IPipelineConfigurationBuilder"),
 	QueryProviderFactory: Symbol.for("QueryProviderFactory"),
+	DataContextResolver: Symbol.for("DataContextResolver"),
 	PipelineIoc: Symbol.for("PipelineIoc"),
 };
 
