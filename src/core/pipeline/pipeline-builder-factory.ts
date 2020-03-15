@@ -69,7 +69,7 @@ export class PipelineBuilderFactory {
 		  .to(HttpDataClient)
 		  .inSingletonScope();
 		ioc
-		  .bind<string>(TYPES.ServiceUrl)
+		  .bind<string>(TYPES.DataServiceUrl)
 		  .toConstantValue(dataServiceUrl);
 		ioc
 		  .bind<PipelineIoc>(TYPES.PipelineIoc)

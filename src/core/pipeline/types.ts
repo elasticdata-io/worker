@@ -12,7 +12,7 @@ const TYPES = {
 	DataContextResolver: Symbol.for("DataContextResolver"),
 	HttpDataClient: Symbol.for("HttpDataClient"),
 	PipelineIoc: Symbol.for("PipelineIoc"),
-	ServiceUrl: Symbol.for("ServiceUrl"),
+	DataServiceUrl: Symbol.for("DataServiceUrl"),
 };
 
 export { TYPES };

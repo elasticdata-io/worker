@@ -9,7 +9,7 @@ export class HttpDataClient {
 	private readonly _servicePath = '/v1/store';
 	private readonly _serviceUrl: string;
 
-	constructor(@inject(TYPES.ServiceUrl) serviceUrl: string) {
+	constructor(@inject(TYPES.DataServiceUrl) serviceUrl: string) {
 		this._serviceUrl = serviceUrl;
 	}
 
