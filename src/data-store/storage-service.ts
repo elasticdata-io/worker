@@ -1,3 +1,5 @@
+import { ContextValidator } from './context-validator';
+
 export class StorageService {
 
 	private readonly _contexts: any;
@@ -7,7 +9,7 @@ export class StorageService {
 	}
 
 	public async put(key: string, value: string, context: string): Promise<void> {
-		this.validateContext(context);
+		ContextValidator.validate(context);
 		await this.upsertLine(context, key, value);
 	}
 	public async getDocument(): Promise<any> {
@@ -31,35 +33,5 @@ export class StorageService {
 			return
 		}
 		lines.push({[key]: value});
-	}
-	private validateContext(context: string): void {
-		const isRoot = /^root$/gi.test(context);
-		if (isRoot) {
-			return;
-		}
-		let correct = /^root\./gi.test(context);
-		if (correct) {
-			correct = /[a-zа-я0-9_\-.]/gi.test(context);
-		}
-		if (!correct) {
-			throw `value of the context: '${context}' is incorrect`;
-		}
-		const contexts = context.split('.');
-		let prevContextIsNumber = true;
-		contexts.forEach((context) => {
-			if (prevContextIsNumber) {
-				correct = /[a-zа-я_\-]/gi.test(context);
-			}
-			if (!prevContextIsNumber) {
-				correct = /[0-9]/gi.test(context);
-			}
-			prevContextIsNumber = !prevContextIsNumber;
-		});
-		if (correct) {
-			correct = /[^0-9]$/.test(context);
-		}
-		if (!correct) {
-			throw `value of the context: '${context}' is incorrect`;
-		}
 	}
 }

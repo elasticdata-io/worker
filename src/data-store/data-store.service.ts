@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { KeyValueData } from './dto/key-value-data';
 import { StorageService } from './storage-service';
 
@@ -11,12 +11,11 @@ export class DataStoreService {
 		this._storages = {};
 	}
 
-	async put(data: KeyValueData): Promise<void> {
+	public async put(data: KeyValueData): Promise<void> {
 		const storage = await this.resolveStorage(data.id);
 		return storage.put(data.key, data.value, data.context);
 	}
-
-	async getDocument(storageId: string): Promise<void> {
+	public async getDocument(storageId: string): Promise<void> {
 		const storage = await this.resolveStorage(storageId);
 		return storage.getDocument();
 	}
