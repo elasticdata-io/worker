@@ -1,3 +1,4 @@
+import { unflatten } from 'flat'
 import { ContextValidator } from './context-validator';
 
 export class StorageService {
@@ -13,7 +14,7 @@ export class StorageService {
 		await this.upsertLine(context, key, value);
 	}
 	public async getDocument(): Promise<any> {
-		return this._contexts;
+		return unflatten(this._contexts);
 	}
 
 	private async upsertLine(context: string, key: string, value: string): Promise<void> {
