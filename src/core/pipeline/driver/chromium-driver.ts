@@ -19,6 +19,11 @@ export class ChromiumDriver implements Driver {
 				height: this._options.height
 			});
 		}
+		if (this._options && this._options.language) {
+			await this._page.setExtraHTTPHeaders({
+				'Accept-Language': this._options.language
+			});
+		}
 	}
 
 	async domClick(command): Promise<void> {
