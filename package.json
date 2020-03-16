@@ -29,6 +29,7 @@
     "axios": "^0.19.2",
     "form-data": "^3.0.0",
     "inversify": "^5.0.1",
+    "moment": "^2.24.0",
     "puppeteer": "^2.1.1",
     "puppeteer-tsd": "0.0.2",
     "reflect-metadata": "^0.1.13",

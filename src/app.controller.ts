@@ -1,5 +1,6 @@
 import { Body, Controller, Post, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { AppService } from './app.service';
+import { RunTaskDto } from './dto/run.task';
 
 @Controller()
 export class AppController {
@@ -7,9 +8,9 @@ export class AppController {
 	}
 
 	@Post()
-	async run(@Body() json: any, @Headers('useruuid') userUuid: string): Promise<string> {
+	async run(@Body() dto: RunTaskDto): Promise<string> {
 		try {
-			return await this.appService.runPipeline(json, userUuid);
+			return await this.appService.runPipeline(dto);
 		} catch (e) {
 			throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
