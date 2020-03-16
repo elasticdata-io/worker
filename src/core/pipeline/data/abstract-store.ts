@@ -2,7 +2,6 @@ import { AbstractCommand } from '../command/abstract-command';
 import { injectable } from 'inversify';
 import { DataContextResolver } from './data-context-resolver';
 import { StringGenerator } from '../util/string.generator';
-import { Stream } from 'stream';
 
 @injectable()
 export abstract class AbstractStore {

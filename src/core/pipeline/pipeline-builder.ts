@@ -17,7 +17,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 	constructor(
 	  @inject(TYPES.IPipelineConfigurationBuilder) private _pipelineConfigurationBuilder: IPipelineConfigurationBuilder,
 	  @inject(TYPES.PipelineLogger) private _logger: PipelineLogger,
-	  @inject(ROOT_TYPES.PipelineIoc) private _pipelineIoc: PipelineIoc,
+	  @inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
 	  @inject(TYPES.AbstractBrowser) private _browser: AbstractBrowser) {
 	}
 
@@ -38,14 +38,17 @@ export class PipelineBuilder implements IPipelineBuilder {
 	async build(): Promise<PipelineProcess> {
 		const driver = await this._browser.create();
 		await driver.init();
-		this._pipelineIoc
+		this._ioc
 		  .bind<Driver>(TYPES.Driver)
 		  .toConstantValue(driver);
+		this._ioc
+		  .bind<Environment>(TYPES.Environment)
+		  .toConstantValue(this._environment);
 		const browserProvider = new BrowserProvider();
 		const pipelineConfiguration = this._pipelineConfigurationBuilder
 		  .setJson(this._pipelineJson);
 		const commands = pipelineConfiguration.buildCommands();
-		this._pipelineProcess = new PipelineProcess(commands, browserProvider, this._pipelineIoc);
+		this._pipelineProcess = new PipelineProcess(commands, browserProvider, this._ioc);
 		return this._pipelineProcess;
 	}
 }

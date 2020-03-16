@@ -7,6 +7,7 @@ export class AppController {
 
   @Post()
   async run(@Body() json: any): Promise<any> {
-    return this.appService.runPipeline(json);
+    const userUuid = 'sergey';
+    return this.appService.runPipeline(json, userUuid);
   }
 }

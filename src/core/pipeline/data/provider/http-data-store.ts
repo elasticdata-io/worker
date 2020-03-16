@@ -4,16 +4,19 @@ import { HttpDataClient } from './http.data.client';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import { DataContextResolver } from '../data-context-resolver';
-import { Stream } from 'stream';
+import { Environment } from '../../environment';
 
 @injectable()
 export class HttpDataStore extends AbstractStore {
 
 	protected httpDataClient: HttpDataClient;
+	protected userUuid: string;
 
 	constructor(@inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
-				@inject(TYPES.HttpDataClient) httpDataClient: HttpDataClient) {
+				@inject(TYPES.HttpDataClient) httpDataClient: HttpDataClient,
+				@inject(TYPES.Environment) env: Environment) {
 		super(dataContextResolver);
+		this.userUuid = env.userUuid;
 		this.httpDataClient = httpDataClient;
 	}
 
@@ -24,6 +27,7 @@ export class HttpDataStore extends AbstractStore {
 			value: value,
 			context: context,
 			id: this.id,
+			userUuid: this.userUuid,
 		});
 	}
 
@@ -34,10 +38,11 @@ export class HttpDataStore extends AbstractStore {
 			file: file,
 			context: context,
 			id: this.id,
+			userUuid: this.userUuid,
 		});
 	}
 
 	async getDocument(): Promise<any>  {
-		return this.httpDataClient.getDocument(this.id);
+		return this.httpDataClient.getDocument(this.id, this.userUuid);
 	}
 }

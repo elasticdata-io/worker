@@ -16,10 +16,12 @@ export class HttpDataClient {
 	}
 
 	async put(data: KeyValueData): Promise<void> {
-		const res = await axios.post(
-		  `${this._serviceUrl}${this._servicePath}`,
-		  data
-		);
+		const config = {
+			headers: {
+				userUuid: data.userUuid,
+			},
+		};
+		const res = await axios.post(`${this._serviceUrl}${this._servicePath}`, data, config);
 		if (!res.data.success) {
 			throw res.data.message;
 		}
@@ -29,9 +31,12 @@ export class HttpDataClient {
 		const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.key}`);
 		const form = new FormData();
 		const file = data.file;
-		form.append('file', file, {filename: 'file'});
+		form.append('file', file, { filename: 'file' });
 		const config = {
-			headers: form.getHeaders()
+			headers: {
+				...form.getHeaders(),
+				userUuid: data.userUuid,
+			},
 		};
 		const res = await axios.post(url.href, form, config);
 		if (!res.data.success) {
@@ -39,8 +44,13 @@ export class HttpDataClient {
 		}
 	}
 
-	async getDocument(storeId: string): Promise<any> {
-		const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`);
+	async getDocument(storeId: string, userUuid: string): Promise<any> {
+		const config = {
+			headers: {
+				userUuid: userUuid,
+			},
+		};
+		const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`, config);
 		return res.data;
 	}
 }
