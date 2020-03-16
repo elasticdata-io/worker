@@ -12,7 +12,7 @@ COPY .eslintrc.js .
 COPY .prettierrc .
 RUN npm run build
 
-FROM node:13.10.1-alpine3.11
+FROM buildkite/puppeteer:latest
 WORKDIR /app
 COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/dist dist
