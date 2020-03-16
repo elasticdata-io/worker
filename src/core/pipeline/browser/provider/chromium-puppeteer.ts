@@ -28,6 +28,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 				ignoreDefaultArgs: ['--enable-automation', /*'--no-sandbox'*/],
 				args: args,
 			});
+			console.log(args);
 			const driver = new ChromiumDriver(browser);
 			await driver.init({
 				width: this.windowWidth,
