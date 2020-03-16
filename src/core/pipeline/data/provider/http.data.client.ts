@@ -1,12 +1,9 @@
 import axios from 'axios';
 import * as FormData from 'form-data';
-import { request } from 'http';
-import { createReadStream } from 'fs';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import { KeyValueData } from '../dto/key.value.data';
 import { KeyFileData } from '../dto/key.file.data';
-import * as fs from 'fs';
 
 @injectable()
 export class HttpDataClient {
@@ -19,9 +16,10 @@ export class HttpDataClient {
 	}
 
 	async put(data: KeyValueData): Promise<void> {
-		const res = await axios.post(`${this._serviceUrl}${this._servicePath}`, {
-			...data
-		});
+		const res = await axios.post(
+		  `${this._serviceUrl}${this._servicePath}`,
+		  data
+		);
 		if (!res.data.success) {
 			throw res.data.message;
 		}
@@ -32,18 +30,13 @@ export class HttpDataClient {
 		const form = new FormData();
 		const file = data.file;
 		form.append('file', file, {filename: 'file'});
-		const req = request(
-		  {
-			  protocol: url.protocol,
-			  host: url.hostname,
-			  path: url.pathname,
-			  port: url.port,
-			  method: 'POST',
-			  headers: form.getHeaders(),
-		  }
-		);
-		form.pipe(req);
-		await req;
+		const config = {
+			headers: form.getHeaders()
+		};
+		const res = await axios.post(url.href, form, config);
+		if (!res.data.success) {
+			throw res.data.message;
+		}
 	}
 
 	async getDocument(storeId: string): Promise<any> {
