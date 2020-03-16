@@ -8,11 +8,9 @@ import { ChromiumDriver } from '../../driver/chromium-driver';
 export class ChromiumPuppeteer extends AbstractBrowser {
 	async create(): Promise<Driver> {
 		try {
-			const args = await puppeteer.defaultArgs()
-			  .filter(x => {
-				  const ignore = x === '--enable-automation' || x === '--no-sandbox';
-				  return ignore === false;
-			  });
+			const args = await puppeteer.defaultArgs();
+			args.push('--no-sandbox');
+			args.push('--disable-setuid-sandbox');
 			if (this.windowWidth && this.windowHeight) {
 				args.push(`--window-size=${this.windowWidth},${this.windowHeight}`);
 			} else {
@@ -27,7 +25,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			}
 			const browser = await puppeteer.launch({
 				headless: true,
-				ignoreDefaultArgs: ['--enable-automation', '--no-sandbox'],
+				ignoreDefaultArgs: ['--enable-automation', /*'--no-sandbox'*/],
 				args: args,
 			});
 			const driver = new ChromiumDriver(browser);
