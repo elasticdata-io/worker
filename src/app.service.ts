@@ -14,6 +14,6 @@ export class AppService {
 		  .setPipelineJson(JSON.stringify(json))
 		  .build();
 		await pipelineProcess.run();
-		return pipelineProcess.getDocument();
+		return pipelineProcess.commit();
 	}
 }

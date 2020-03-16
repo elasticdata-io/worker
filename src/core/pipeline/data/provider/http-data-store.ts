@@ -46,4 +46,8 @@ export class HttpDataStore extends AbstractStore {
 	async getDocument(): Promise<any>  {
 		return this.httpDataClient.getDocument(this.id, this.userUuid);
 	}
+
+	async commit(): Promise<string>  {
+		return this.httpDataClient.commit(this.id, this.userUuid);
+	}
 }

@@ -17,4 +17,5 @@ export abstract class AbstractStore {
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
 	abstract putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void>;
 	abstract getDocument(): Promise<any>;
+	abstract commit(): Promise<string>;
 }

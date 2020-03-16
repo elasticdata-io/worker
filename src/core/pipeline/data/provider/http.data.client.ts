@@ -50,4 +50,16 @@ export class HttpDataClient {
 		const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`, config);
 		return res.data;
 	}
+
+	async commit(storeId: string, userUuid: string): Promise<string> {
+		const config = {
+			headers: {
+				userUuid: userUuid,
+			},
+		};
+		const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, {
+			id: storeId,
+		}, config);
+		return res.data;
+	}
 }
