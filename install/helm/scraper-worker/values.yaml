@@ -21,6 +21,7 @@ ingress:
 
 env:
   DATA_SERVICE_URL: http://data-service
+  SCRAPER_SERVICE_URL: http://backend:8080
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
