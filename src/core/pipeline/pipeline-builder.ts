@@ -29,14 +29,18 @@ export class PipelineBuilder implements IPipelineBuilder {
 
 	private _environment: Environment;
 
-	setPipelineJson(pipelineJson: any): PipelineBuilder {
+	setPipelineJson(pipelineJson: string): PipelineBuilder {
 		this._pipelineJson = pipelineJson;
 		return this;
 	}
 
-	private _pipelineJson: any;
+	private _pipelineJson: string;
 
 	async build(): Promise<PipelineProcess> {
+		// todo : settings need before this._browser.create
+		const pipeline = JSON.parse(this._pipelineJson);
+		const settings = pipeline.settings;
+		this.setBrowserSettings(settings);
 		const driver = await this._browser.create();
 		this._ioc
 		  .bind<Driver>(ROOT_TYPES.Driver)
@@ -46,8 +50,6 @@ export class PipelineBuilder implements IPipelineBuilder {
 		  .toConstantValue(this._environment);
 		const pipelineConfiguration = this._pipelineConfigurationBuilder
 		  .buildFromJson(this._pipelineJson);
-		const settings = pipelineConfiguration.settings;
-		this.setBrowserSettings(settings);
 		const browserProvider = new BrowserProvider();
 		const commands = pipelineConfiguration.commands;
 		this._pipelineProcess = new PipelineProcess(commands, browserProvider, this._ioc);

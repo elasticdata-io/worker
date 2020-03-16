@@ -9,7 +9,6 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 	async create(): Promise<Driver> {
 		try {
 			const args = await puppeteer.defaultArgs();
-			args.push('--no-sandbox');
 			args.push('--disable-setuid-sandbox');
 			if (this.windowWidth && this.windowHeight) {
 				args.push(`--window-size=${this.windowWidth},${this.windowHeight}`);
