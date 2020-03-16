@@ -31,6 +31,7 @@ export class PipelineProcess {
 	async getDocument(): Promise<any> {
 		return this.store.getDocument();
 	}
+
 	async commit(): Promise<string> {
 		return this.store.commit();
 	}

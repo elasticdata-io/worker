@@ -1,5 +1,4 @@
 import { AbstractCommand } from '../command/abstract-command';
-import { Stream } from 'stream';
 
 export abstract class Driver {
 	abstract async init();

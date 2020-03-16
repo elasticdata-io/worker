@@ -24,6 +24,8 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
   }
 
   buildSettings(): SettingsConfiguration {
+    const pipeline = JSON.parse(this._json);
+    this.settings = pipeline.settings as SettingsConfiguration;
     return this.settings;
   }
 

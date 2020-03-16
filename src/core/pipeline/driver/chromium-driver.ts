@@ -1,18 +1,24 @@
 import { Driver } from './driver';
 import { Browser, Page } from 'puppeteer';
 import { injectable } from 'inversify';
-import { Duplex, Readable, Stream } from 'stream';
+import { DriverOptions } from './driver.options';
 
 @injectable()
 export class ChromiumDriver extends Driver {
 	private _page: Page;
 
-	constructor(private _browser: Browser) {
+	constructor(private _browser: Browser, private _options: DriverOptions) {
 		super();
 	}
 
 	async init() {
 		this._page = await this._browser.newPage();
+		if (this._options && this._options.width) {
+			await this._page.setViewport({
+				width: this._options.width,
+				height: this._options.height
+			});
+		}
 	}
 
 	async domClick(command): Promise<void> {

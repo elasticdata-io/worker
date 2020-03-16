@@ -9,6 +9,7 @@ import { Driver } from './driver/driver';
 import { PipelineIoc } from './pipeline-ioc';
 import { PipelineLogger } from './logger/pipeline-logger';
 import { Environment } from './environment';
+import { SettingsConfiguration } from './configuration/settings-configuration';
 
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
@@ -36,6 +37,10 @@ export class PipelineBuilder implements IPipelineBuilder {
 	private _pipelineJson: any;
 
 	async build(): Promise<PipelineProcess> {
+		const pipelineConfiguration = this._pipelineConfigurationBuilder
+		  .setJson(this._pipelineJson);
+		const settings = pipelineConfiguration.buildSettings();
+		this.setBrowserSettings(settings);
 		const driver = await this._browser.create();
 		await driver.init();
 		this._ioc
@@ -45,10 +50,14 @@ export class PipelineBuilder implements IPipelineBuilder {
 		  .bind<Environment>(TYPES.Environment)
 		  .toConstantValue(this._environment);
 		const browserProvider = new BrowserProvider();
-		const pipelineConfiguration = this._pipelineConfigurationBuilder
-		  .setJson(this._pipelineJson);
 		const commands = pipelineConfiguration.buildCommands();
 		this._pipelineProcess = new PipelineProcess(commands, browserProvider, this._ioc);
 		return this._pipelineProcess;
+	}
+
+	private setBrowserSettings(settings: SettingsConfiguration) {
+		this._browser.language = settings.window.language;
+		this._browser.windowHeight = settings.window.height;
+		this._browser.windowWidth = settings.window.width;
 	}
 }
