@@ -6,7 +6,7 @@ import { Environment } from './core/pipeline/environment';
 export class AppService {
 	constructor(private _pipelineBuilderFactory: PipelineBuilderFactory) {}
 
-	async runPipeline(json: string, userUuid: string): Promise<any> {
+	async runPipeline(json: string, userUuid: string): Promise<string> {
 		const env = { userUuid: userUuid } as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
 		const pipelineProcess = await pipelineBuilder
