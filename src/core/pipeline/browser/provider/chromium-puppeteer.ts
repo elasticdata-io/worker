@@ -23,7 +23,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			}
 			const browser = await puppeteer.launch({
 				headless: true,
-				ignoreDefaultArgs: ['--enable-automation', '--no-sandbox'],
+				ignoreDefaultArgs: ['--enable-automation', /*'--no-sandbox'*/],
 				args: args
 			});
 			const driver = new ChromiumDriver(browser);
