@@ -14,6 +14,8 @@ export class AppService {
 		  .setPipelineJson(JSON.stringify(json))
 		  .build();
 		await pipelineProcess.run();
-		return pipelineProcess.commit();
+		const fileLink = await pipelineProcess.commit();
+		await pipelineProcess.destroy();
+		return fileLink;
 	}
 }

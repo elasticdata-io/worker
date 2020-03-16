@@ -38,6 +38,11 @@ export class PipelineProcess {
 
 	stop(): void {
 		// todo: need implement
+		this.destroy();
+	}
+
+	destroy(): void {
+		// todo: need implement
 		this._ioc.unbindAll();
 	}
 }

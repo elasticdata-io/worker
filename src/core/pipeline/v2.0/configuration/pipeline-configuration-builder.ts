@@ -15,12 +15,16 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 	public _settings: SettingsConfiguration;
 	public _version: string;
 
-	get commands() {
+	get commands(): any[] {
 		return this._commands;
 	}
 
-	get settings() {
+	get settings(): SettingsConfiguration {
 		return this._settings;
+	}
+
+	get transform(): any[] {
+		return this._transform;
 	}
 
 	buildFromJson(json: any): IPipelineConfigurationBuilder {
