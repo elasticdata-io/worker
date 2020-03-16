@@ -6,7 +6,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  async run(@Body() json: any): Promise<void> {
-    await this.appService.runPipeline(json);
+  async run(@Body() json: any): Promise<any> {
+    return this.appService.runPipeline(json);
   }
 }

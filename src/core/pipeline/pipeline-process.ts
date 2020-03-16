@@ -22,12 +22,14 @@ export class PipelineProcess {
 			}
 			const command = this._commands[0];
 			await this._browserProvider.execute(command);
-			const document = await this.store.getDocument();
-			console.log(`root has: ${document.length} documents`);
 			this.stop();
 		} catch (e) {
 			console.error(e);
 		}
+	}
+
+	async getDocument(): Promise<any> {
+		return this.store.getDocument();
 	}
 
 	stop(): void {
