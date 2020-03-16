@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Headers } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -6,8 +6,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  async run(@Body() json: any): Promise<any> {
-    const userUuid = 'sergey';
+  async run(@Body() json: any, @Headers('useruuid') userUuid: string): Promise<any> {
     return this.appService.runPipeline(json, userUuid);
   }
 }
