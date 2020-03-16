@@ -28,7 +28,7 @@ export class HttpDataClient {
 	}
 
 	async putFile(data: KeyFileData): Promise<void> {
-		const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.key}`);
+		const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.fileExtension}/${data.key}`);
 		const form = new FormData();
 		const file = data.file;
 		form.append('file', file, { filename: 'file' });

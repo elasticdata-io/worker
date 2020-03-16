@@ -31,11 +31,12 @@ export class HttpDataStore extends AbstractStore {
 		});
 	}
 
-	async putFile(key: string, file: Buffer, command: AbstractCommand): Promise<void> {
+	async putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
 		await this.httpDataClient.putFile({
 			key: key,
 			file: file,
+			fileExtension: fileExtension,
 			context: context,
 			id: this.id,
 			userUuid: this.userUuid,
