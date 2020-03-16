@@ -38,10 +38,7 @@ export class HttpDataClient {
 				userUuid: data.userUuid,
 			},
 		};
-		const res = await axios.post(url.href, form, config);
-		if (!res.data.success) {
-			throw res.data.message;
-		}
+		await axios.post(url.href, form, config);
 	}
 
 	async getDocument(storeId: string, userUuid: string): Promise<any> {
