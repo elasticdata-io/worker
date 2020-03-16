@@ -1,36 +1,43 @@
 import { IPipelineConfigurationBuilder } from '../../configuration/i-pipeline-configuration-builder';
 import { ICommandFactory } from '../../command/i-command-factory';
 import { SettingsConfiguration } from '../../configuration/settings-configuration';
-import { AbstractCommand } from '../../command/abstract-command';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 
 @injectable()
 export class PipelineConfigurationBuilder implements IPipelineConfigurationBuilder {
-  private _json: any;
+	private _json: string;
 
-  constructor(@inject(TYPES.ICommandFactory) private _commandFactory: ICommandFactory) {
-  }
+	constructor(@inject(TYPES.ICommandFactory) private _commandFactory: ICommandFactory) {}
 
-  public commands: any[];
-  public dataRules: any[];
-  public settings: SettingsConfiguration;
+	public _commands: any[];
+	public _transform: any[];
+	public _settings: SettingsConfiguration;
+	public _version: string;
 
-  buildCommands(): AbstractCommand[] {
-    const pipeline = JSON.parse(this._json);
-    const commandsJson = JSON.stringify(pipeline.commands);
-    this.commands = this._commandFactory.createChainCommands(commandsJson);
-    return this.commands;
-  }
+	get commands() {
+		return this._commands;
+	}
 
-  buildSettings(): SettingsConfiguration {
-    const pipeline = JSON.parse(this._json);
-    this.settings = pipeline.settings as SettingsConfiguration;
-    return this.settings;
-  }
+	get settings() {
+		return this._settings;
+	}
 
-  setJson(json: any): IPipelineConfigurationBuilder {
-    this._json = json;
-    return this;
-  }
+	buildFromJson(json: any): IPipelineConfigurationBuilder {
+		this._json = json;
+		const pipeline = JSON.parse(this._json);
+		const commandsJson = JSON.stringify(pipeline.commands || []);
+		this._commands = this._commandFactory.createChainCommands(commandsJson);
+		this._settings = pipeline.settings || {} as SettingsConfiguration;
+		this._version = pipeline.version;
+		this.validate();
+		return this;
+	}
+
+	private validate() {
+		if (this._version === '2.0') {
+			return;
+		}
+		throw `version: ${this._version} not supported`;
+	}
 }
