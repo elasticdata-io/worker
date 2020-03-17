@@ -36,6 +36,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 				width: this.windowWidth,
 				height: this.windowHeight,
 				language: this.language,
+				proxies: proxies,
 			});
 			return driver;
 		} catch (e) {
