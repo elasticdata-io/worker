@@ -38,7 +38,7 @@ export class ChromiumDriver implements Driver {
 	}
 
 	async executeScript(script: string, ...args: any[]): Promise<any> {
-		return await this._page.evaluate(script, args);
+		return await this._page.evaluate(`(function(){${script})()`, args);
 	}
 
 	async getCurrentUrl(): Promise<string> {
