@@ -91,7 +91,7 @@ export class AppService {
 				value: moment().format('YYYY-MM-DD HH:mm:ss')
 			},
 			{
-				op: "replace",
+				op: "add",
 				path: "/failureReason",
 				value: error
 			}
