@@ -5,6 +5,7 @@ import { TYPES } from '../../types';
 import { KeyValueData } from '../dto/key.value.data';
 import { KeyFileData } from '../dto/key.file.data';
 import { DataResult } from '../dto/data.result';
+import { CommitDocument } from '../dto/commit.document';
 
 @injectable()
 export class HttpDataClient {
@@ -52,15 +53,8 @@ export class HttpDataClient {
 		return res.data;
 	}
 
-	async commit(storeId: string, userUuid: string): Promise<DataResult> {
-		const config = {
-			headers: {
-				userUuid: userUuid,
-			},
-		};
-		const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, {
-			id: storeId,
-		}, config);
+	async commit(data: CommitDocument): Promise<DataResult> {
+		const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);
 		return res.data;
 	}
 }

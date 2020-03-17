@@ -22,7 +22,10 @@ export class AppService {
 
 	private async runTask(dto: RunTaskDto): Promise<DataResult> {
 		this.beforeRunTask(dto.taskId);
-		const env = { userUuid: dto.userUuid } as Environment;
+		const env = {
+			userUuid: dto.userUuid,
+			taskId: dto.taskId
+		} as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
 		console.log(JSON.parse(dto.json));
 		const pipelineProcess = await pipelineBuilder

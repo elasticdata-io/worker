@@ -12,12 +12,14 @@ export class HttpDataStore extends AbstractStore {
 
 	protected httpDataClient: HttpDataClient;
 	protected userUuid: string;
+	protected taskId: string;
 
 	constructor(@inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
 				@inject(TYPES.HttpDataClient) httpDataClient: HttpDataClient,
 				@inject(TYPES.Environment) env: Environment) {
 		super(dataContextResolver);
 		this.userUuid = env.userUuid;
+		this.taskId = env.taskId;
 		this.httpDataClient = httpDataClient;
 	}
 
@@ -49,6 +51,10 @@ export class HttpDataStore extends AbstractStore {
 	}
 
 	async commit(): Promise<DataResult>  {
-		return this.httpDataClient.commit(this.id, this.userUuid);
+		return this.httpDataClient.commit({
+			bucket: this.userUuid,
+			fileName: `${this.taskId}.json`,
+			storeId: this.id,
+		});
 	}
 }
