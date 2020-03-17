@@ -32,7 +32,7 @@ export class AppConsumer {
 
 	protected async consume(message: Amqp.Message): Promise<void> {
 		try {
-			const dto = message.getContent() as RunTaskDto;
+			const dto = JSON.parse(message.getContent()) as RunTaskDto;
 			AppConsumer.validateDto(dto);
 			const payload = {
 				json: dto.json,
