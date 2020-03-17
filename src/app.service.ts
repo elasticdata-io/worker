@@ -91,9 +91,9 @@ export class AppService {
 				value: moment().format('YYYY-MM-DD HH:mm:ss')
 			},
 			{
-				op: "add",
+				op: "replace",
 				path: "/failureReason",
-				value: error
+				value: error.toString()
 			}
 		];
 		await this._taskService.update(taskId, patch);
