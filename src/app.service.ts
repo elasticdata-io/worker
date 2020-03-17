@@ -12,7 +12,7 @@ export class AppService {
 
 	public async runPipelineTask(dto: RunTaskDto): Promise<string> {
 		try {
-			return this.runTask(dto);
+			return await this.runTask(dto);
 		} catch (e) {
 			await this.handleErrorOfTask(dto.taskId);
 			throw e
