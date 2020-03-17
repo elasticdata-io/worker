@@ -34,12 +34,7 @@ export class AppConsumer {
 		try {
 			const dto = JSON.parse(message.getContent()) as RunTaskDto;
 			AppConsumer.validateDto(dto);
-			const payload = {
-				json: dto.json,
-				taskId: dto.taskId,
-				userUuid: dto.userUuid,
-			};
-			await this.runPipelineTask(payload);
+			await this.runPipelineTask(dto);
 			message.ack();
 		} catch (e) {
 			console.error(e);
