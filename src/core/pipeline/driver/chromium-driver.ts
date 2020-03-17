@@ -88,12 +88,7 @@ export class ChromiumDriver implements Driver {
 	}
 
 	async pause(command: AbstractCommand): Promise<void> {
-		async function delay(time) {
-			return new Promise(function(resolve) {
-				setTimeout(resolve, time);
-			});
-		}
-		await delay(command.timeout * 1000);
+		await this.delay(command.timeout * 1000);
 	}
 
 	async setElValue(command: AbstractCommand, value: string): Promise<void> {
@@ -105,7 +100,14 @@ export class ChromiumDriver implements Driver {
 	}
 
 	async waitElement(command: AbstractCommand): Promise<void> {
-		return undefined;
+		const skipAfterTimeout = command.timeout * 1000;
+		const interval = 250;
+		const queryProvider = command.getQueryProvider();
+		const getCountFn = queryProvider.getElementsFn(command, '.length');
+		await this.wait(skipAfterTimeout, interval, async () => {
+			const count = await this._page.evaluate(getCountFn) as number;
+			return count > 0;
+		});
 	}
 
 	async getScreenshot(command: AbstractCommand): Promise<Buffer> {
@@ -119,4 +121,30 @@ export class ChromiumDriver implements Driver {
 		return undefined;
 	}
 
+	protected async delay(time: number) {
+		return new Promise(function(resolve) {
+			setTimeout(resolve, time);
+		});
+	}
+
+	protected async wait(timeoutMs: number, intervalMs: number, conditionFn: Function) {
+		const start = new Date().getTime();
+		return new Promise(async resolve => {
+			const intervalId = setInterval(async () => {
+				try {
+					const end = new Date().getTime();
+					const executeTime = end - start;
+					if (executeTime >= timeoutMs) {
+						clearInterval(intervalId);
+						resolve();
+						return;
+					}
+					const value = await conditionFn();
+					if (value === true) {
+						resolve();
+					}
+				} catch (e) {}
+			}, intervalMs);
+		});
+	}
 }
