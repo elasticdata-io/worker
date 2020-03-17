@@ -23,9 +23,10 @@ export class PipelineProcess {
 			}
 			const command = this._commands[0];
 			await this._browserProvider.execute(command);
-			this.stop();
 		} catch (e) {
-			console.error(e);
+			throw e;
+		} finally {
+			await this.destroy();
 		}
 	}
 
@@ -33,12 +34,12 @@ export class PipelineProcess {
 		return this.store.commit();
 	}
 
-	stop(): void {
+	async stop(): Promise<void> {
 		// todo: need implement
 		this.destroy();
 	}
 
-	destroy(): void {
+	async destroy(): Promise<void> {
 		// todo: need implement
 		this._ioc.unbindAll();
 	}
