@@ -82,6 +82,7 @@ export class AppService {
 			}
 		];
 		await this._taskService.update(taskId, patch);
+		await this._taskService.synchronizeWithPipeline(taskId);
 	}
 
 	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {

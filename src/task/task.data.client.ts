@@ -15,4 +15,9 @@ export class TaskDataClient {
 		const url = `${this._serviceUrl}/api/task/${taskId}`;
 		await axios.patch(`${url}`, patch);
 	}
+
+	async synchronizeWithPipeline(taskId: string): Promise<void> {
+		const url = `${this._serviceUrl}/api/pipeline/task/synchronize/${taskId}`;
+		await axios.post(`${url}`);
+	}
 }

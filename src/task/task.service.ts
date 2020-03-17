@@ -10,4 +10,8 @@ export class TaskService {
 	public async update(taskId: string, patch: any): Promise<void> {
 		await this._taskDataClient.update(taskId, patch);
 	}
+
+	public async synchronizeWithPipeline(taskId: string): Promise<void> {
+		await this._taskDataClient.synchronizeWithPipeline(taskId);
+	}
 }
