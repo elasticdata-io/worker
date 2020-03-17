@@ -67,13 +67,13 @@ export class AppService {
 			},
 			{
 				op: "replace",
-				path: "/docsBytes",
-				value: data.bytes
+				path: "/docsCount",
+				value: data.rootLines
 			},
 			{
 				op: "replace",
-				path: "/docsCount",
-				value: 0
+				path: "/docsBytes",
+				value: data.bytes
 			},
 			{
 				op: "replace",
