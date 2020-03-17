@@ -5,8 +5,12 @@ import { injectable } from 'inversify';
 @injectable()
 export class CssQueryProvider extends AbstractQueryProvider {
 
-	protected getSelectionFn(selector: string, suffix: string) {
-		return new Function(`return document.querySelector(\`${selector}\`)${suffix}`);
+	protected getElementActionFn(selector: string, actionSuffix: string): Function {
+		return new Function(`return document.querySelector(\`${selector}\`)${actionSuffix}`);
+	}
+
+	protected getElementsActionFn(selector: string, actionSuffix: string): Function {
+		return new Function(`return document.querySelectorAll(\`${selector}\`)${actionSuffix}`);
 	}
 
 	isSupporting(command: AbstractCommand): boolean {

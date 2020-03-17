@@ -1,6 +1,7 @@
 import { AbstractCommand } from '../command/abstract-command';
 
 export interface QueryProvider {
-	getSelectionElFn(command: AbstractCommand, suffix: string): Function;
+	getElementFn(command: AbstractCommand, suffix: string): any;
+	getElementsFn(command: AbstractCommand, suffix: string): any;
 	isSupporting(command: AbstractCommand): boolean;
 }

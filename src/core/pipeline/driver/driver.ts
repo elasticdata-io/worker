@@ -4,8 +4,8 @@ import { DriverOptions } from './driver.options';
 export interface Driver {
 	init(options: DriverOptions): Promise<void>;
 	pause(command: AbstractCommand): Promise<void>;
-	executeAsyncScript(script: string, arg: any): Promise<string>;
-	executeScript(script: string, arg: any): Promise<string>;
+	executeAsyncScript(script: string, ...args: any[]): Promise<string>;
+	executeScript(script: string, ...args: any[]): Promise<string>;
 	goToUrl(url: string, timeoutSec?: number): Promise<void>;
 	domClick(command: AbstractCommand): Promise<void>;
 	getScreenshot(command: AbstractCommand): Promise<Buffer>;

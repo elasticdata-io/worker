@@ -2,6 +2,7 @@ import { Driver } from './driver';
 import { Browser, Page } from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
+import { AbstractCommand } from '../command/abstract-command';
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -26,77 +27,88 @@ export class ChromiumDriver implements Driver {
 		}
 	}
 
-	async domClick(command): Promise<void> {
+	async domClick(command: AbstractCommand): Promise<void> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getSelectionElFn(command, `.click()`);
+		const getElFn = queryProvider.getElementFn(command, `.click()`);
 		await this._page.evaluate(getElFn);
 	}
 
-	async executeAsyncScript(script: string, arg: any): Promise<string> {
+	async executeAsyncScript(script: string, ...args: any[]): Promise<string> {
 		return undefined;
 	}
 
-	async executeScript(script: string, arg: any): Promise<string> {
-		return undefined;
+	async executeScript(script: string, ...args: any[]): Promise<any> {
+		return await this._page.evaluate(script, args);
 	}
 
 	async getCurrentUrl(): Promise<string> {
 		return this._page.url();
 	}
 
-	async getElAttribute(command, attributeName: string): Promise<string> {
+	async getElAttribute(command: AbstractCommand, attributeName: string): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getSelectionElFn(command, `.getAttribute(${attributeName})`);
+		const getElFn = queryProvider.getElementFn(command, `.getAttribute(${attributeName})`);
 		return await this._page.evaluate(getElFn) as Promise<string>;
 	}
 
-	async getElText(command): Promise<string> {
+	async getElText(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getSelectionElFn(command, '.innerText');
+		const getElFn = queryProvider.getElementFn(command, '.innerText');
 		return await this._page.evaluate(getElFn) as Promise<string>;
 	}
 
-	async getElementsCount(command): Promise<number> {
-		return undefined;
+	async getElHtml(command: AbstractCommand): Promise<string> {
+		const queryProvider = command.getQueryProvider();
+		const getElFn = queryProvider.getElementFn(command, '.innerHtml');
+		return await this._page.evaluate(getElFn) as Promise<string>;
+	}
+
+	async getElementsCount(command: AbstractCommand): Promise<number> {
+		const queryProvider = command.getQueryProvider();
+		const getCountFn = queryProvider.getElementsFn(command, '.length');
+		const count = await this._page.evaluate(getCountFn) as string;
+		return count && parseInt(count, 10) || 0;
 	}
 
 	async goToUrl(url: string, timeoutSec: number): Promise<void> {
 		await this._page.goto(url, {timeout: timeoutSec * 1000});
 	}
 
-	async hover(command): Promise<void> {
+	async hover(command: AbstractCommand): Promise<void> {
+		// todo: supporting only CSS selector ?
+		await this._page.hover(command.selector);
+	}
+
+	async nativeClick(command: AbstractCommand): Promise<void> {
+		await this._page.click(command.selector);
+	}
+
+	async getElHash(command: AbstractCommand): Promise<string> {
 		return undefined;
 	}
 
-	async nativeClick(command): Promise<void> {
+	async pause(command: AbstractCommand): Promise<void> {
+		async function delay(time) {
+			return new Promise(function(resolve) {
+				setTimeout(resolve, time);
+			});
+		}
+		await delay(command.timeout * 1000);
+	}
+
+	async setElValue(command: AbstractCommand, value: string): Promise<void> {
 		return undefined;
 	}
 
-	async getElHash(command): Promise<string> {
+	async switchToFrame(command: AbstractCommand): Promise<void> {
 		return undefined;
 	}
 
-	async getElHtml(command): Promise<string> {
+	async waitElement(command: AbstractCommand): Promise<void> {
 		return undefined;
 	}
 
-	async pause(command): Promise<void> {
-		return undefined;
-	}
-
-	async setElValue(command, value: string): Promise<void> {
-		return undefined;
-	}
-
-	async switchToFrame(command): Promise<void> {
-		return undefined;
-	}
-
-	async waitElement(command): Promise<void> {
-		return undefined;
-	}
-
-	async getScreenshot(command): Promise<Buffer> {
+	async getScreenshot(command: AbstractCommand): Promise<Buffer> {
 		const base64 = await this._page.screenshot({
 			encoding: 'base64',
 		});
