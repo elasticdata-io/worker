@@ -29,10 +29,6 @@ export class PipelineProcess {
 		}
 	}
 
-	async getDocument(): Promise<any> {
-		return this.store.getDocument();
-	}
-
 	async commit(): Promise<DataResult> {
 		return this.store.commit();
 	}
