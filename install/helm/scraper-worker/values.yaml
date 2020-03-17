@@ -22,6 +22,9 @@ ingress:
 env:
   DATA_SERVICE_URL: http://data-service
   SCRAPER_SERVICE_URL: http://backend:8080
+  WORKER_QUEUE_NAME: PIPELINE_TASK_RUN_NODE
+  AMQP_CONNECTION_STRING: amqp://user:password@rabbitmq.rabbitmq:5672
+  AMQP_LOG_LEVEL: info
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

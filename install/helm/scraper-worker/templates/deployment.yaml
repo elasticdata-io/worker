@@ -29,6 +29,12 @@ spec:
               value: {{ .Values.env.DATA_SERVICE_URL }}
             - name: SCRAPER_SERVICE_URL
               value: {{ .Values.env.SCRAPER_SERVICE_URL }}
+            - name: WORKER_QUEUE_NAME
+              value: {{ .Values.env.WORKER_QUEUE_NAME }}
+            - name: AMQP_CONNECTION_STRING
+              value: {{ .Values.env.AMQP_CONNECTION_STRING }}
+            - name: AMQP_LOG_LEVEL
+              value: {{ .Values.env.AMQP_LOG_LEVEL }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
