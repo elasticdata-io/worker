@@ -3,7 +3,7 @@ import { DriverOptions } from './driver.options';
 
 export interface Driver {
 	init(options: DriverOptions): Promise<void>;
-	pause(seconds: number): Promise<void>;
+	pause(command: AbstractCommand): Promise<void>;
 	executeAsyncScript(script: string, arg: any): Promise<string>;
 	executeScript(script: string, arg: any): Promise<string>;
 	goToUrl(url: string, timeoutSec?: number): Promise<void>;
@@ -20,4 +20,5 @@ export interface Driver {
 	setElValue(command: AbstractCommand, value: string): Promise<void>;
 	getCurrentUrl(): Promise<string>;
 	switchToFrame(command: AbstractCommand): Promise<void>;
+	scrollBy(position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void>;
 }

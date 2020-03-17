@@ -1,8 +1,9 @@
 import { AbstractCommand } from '../../command/abstract-command';
 
 export class PauseCommand extends AbstractCommand {
-	execute(): Promise<void> {
-		return undefined;
-	}
 
+	async execute(): Promise<void> {
+		await this.driver.pause(this);
+		await super.execute();
+	}
 }

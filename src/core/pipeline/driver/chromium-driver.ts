@@ -32,11 +32,11 @@ export class ChromiumDriver implements Driver {
 		await this._page.evaluate(getElFn);
 	}
 
-	executeAsyncScript(script: string, arg: any): Promise<string> {
+	async executeAsyncScript(script: string, arg: any): Promise<string> {
 		return undefined;
 	}
 
-	executeScript(script: string, arg: any): Promise<string> {
+	async executeScript(script: string, arg: any): Promise<string> {
 		return undefined;
 	}
 
@@ -56,7 +56,7 @@ export class ChromiumDriver implements Driver {
 		return await this._page.evaluate(getElFn) as Promise<string>;
 	}
 
-	getElementsCount(command): Promise<number> {
+	async getElementsCount(command): Promise<number> {
 		return undefined;
 	}
 
@@ -64,35 +64,35 @@ export class ChromiumDriver implements Driver {
 		await this._page.goto(url, {timeout: timeoutSec * 1000});
 	}
 
-	hover(command): Promise<void> {
+	async hover(command): Promise<void> {
 		return undefined;
 	}
 
-	nativeClick(command): Promise<void> {
+	async nativeClick(command): Promise<void> {
 		return undefined;
 	}
 
-	getElHash(command): Promise<string> {
+	async getElHash(command): Promise<string> {
 		return undefined;
 	}
 
-	getElHtml(command): Promise<string> {
+	async getElHtml(command): Promise<string> {
 		return undefined;
 	}
 
-	pause(seconds: number): Promise<void> {
+	async pause(command): Promise<void> {
 		return undefined;
 	}
 
-	setElValue(command, value: string): Promise<void> {
+	async setElValue(command, value: string): Promise<void> {
 		return undefined;
 	}
 
-	switchToFrame(command): Promise<void> {
+	async switchToFrame(command): Promise<void> {
 		return undefined;
 	}
 
-	waitElement(command): Promise<void> {
+	async waitElement(command): Promise<void> {
 		return undefined;
 	}
 
@@ -101,6 +101,10 @@ export class ChromiumDriver implements Driver {
 			encoding: 'base64',
 		});
 		return Buffer.from(base64, 'base64');
+	}
+
+	async scrollBy(position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void> {
+		return undefined;
 	}
 
 }

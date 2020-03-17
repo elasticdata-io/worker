@@ -8,5 +8,4 @@ export class OpenUrlCommand extends AbstractCommand {
 		await this.driver.goToUrl(this.link);
 		await super.execute();
 	}
-
 }
