@@ -10,4 +10,9 @@ export class SettingsConfiguration {
    * Browser window configuration
    */
   public window: SettingsWindowConfiguration;
+
+  /**
+   * Browser proxy
+   */
+  public proxy: string;
 }

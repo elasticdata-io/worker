@@ -60,5 +60,6 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._browser.language = settings.window.language;
 		this._browser.windowHeight = settings.window.height;
 		this._browser.windowWidth = settings.window.width;
+		this._browser.proxy = settings.proxy;
 	}
 }
