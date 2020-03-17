@@ -5,6 +5,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import { DataContextResolver } from '../data-context-resolver';
 import { Environment } from '../../environment';
+import { DataResult } from '../dto/data.result';
 
 @injectable()
 export class HttpDataStore extends AbstractStore {
@@ -47,7 +48,7 @@ export class HttpDataStore extends AbstractStore {
 		return this.httpDataClient.getDocument(this.id, this.userUuid);
 	}
 
-	async commit(): Promise<string>  {
+	async commit(): Promise<DataResult>  {
 		return this.httpDataClient.commit(this.id, this.userUuid);
 	}
 }

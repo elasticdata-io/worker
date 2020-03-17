@@ -3,6 +3,7 @@ import { AbstractCommand } from './command/abstract-command';
 import { PipelineIoc } from './pipeline-ioc';
 import { AbstractStore } from './data/abstract-store';
 import { TYPES } from './types';
+import { DataResult } from './data/dto/data.result';
 
 export class PipelineProcess {
 
@@ -32,7 +33,7 @@ export class PipelineProcess {
 		return this.store.getDocument();
 	}
 
-	async commit(): Promise<string> {
+	async commit(): Promise<DataResult> {
 		return this.store.commit();
 	}
 

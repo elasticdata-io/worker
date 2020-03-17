@@ -14,6 +14,9 @@ import { SettingsConfiguration } from './configuration/settings-configuration';
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
 	private _pipelineProcess: PipelineProcess;
+	private _environment: Environment;
+	private _proxies: string[];
+	private _pipelineJson: string;
 
 	constructor(
 	  @inject(ROOT_TYPES.IPipelineConfigurationBuilder) private _pipelineConfigurationBuilder: IPipelineConfigurationBuilder,
@@ -27,14 +30,15 @@ export class PipelineBuilder implements IPipelineBuilder {
 		return this;
 	}
 
-	private _environment: Environment;
-
 	setPipelineJson(pipelineJson: string): PipelineBuilder {
 		this._pipelineJson = pipelineJson;
 		return this;
 	}
 
-	private _pipelineJson: string;
+	setProxies(proxies: string[]): PipelineBuilder {
+		this._proxies = proxies;
+		return this;
+	}
 
 	async build(): Promise<PipelineProcess> {
 		// todo : settings need before this._browser.create

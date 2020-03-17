@@ -4,13 +4,14 @@ import { PipelineBuilderFactory } from './core/pipeline/pipeline-builder-factory
 import { Environment } from './core/pipeline/environment';
 import { TaskService } from './task/task.service';
 import { RunTaskDto } from './dto/run.task';
+import { DataResult } from './core/pipeline/data/dto/data.result';
 
 @Injectable()
 export class AppService {
 	constructor(private _pipelineBuilderFactory: PipelineBuilderFactory,
 				private _taskService: TaskService) {}
 
-	public async runPipelineTask(dto: RunTaskDto): Promise<string> {
+	public async runPipelineTask(dto: RunTaskDto): Promise<DataResult> {
 		try {
 			return await this.runTask(dto);
 		} catch (e) {
@@ -19,7 +20,7 @@ export class AppService {
 		}
 	}
 
-	private async runTask(dto: RunTaskDto): Promise<string> {
+	private async runTask(dto: RunTaskDto): Promise<DataResult> {
 		this.beforeRunTask(dto.taskId);
 		const env = { userUuid: dto.userUuid } as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
@@ -27,12 +28,13 @@ export class AppService {
 		const pipelineProcess = await pipelineBuilder
 		  .setEnvironment(env)
 		  .setPipelineJson(dto.json)
+		  .setProxies(dto.proxies)
 		  .build();
 		await pipelineProcess.run();
-		const fileLink = await pipelineProcess.commit();
+		const data = await pipelineProcess.commit();
 		await pipelineProcess.destroy();
-		await this.afterRunTask(dto.taskId, fileLink);
-		return fileLink;
+		await this.afterRunTask(dto.taskId, data);
+		return data;
 	}
 
 	private async beforeRunTask(taskId: string): Promise<void> {
@@ -51,7 +53,7 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 	}
 
-	private async afterRunTask(taskId: string, fileLink: string): Promise<void> {
+	private async afterRunTask(taskId: string, data: DataResult): Promise<void> {
 		const patch = [
 			{
 				op: "replace",
@@ -61,7 +63,12 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/docsUrl",
-				value: fileLink
+				value: data.fileLink
+			},
+			{
+				op: "replace",
+				path: "/docsBytes",
+				value: data.bytes
 			},
 			{
 				op: "replace",

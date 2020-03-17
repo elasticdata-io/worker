@@ -4,6 +4,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import { KeyValueData } from '../dto/key.value.data';
 import { KeyFileData } from '../dto/key.file.data';
+import { DataResult } from '../dto/data.result';
 
 @injectable()
 export class HttpDataClient {
@@ -51,7 +52,7 @@ export class HttpDataClient {
 		return res.data;
 	}
 
-	async commit(storeId: string, userUuid: string): Promise<string> {
+	async commit(storeId: string, userUuid: string): Promise<DataResult> {
 		const config = {
 			headers: {
 				userUuid: userUuid,
