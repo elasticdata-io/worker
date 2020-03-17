@@ -78,6 +78,7 @@ export class AppService {
 	}
 
 	private async handleErrorOfTask(taskId: string): Promise<void> {
+		console.log(`handleErrorOfTask, taskId: ${taskId}`);
 		const patch = [
 			{
 				op: "replace",

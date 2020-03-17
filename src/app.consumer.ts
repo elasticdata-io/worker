@@ -42,8 +42,8 @@ export class AppConsumer {
 		}
 	}
 
-	private async runPipelineTask(dto: RunTaskDto): Promise<string> {
-		return this._appService.runPipelineTask(dto);
+	private async runPipelineTask(dto: RunTaskDto): Promise<void> {
+		await this._appService.runPipelineTask(dto);
 	}
 
 	private static validateDto(dto: RunTaskDto) {
