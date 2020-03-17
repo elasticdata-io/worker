@@ -21,7 +21,7 @@ export class AppConsumer {
 			noCreate: true,
 			prefetch: 1
 		});
-		queue.activateConsumer(this.consume, { noAck: false })
+		queue.activateConsumer(message => this.consume(message), { noAck: false })
 	  		.then(() => {
 				console.log('consumer activated');
 			})
