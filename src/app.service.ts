@@ -23,10 +23,10 @@ export class AppService {
 		this.beforeRunTask(dto.taskId);
 		const env = { userUuid: dto.userUuid } as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
-		console.log(JSON.stringify(dto.json));
+		console.log(JSON.parse(dto.json));
 		const pipelineProcess = await pipelineBuilder
 		  .setEnvironment(env)
-		  .setPipelineJson(JSON.stringify(dto.json))
+		  .setPipelineJson(dto.json)
 		  .build();
 		await pipelineProcess.run();
 		const fileLink = await pipelineProcess.commit();
