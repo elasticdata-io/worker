@@ -10,8 +10,17 @@ export class AppService {
 	constructor(private _pipelineBuilderFactory: PipelineBuilderFactory,
 				private _taskService: TaskService) {}
 
-	async runPipeline(dto: RunTaskDto): Promise<string> {
-		this.beforeRunPipeline(dto.taskId);
+	public async runPipelineTask(dto: RunTaskDto): Promise<string> {
+		try {
+			return this.runTask(dto);
+		} catch (e) {
+			this.handleErrorOfTask(dto.taskId);
+			throw e
+		}
+	}
+
+	private async runTask(dto: RunTaskDto): Promise<string> {
+		this.beforeRunTask(dto.taskId);
 		const env = { userUuid: dto.userUuid } as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
 		const pipelineProcess = await pipelineBuilder
@@ -21,11 +30,11 @@ export class AppService {
 		await pipelineProcess.run();
 		const fileLink = await pipelineProcess.commit();
 		await pipelineProcess.destroy();
-		await this.afterRunPipeline(dto.taskId, fileLink);
+		await this.afterRunTask(dto.taskId, fileLink);
 		return fileLink;
 	}
 
-	async beforeRunPipeline(taskId: string): Promise<void> {
+	private async beforeRunTask(taskId: string): Promise<void> {
 		const patch = [
 			{
 				op: "replace",
@@ -41,7 +50,7 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 	}
 
-	async afterRunPipeline(taskId: string, fileLink: string): Promise<void> {
+	private async afterRunTask(taskId: string, fileLink: string): Promise<void> {
 		const patch = [
 			{
 				op: "replace",
@@ -57,6 +66,22 @@ export class AppService {
 				op: "replace",
 				path: "/docsCount",
 				value: 0
+			},
+			{
+				op: "replace",
+				path: "/endOnUtc",
+				value: moment().format('YYYY-MM-DD HH:mm:ss')
+			}
+		];
+		await this._taskService.update(taskId, patch);
+	}
+
+	private async handleErrorOfTask(taskId: string): Promise<void> {
+		const patch = [
+			{
+				op: "replace",
+				path: "/status",
+				value: 'error'
 			},
 			{
 				op: "replace",
