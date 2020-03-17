@@ -68,7 +68,7 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/docsCount",
-				value: data.rootLines
+				value: data.rootLines || 0
 			},
 			{
 				op: "replace",
