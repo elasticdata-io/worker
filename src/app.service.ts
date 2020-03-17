@@ -14,7 +14,7 @@ export class AppService {
 		try {
 			return await this.runTask(dto);
 		} catch (e) {
-			await this.handleErrorOfTask(dto.taskId);
+			await this.handleErrorOfTask(dto.taskId, e);
 			throw e
 		}
 	}
@@ -77,7 +77,7 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 	}
 
-	private async handleErrorOfTask(taskId: string): Promise<void> {
+	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {
 		console.log(`handleErrorOfTask, taskId: ${taskId}`);
 		const patch = [
 			{
@@ -89,6 +89,11 @@ export class AppService {
 				op: "replace",
 				path: "/endOnUtc",
 				value: moment().format('YYYY-MM-DD HH:mm:ss')
+			},
+			{
+				op: "replace",
+				path: "/failureReason",
+				value: error
 			}
 		];
 		await this._taskService.update(taskId, patch);
