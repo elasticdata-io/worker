@@ -14,7 +14,7 @@ export class AppService {
 		try {
 			return this.runTask(dto);
 		} catch (e) {
-			this.handleErrorOfTask(dto.taskId);
+			await this.handleErrorOfTask(dto.taskId);
 			throw e
 		}
 	}
@@ -23,6 +23,7 @@ export class AppService {
 		this.beforeRunTask(dto.taskId);
 		const env = { userUuid: dto.userUuid } as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
+		console.log(JSON.stringify(dto.json));
 		const pipelineProcess = await pipelineBuilder
 		  .setEnvironment(env)
 		  .setPipelineJson(JSON.stringify(dto.json))

@@ -39,7 +39,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 	async build(): Promise<PipelineProcess> {
 		// todo : settings need before this._browser.create
 		const pipeline = JSON.parse(this._pipelineJson);
-		const settings = pipeline.settings;
+		const settings = pipeline.settings || {window: {}};
 		this.setBrowserSettings(settings);
 		const driver = await this._browser.create();
 		this._ioc
