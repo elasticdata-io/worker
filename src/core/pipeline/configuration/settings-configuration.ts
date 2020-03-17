@@ -12,7 +12,7 @@ export class SettingsConfiguration {
   public window: SettingsWindowConfiguration;
 
   /**
-   * Browser proxy
+   * Browser proxies
    */
-  public proxy: string;
+  public proxies: string[];
 }

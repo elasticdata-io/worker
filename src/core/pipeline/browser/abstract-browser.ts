@@ -5,7 +5,7 @@ import { injectable } from 'inversify';
 export abstract class AbstractBrowser {
 	public enableImage = true;
 	public isDebugMode = false;
-	public proxy: string;
+	public proxies: string[];
 	public windowWidth = 1920;
 	public windowHeight = 1080;
 	public language = 'en';

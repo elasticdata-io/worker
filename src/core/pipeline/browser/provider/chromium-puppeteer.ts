@@ -21,8 +21,9 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			if (this.language) {
 				args.push(`--lang=${this.language}`);
 			}
-			if (this.proxy) {
-				args.push(`--proxy-server=${this.proxy}`);
+			const proxies = this.proxies || [];
+			if (proxies.length) {
+				args.push(`--proxy-server=${proxies[0]}`);
 			}
 			console.log(args);
 			const browser = await puppeteer.launch({
