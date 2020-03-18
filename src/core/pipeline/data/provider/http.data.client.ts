@@ -17,6 +17,10 @@ export class HttpDataClient {
 		this._serviceUrl = serviceUrl;
 	}
 
+	async putAll(context: string, data: any[]): Promise<void> {
+		await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data);
+	}
+
 	async put(data: KeyValueData): Promise<void> {
 		const config = {
 			headers: {

@@ -23,6 +23,11 @@ export class HttpDataStore extends AbstractStore {
 		this.httpDataClient = httpDataClient;
 	}
 
+	async putAll(data: any[], command: AbstractCommand): Promise<void> {
+		const context = this.contextResolver.resolveContext(command);
+		await this.httpDataClient.putAll(context, data);
+	}
+
 	async put(key: string, value: string, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
 		await this.httpDataClient.put({

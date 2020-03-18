@@ -15,6 +15,7 @@ export abstract class AbstractStore {
 		this.id = StringGenerator.generate();
 	}
 
+	abstract putAll(data: any[], command: AbstractCommand): Promise<void>;
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
 	abstract putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void>;
 	abstract getDocument(): Promise<any>;
