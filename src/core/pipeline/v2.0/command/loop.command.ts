@@ -11,10 +11,12 @@ export class LoopCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		try {
+			this.index = 0;
 			for (let i = 0; i < this.max; i++) {
 				await this.applyChildCommandsContext();
 				const firstCommand = this.commands[0];
 				await this.browserProvider.execute(firstCommand);
+				this.index++;
 			}
 		} catch (e) {
 			console.error(e);
