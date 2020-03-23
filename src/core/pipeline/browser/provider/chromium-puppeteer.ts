@@ -14,9 +14,6 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			args.push('--disable-setuid-sandbox');
 			if (this.windowWidth && this.windowHeight) {
 				args.push(`--window-size=${this.windowWidth},${this.windowHeight}`);
-			} else {
-				args.push('--start-maximized');
-				args.push('--start-fullscreen');
 			}
 			if (this.language) {
 				args.push(`--lang=${this.language}`);

@@ -15,6 +15,7 @@ export class AppService {
 		try {
 			return await this.runTask(dto);
 		} catch (e) {
+			console.error(e);
 			await this.handleErrorOfTask(dto.taskId, e);
 			throw e
 		}

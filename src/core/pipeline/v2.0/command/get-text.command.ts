@@ -3,9 +3,15 @@ import { AbstractCommand } from '../../command/abstract-command';
 export class GetTextCommand extends AbstractCommand {
 
 	public key: string;
+	public attribute: string;
 
 	async execute(): Promise<void> {
-		const text = await this.driver.getElText(this);
+		let text;
+		if (this.attribute) {
+			text = await this.driver.getElAttribute(this, this.attribute);
+		} else {
+			text = await this.driver.getElText(this);
+		}
 		await this.store.put(this.key, text, this);
 		await super.execute();
 	}

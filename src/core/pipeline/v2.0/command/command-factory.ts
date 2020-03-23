@@ -21,15 +21,18 @@ import { WaitElementCommand } from './wait-element.command';
 import { PipelineIoc } from '../../pipeline-ioc';
 import { inject } from 'inversify';
 import { TYPES as ROOT_TYPES } from '../../types';
+import { DataContextResolver } from '../../data/data-context-resolver';
 
 export class CommandFactory extends ICommandFactory {
-	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {
+	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
+				@inject(ROOT_TYPES.DataContextResolver) private _contextResolver: DataContextResolver) {
 		super();
 	}
 
 	createChainCommands(commandsJson: string): AbstractCommand[] {
 		const commands = this.getCommands(commandsJson);
 		this.linksCommands(commands);
+		this.initDataContext(commands);
 		return commands;
 	}
 
@@ -81,7 +84,10 @@ export class CommandFactory extends ICommandFactory {
 					command = new JsCommand(ioc);
 					break;
 				case 'loop':
-					command = new LoopCommand(ioc);
+					const loop = new LoopCommand(ioc);
+					const commandsJson = JSON.stringify(config.commands);
+					loop.commands = this.createChainCommands(commandsJson);
+					command = loop;
 					break;
 				case 'nativeclick':
 					command = new NativeClickCommand(ioc);
@@ -109,10 +115,22 @@ export class CommandFactory extends ICommandFactory {
 			}
 			if (command) {
 				for(const [key, value] of Object.entries(config)) {
-					command[key] = value;
+					const ignoreKeys = key === 'commands'
+						|| key === 'condition'
+						|| key === 'truecommands'
+						|| key === 'falsecommands';
+					if (!ignoreKeys) {
+						command[key] = value;
+					}
 				}
 			}
 			return command;
 		});
+	}
+
+	private initDataContext(commands: AbstractCommand[]) {
+		commands.forEach(command => {
+			this._contextResolver.setRootContext(command);
+		})
 	}
 }

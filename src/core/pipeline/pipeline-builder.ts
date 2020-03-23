@@ -61,9 +61,9 @@ export class PipelineBuilder implements IPipelineBuilder {
 	}
 
 	private setBrowserSettings(settings: SettingsConfiguration) {
-		this._browser.language = settings.window.language;
-		this._browser.windowHeight = settings.window.height;
-		this._browser.windowWidth = settings.window.width;
+		this._browser.language = settings.window.language || this._browser.language;
+		this._browser.windowHeight = settings.window.height || this._browser.windowHeight;
+		this._browser.windowWidth = settings.window.width || this._browser.windowWidth;
 		this._browser.proxies = settings.proxies || this._proxies;
 	}
 }

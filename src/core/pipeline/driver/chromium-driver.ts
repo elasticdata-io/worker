@@ -49,7 +49,7 @@ export class ChromiumDriver implements Driver {
 
 	async getElAttribute(command: AbstractCommand, attributeName: string): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, `.getAttribute(${attributeName})`);
+		const getElFn = queryProvider.getElementFn(command, `.getAttribute('${attributeName}')`);
 		return await this._page.evaluate(getElFn) as Promise<string>;
 	}
 
