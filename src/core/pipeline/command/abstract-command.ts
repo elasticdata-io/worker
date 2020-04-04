@@ -31,7 +31,7 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public selector: string;
-	public timeout: number;
+	public timeout = 1;
 	public uuid: string;
 
 	public setNextCommand(nextCommand: AbstractCommand): void {

@@ -6,6 +6,9 @@ import { ChromiumDriver } from '../../driver/chromium-driver';
 
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {
+
+	private _driver: Driver;
+
 	async create(): Promise<Driver> {
 		try {
 			const args = await puppeteer.defaultArgs()
@@ -22,23 +25,31 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			if (proxies.length) {
 				args.push(`--proxy-server=${proxies[0]}`);
 			}
-			console.log(args);
+			// console.log(args);
 			const browser = await puppeteer.launch({
 				headless: true,
 				ignoreDefaultArgs: ['--enable-automation' /*'--no-sandbox'*/],
 				args: args,
 			});
-			const driver = new ChromiumDriver(browser);
-			await driver.init({
+			this._driver = new ChromiumDriver(browser);
+			await this._driver.init({
 				width: this.windowWidth,
 				height: this.windowHeight,
 				language: this.language,
 				proxies: proxies,
 			});
-			return driver;
+			return this._driver;
 		} catch (e) {
 			console.error(e);
 			throw e;
 		}
+	}
+
+	async stop(): Promise<void> {
+		await this._driver.exit()
+	}
+
+	isStopped(): boolean {
+		return this._driver.hasBeenStopped();
 	}
 }

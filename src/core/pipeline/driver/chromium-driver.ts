@@ -1,3 +1,4 @@
+import * as chalk from 'chalk';
 import { Driver } from './driver';
 import { Browser, Page } from 'puppeteer';
 import { DriverOptions } from './driver.options';
@@ -8,6 +9,7 @@ import { AbstractCommand } from '../command/abstract-command';
 export class ChromiumDriver implements Driver {
 	private _options: DriverOptions;
 	private _page: Page;
+	private _hasBeenExited: boolean;
 
 	constructor(private _browser: Browser) {}
 
@@ -72,7 +74,7 @@ export class ChromiumDriver implements Driver {
 		return count && parseInt(count, 10) || 0;
 	}
 
-	async goToUrl(url: string, timeoutSec: number): Promise<void> {
+	async goToUrl(url: string, timeoutSec = 1): Promise<void> {
 		await this._page.goto(url, {timeout: timeoutSec * 1000});
 	}
 
@@ -106,10 +108,14 @@ export class ChromiumDriver implements Driver {
 		const interval = 250;
 		const queryProvider = command.getQueryProvider();
 		const getCountFn = queryProvider.getElementsFn(command, '.length');
-		await this.wait(skipAfterTimeout, interval, async () => {
-			const count = await this._page.evaluate(getCountFn) as number;
-			return count > 0;
-		});
+		try {
+			await this.wait(skipAfterTimeout, interval, async () => {
+				const count = await this._page.evaluate(getCountFn) as number;
+				return count > 0;
+			});
+		} catch (e) {
+			throw `${command.constructor.name} terminated after: ${skipAfterTimeout} ms, ${getCountFn.toString()}`
+		}
 	}
 
 	async getScreenshot(command: AbstractCommand): Promise<Buffer> {
@@ -124,29 +130,46 @@ export class ChromiumDriver implements Driver {
 	}
 
 	protected async delay(time: number) {
-		return new Promise(function(resolve) {
-			setTimeout(resolve, time);
-		});
+		return new Promise((resolve) => setTimeout(resolve, time));
 	}
 
 	protected async wait(timeoutMs: number, intervalMs: number, conditionFn: Function) {
 		const start = new Date().getTime();
-		return new Promise(async resolve => {
+		return new Promise(async (resolve, reject) => {
 			const intervalId = setInterval(async () => {
+				if (this.hasBeenStopped()) {
+					clearInterval(intervalId);
+					reject();
+					return;
+				}
 				try {
 					const end = new Date().getTime();
 					const executeTime = end - start;
 					if (executeTime >= timeoutMs) {
 						clearInterval(intervalId);
-						resolve();
+						reject();
 						return;
 					}
 					const value = await conditionFn();
 					if (value === true) {
+						clearInterval(intervalId);
 						resolve();
 					}
 				} catch (e) {}
 			}, intervalMs);
 		});
+	}
+
+	async exit(): Promise<void> {
+		if (this.hasBeenStopped()) {
+			return;
+		}
+		await this._browser.close();
+		console.log(chalk.cyan('browser has been closed...'));
+		this._hasBeenExited = true;
+	}
+
+	hasBeenStopped(): boolean {
+		return this._hasBeenExited;
 	}
 }

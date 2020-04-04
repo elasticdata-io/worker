@@ -54,7 +54,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 		  .toConstantValue(this._environment);
 		const pipelineConfiguration = this._pipelineConfigurationBuilder
 		  .buildFromJson(this._pipelineJson);
-		const browserProvider = new BrowserProvider();
+		const browserProvider = new BrowserProvider(this._ioc);
 		const commands = pipelineConfiguration.commands;
 		this._pipelineProcess = new PipelineProcess(commands, browserProvider, this._ioc);
 		return this._pipelineProcess;

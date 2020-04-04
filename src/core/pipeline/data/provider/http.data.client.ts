@@ -18,47 +18,67 @@ export class HttpDataClient {
 	}
 
 	async putAll(context: string, data: any[]): Promise<void> {
-		await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data);
+		try {
+			await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data);
+		} catch (e) {
+			throw `putAll data is failed: ${e.message}`
+		}
 	}
 
 	async put(data: KeyValueData): Promise<void> {
-		const config = {
-			headers: {
-				userUuid: data.userUuid,
-			},
-		};
-		const res = await axios.post(`${this._serviceUrl}${this._servicePath}`, data, config);
-		if (!res.data.success) {
-			throw res.data.message;
+		try {
+			const config = {
+				headers: {
+					userUuid: data.userUuid,
+				},
+			};
+			const res = await axios.post(`${this._serviceUrl}${this._servicePath}`, data, config);
+			if (!res.data.success) {
+				throw res.data.message;
+			}
+		} catch (e) {
+			throw `put data is failed: ${e.message}`
 		}
 	}
 
 	async putFile(data: KeyFileData): Promise<void> {
-		const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.fileExtension}/${data.key}`);
-		const form = new FormData();
-		const file = data.file;
-		form.append('file', file, { filename: 'file' });
-		const config = {
-			headers: {
-				...form.getHeaders(),
-				userUuid: data.userUuid,
-			},
-		};
-		await axios.post(url.href, form, config);
+		try {
+			const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.fileExtension}/${data.key}`);
+			const form = new FormData();
+			const file = data.file;
+			form.append('file', file, { filename: 'file' });
+			const config = {
+				headers: {
+					...form.getHeaders(),
+					userUuid: data.userUuid,
+				},
+			};
+			await axios.post(url.href, form, config);
+		} catch (e) {
+			throw `putFile data is failed: ${e.message}`
+		}
 	}
 
 	async getDocument(storeId: string, userUuid: string): Promise<any> {
-		const config = {
-			headers: {
-				userUuid: userUuid,
-			},
-		};
-		const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`, config);
-		return res.data;
+		try {
+			const config = {
+				headers: {
+					userUuid: userUuid,
+				},
+			};
+			const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`, config);
+			return res.data;
+		} catch (e) {
+			throw `getDocument data is failed: ${e.message}`
+		}
 	}
 
 	async commit(data: CommitDocument): Promise<DataResult> {
-		const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);
-		return res.data;
+		try {
+			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);
+			return res.data;
+		} catch (e) {
+			throw `commit data is failed: ${e.message}`
+		}
 	}
 }

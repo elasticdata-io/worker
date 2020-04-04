@@ -4,15 +4,18 @@ import { PipelineIoc } from './pipeline-ioc';
 import { AbstractStore } from './data/abstract-store';
 import { TYPES } from './types';
 import { DataResult } from './data/dto/data.result';
+import { AbstractBrowser } from './browser/abstract-browser';
 
 export class PipelineProcess {
 
+	protected browser: AbstractBrowser;
 	protected store: AbstractStore;
 
 	constructor(private _commands: AbstractCommand[],
 				private _browserProvider: BrowserProvider,
 				private _ioc: PipelineIoc) {
 		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
+		this.browser = this._ioc.get<AbstractBrowser>(TYPES.AbstractBrowser);
 	}
 
 	async run(): Promise<void> {
@@ -35,12 +38,12 @@ export class PipelineProcess {
 	}
 
 	async stop(): Promise<void> {
-		// todo: need implement
 		this.destroy();
 	}
 
 	async destroy(): Promise<void> {
 		// todo: need implement
+		await this.browser.stop();
 		this._ioc.unbindAll();
 	}
 }

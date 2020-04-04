@@ -5,20 +5,42 @@ import { Environment } from './core/pipeline/environment';
 import { TaskService } from './task/task.service';
 import { RunTaskDto } from './dto/run.task';
 import { DataResult } from './core/pipeline/data/dto/data.result';
+import { PipelineProcess } from './core/pipeline/pipeline-process';
 
 @Injectable()
 export class AppService {
+	private _pipelineProcess: PipelineProcess;
+	private _currentTaskId: string;
+
 	constructor(private _pipelineBuilderFactory: PipelineBuilderFactory,
 				private _taskService: TaskService) {}
 
-	public async runPipelineTask(dto: RunTaskDto): Promise<DataResult> {
+	public async stopPipelineTask(taskId: string): Promise<boolean> {
 		try {
-			return await this.runTask(dto);
+			return await this.stopTask(taskId);
 		} catch (e) {
 			console.error(e);
+			throw e
+		}
+		return false;
+	}
+
+	public async runPipelineTask(dto: RunTaskDto): Promise<DataResult> {
+		try {
+			this._currentTaskId = dto.taskId;
+			return await this.runTask(dto);
+		} catch (e) {
 			await this.handleErrorOfTask(dto.taskId, e);
 			throw e
 		}
+	}
+
+	private async stopTask(taskId: string): Promise<boolean>  {
+		if (this._currentTaskId === taskId) {
+			await this._pipelineProcess.stop();
+			return true;
+		}
+		return false;
 	}
 
 	private async runTask(dto: RunTaskDto): Promise<DataResult> {
@@ -29,14 +51,14 @@ export class AppService {
 		} as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
 		console.log(JSON.parse(dto.json));
-		const pipelineProcess = await pipelineBuilder
+		this._pipelineProcess = await pipelineBuilder
 		  .setEnvironment(env)
 		  .setPipelineJson(dto.json)
 		  .setProxies(dto.proxies)
 		  .build();
-		await pipelineProcess.run();
-		const data = await pipelineProcess.commit();
-		await pipelineProcess.destroy();
+		await this._pipelineProcess.run();
+		const data = await this._pipelineProcess.commit();
+		await this._pipelineProcess.destroy();
 		await this.afterRunTask(dto.taskId, data);
 		return data;
 	}
