@@ -38,6 +38,7 @@ export class AppService {
 	private async stopTask(taskId: string): Promise<boolean>  {
 		if (this._currentTaskId === taskId) {
 			await this._pipelineProcess.stop();
+			await this.handleTaskStopped(taskId);
 			return true;
 		}
 		return false;
@@ -131,5 +132,22 @@ export class AppService {
 			}
 		];
 		await this._taskService.update(taskId, patch);
+	}
+
+	private async handleTaskStopped(taskId: string): Promise<void> {
+		const patch = [
+			{
+				op: "replace",
+				path: "/status",
+				value: 'stopped'
+			},
+			{
+				op: "replace",
+				path: "/endOnUtc",
+				value: moment().format('YYYY-MM-DD HH:mm:ss')
+			}
+		];
+		await this._taskService.update(taskId, patch);
+		console.log(`handleTaskStopped, taskId: ${taskId}`);
 	}
 }
