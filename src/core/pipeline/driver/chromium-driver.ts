@@ -188,7 +188,7 @@ export class ChromiumDriver implements Driver {
 	 * @return {Promise<string>} MHTML page format
 	 */
 	async captureSnapshot(): Promise<string> {
-		const data = await this._cdpSession.send('Page.captureSnapshot');
-		return data.toString();
+		const result = await this._cdpSession.send('Page.captureSnapshot') as any;
+		return result.data.toString();
 	}
 }

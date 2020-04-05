@@ -22,6 +22,7 @@ import { PipelineIoc } from '../../pipeline-ioc';
 import { inject } from 'inversify';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
+import { CaptureSnapshotCommand } from './capture-snapshot.command';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -109,6 +110,9 @@ export class CommandFactory extends ICommandFactory {
 					break;
 				case 'waitelement':
 					command = new WaitElementCommand(ioc);
+					break;
+				case 'snapshot':
+					command = new CaptureSnapshotCommand(ioc);
 					break;
 				default:
 					throw new Error(`command: ${cmd} not supported`)
