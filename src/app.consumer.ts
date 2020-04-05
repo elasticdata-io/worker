@@ -27,7 +27,7 @@ export class AppConsumer {
 		const stopTaskQueue = connection.declareQueue(stopTaskQueueName, { noCreate: true, prefetch: 1 });
 		stopTaskQueue
 		  .activateConsumer(message => this.stopTaskConsume(message), { noAck: false })
-		  .then(() => console.log('runTaskConsume activated'))
+		  .then(() => console.log('stopTaskConsume activated'))
 		  .catch((err) => console.error(err));
 	}
 

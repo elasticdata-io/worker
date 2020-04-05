@@ -139,7 +139,9 @@ export class ChromiumDriver implements Driver {
 	protected async delay(time: number) {
 		return new Promise((resolve) => {
 			const id = setTimeout(resolve, time);
-			this._timer.addSetTimeoutId(id);
+			this._timer.addSetTimeoutId(id, () => {
+				resolve();
+			});
 		});
 	}
 

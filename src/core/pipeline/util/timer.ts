@@ -1,6 +1,11 @@
+class TimerFunction {
+	id:  NodeJS.Timeout;
+	fn: Function;
+}
+
 export class Timer {
-	private _setTimeoutIds: NodeJS.Timeout[];
-	private _setIntervalIds: NodeJS.Timeout[];
+	private _setTimeoutIds: TimerFunction[];
+	private _setIntervalIds: TimerFunction[];
 	private _watchInterval: NodeJS.Timeout;
 
 	constructor() {
@@ -9,18 +14,30 @@ export class Timer {
 	}
 
 	protected clear() {
-		this._setTimeoutIds.forEach(clearTimeout);
-		this._setIntervalIds.forEach(clearInterval);
+		this._setTimeoutIds.forEach(x => {
+			clearTimeout(x.id);
+			x.fn();
+		});
+		this._setIntervalIds.forEach(x => {
+			clearTimeout(x.id);
+			x.fn();
+		});
 		this._setTimeoutIds = [];
 		this._setIntervalIds = [];
 	}
 
-	public addSetTimeoutId(id: NodeJS.Timeout): void {
-		this._setTimeoutIds.push(id);
+	public addSetTimeoutId(id: NodeJS.Timeout, stoppedFn: Function = () => ({})): void {
+		this._setTimeoutIds.push({
+			id: id,
+			fn: stoppedFn,
+		});
 	}
 
-	public addSetIntervalId(id: NodeJS.Timeout): void {
-		this._setIntervalIds.push(id);
+	public addSetIntervalId(id: NodeJS.Timeout, stoppedFn: Function = () => ({})): void {
+		this._setIntervalIds.push({
+			id: id,
+			fn: stoppedFn,
+		});
 	}
 
 	public watchStopByFn(stopFn: Function) {
