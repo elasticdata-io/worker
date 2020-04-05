@@ -4,14 +4,21 @@ import { Browser, Page } from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
+import { Timer } from '../util/timer';
 
 @injectable()
 export class ChromiumDriver implements Driver {
+	private _timer: Timer;
 	private _options: DriverOptions;
 	private _page: Page;
 	private _hasBeenExited: boolean;
 
-	constructor(private _browser: Browser) {}
+	constructor(private _browser: Browser) {
+		this._timer = new Timer();
+		this._timer.watchStopByFn(() => {
+			return this.hasBeenExited() === true;
+		});
+	}
 
 	async init(options: DriverOptions) {
 		this._options = options;
@@ -130,18 +137,16 @@ export class ChromiumDriver implements Driver {
 	}
 
 	protected async delay(time: number) {
-		return new Promise((resolve) => setTimeout(resolve, time));
+		return new Promise((resolve) => {
+			const id = setTimeout(resolve, time);
+			this._timer.addSetTimeoutId(id);
+		});
 	}
 
 	protected async wait(timeoutMs: number, intervalMs: number, conditionFn: Function) {
 		const start = new Date().getTime();
 		return new Promise(async (resolve, reject) => {
 			const intervalId = setInterval(async () => {
-				if (this.hasBeenStopped()) {
-					clearInterval(intervalId);
-					reject();
-					return;
-				}
 				try {
 					const end = new Date().getTime();
 					const executeTime = end - start;
@@ -157,11 +162,12 @@ export class ChromiumDriver implements Driver {
 					}
 				} catch (e) {}
 			}, intervalMs);
+			this._timer.addSetIntervalId(intervalId);
 		});
 	}
 
 	async exit(): Promise<void> {
-		if (this.hasBeenStopped()) {
+		if (this.hasBeenExited()) {
 			return;
 		}
 		await this._browser.close();
@@ -169,7 +175,7 @@ export class ChromiumDriver implements Driver {
 		this._hasBeenExited = true;
 	}
 
-	hasBeenStopped(): boolean {
+	hasBeenExited(): boolean {
 		return this._hasBeenExited;
 	}
 }

@@ -50,6 +50,6 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 	}
 
 	isStopped(): boolean {
-		return this._driver.hasBeenStopped();
+		return this._driver.hasBeenExited();
 	}
 }

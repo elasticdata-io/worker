@@ -46,4 +46,8 @@ export class PipelineProcess {
 		await this.browser.stop();
 		this._ioc.unbindAll();
 	}
+
+	isStopped(): boolean {
+		return this.browser.isStopped();
+	}
 }

@@ -23,5 +23,5 @@ export interface Driver {
 	scrollBy(position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void>;
 
 	exit(): Promise<void>;
-	hasBeenStopped(): boolean;
+	hasBeenExited(): boolean;
 }
