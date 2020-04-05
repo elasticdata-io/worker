@@ -78,7 +78,7 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/runOnUtc",
-				value: moment().format('YYYY-MM-DD HH:mm:ss')
+				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			}
 		];
 		await this._taskService.update(taskId, patch);
@@ -109,7 +109,7 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/endOnUtc",
-				value: moment().format('YYYY-MM-DD HH:mm:ss')
+				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			}
 		];
 		await this._taskService.update(taskId, patch);
@@ -127,7 +127,7 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/endOnUtc",
-				value: moment().format('YYYY-MM-DD HH:mm:ss')
+				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			},
 			{
 				op: "replace",
@@ -148,7 +148,7 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/endOnUtc",
-				value: moment().format('YYYY-MM-DD HH:mm:ss')
+				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			}
 		];
 		await this._taskService.update(taskId, patch);
