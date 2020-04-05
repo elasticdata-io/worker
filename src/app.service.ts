@@ -37,7 +37,7 @@ export class AppService {
 
 	private async stopTask(taskId: string): Promise<boolean>  {
 		if (this._currentTaskId === taskId) {
-			await this._pipelineProcess.stop();
+			await this._pipelineProcess.abort();
 			await this.handleTaskStopped(taskId);
 			return true;
 		}
@@ -58,6 +58,10 @@ export class AppService {
 		  .setProxies(dto.proxies)
 		  .build();
 		await this._pipelineProcess.run();
+		if (this._pipelineProcess.isAborted) {
+			await this._pipelineProcess.destroy();
+			return {} as DataResult;
+		}
 		const data = await this._pipelineProcess.commit();
 		await this.afterRunTask(dto.taskId, data);
 		await this._pipelineProcess.destroy();

@@ -11,6 +11,8 @@ export class PipelineProcess {
 	protected browser: AbstractBrowser;
 	protected store: AbstractStore;
 
+	public isAborted = false;
+
 	constructor(private _commands: AbstractCommand[],
 				private _browserProvider: BrowserProvider,
 				private _ioc: PipelineIoc) {
@@ -37,17 +39,14 @@ export class PipelineProcess {
 		return this.store.commit();
 	}
 
-	async stop(): Promise<void> {
+	async abort(): Promise<void> {
 		this.destroy();
+		this.isAborted = true;
 	}
 
 	async destroy(): Promise<void> {
 		// todo: need implement
 		await this.browser.stop();
 		this._ioc.unbindAll();
-	}
-
-	isStopped(): boolean {
-		return this.browser.isStopped();
 	}
 }
