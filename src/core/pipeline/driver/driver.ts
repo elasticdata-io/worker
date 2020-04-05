@@ -21,6 +21,7 @@ export interface Driver {
 	getCurrentUrl(): Promise<string>;
 	switchToFrame(command: AbstractCommand): Promise<void>;
 	scrollBy(position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void>;
+	captureSnapshot(): Promise<string>;
 
 	exit(): Promise<void>;
 	hasBeenExited(): boolean;

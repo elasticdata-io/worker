@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import { Driver } from './driver';
-import { Browser, Page } from 'puppeteer';
+import { Browser, CDPSession, Page } from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
@@ -12,6 +12,7 @@ export class ChromiumDriver implements Driver {
 	private _options: DriverOptions;
 	private _page: Page;
 	private _hasBeenExited: boolean;
+	private _cdpSession: CDPSession;
 
 	constructor(private _browser: Browser) {
 		this._timer = new Timer();
@@ -34,6 +35,7 @@ export class ChromiumDriver implements Driver {
 				'Accept-Language': this._options.language
 			});
 		}
+		this._cdpSession = await this._page.target().createCDPSession();
 	}
 
 	async domClick(command: AbstractCommand): Promise<void> {
@@ -179,5 +181,14 @@ export class ChromiumDriver implements Driver {
 
 	hasBeenExited(): boolean {
 		return this._hasBeenExited;
+	}
+
+	/**
+	 * More details https://docs.google.com/document/d/1FvmYUC0S0BkdkR7wZsg0hLdKc_qjGnGahBwwa0CdnHE/edit
+	 * @return {Promise<string>} MHTML page format
+	 */
+	async captureSnapshot(): Promise<string> {
+		const data = await this._cdpSession.send('Page.captureSnapshot');
+		return data.toString();
 	}
 }
