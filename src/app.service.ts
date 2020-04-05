@@ -58,10 +58,6 @@ export class AppService {
 		  .setProxies(dto.proxies)
 		  .build();
 		await this._pipelineProcess.run();
-		if (this._pipelineProcess.isStopped()) {
-			await this._pipelineProcess.destroy();
-			return {} as DataResult;
-		}
 		const data = await this._pipelineProcess.commit();
 		await this.afterRunTask(dto.taskId, data);
 		await this._pipelineProcess.destroy();

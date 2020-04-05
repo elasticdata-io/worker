@@ -163,8 +163,8 @@ export class ChromiumDriver implements Driver {
 						resolve();
 					}
 				} catch (e) {}
+				this._timer.addSetIntervalId(intervalId, () => resolve());
 			}, intervalMs);
-			this._timer.addSetIntervalId(intervalId);
 		});
 	}
 
