@@ -9,4 +9,9 @@ export class OpenUrlCommand extends AbstractCommand {
 		await this.driver.goToUrl(this.link, this.timeout);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['link']);
+	}
 }

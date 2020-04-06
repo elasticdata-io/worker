@@ -10,6 +10,7 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 
 	constructor(@inject(TYPES.ICommandFactory) private _commandFactory: ICommandFactory) {}
 
+	public _commandsJson: string;
 	public _commands: any[];
 	public _transform: any[];
 	public _settings: SettingsConfiguration;
@@ -17,6 +18,10 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 
 	get commands(): any[] {
 		return this._commands;
+	}
+
+	get commandsJson(): string {
+		return this._commandsJson;
 	}
 
 	get settings(): SettingsConfiguration {
@@ -31,7 +36,8 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 		this._json = json;
 		const pipeline = JSON.parse(this._json);
 		const commandsJson = JSON.stringify(pipeline.commands || []);
-		this._commands = this._commandFactory.createChainCommands(commandsJson);
+		this._commandsJson = this._commandFactory.appendUuidToCommands(commandsJson);
+		this._commands = this._commandFactory.createChainCommands(this._commandsJson);
 		this._settings = pipeline.settings || {} as SettingsConfiguration;
 		this._version = pipeline.version;
 		this.validate();

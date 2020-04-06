@@ -7,4 +7,9 @@ export class HoverCommand extends AbstractCommand {
 		await this.driver.hover(this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['selector']);
+	}
 }

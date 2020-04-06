@@ -19,6 +19,8 @@ import { DataContextResolver } from './data/data-context-resolver';
 import { HttpDataClient } from './data/provider/http.data.client';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
+import { JsonCommandAnalyzer } from './analyzer/provider/json.command.analyzer';
+import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 
 @Injectable()
 export class PipelineBuilderFactory {
@@ -67,6 +69,10 @@ export class PipelineBuilderFactory {
 		ioc
 		  .bind<HttpDataClient>(TYPES.HttpDataClient)
 		  .to(HttpDataClient)
+		  .inSingletonScope();
+		ioc
+		  .bind<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer)
+		  .to(JsonCommandAnalyzer)
 		  .inSingletonScope();
 		ioc
 		  .bind<string>(TYPES.DataServiceUrl)

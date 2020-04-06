@@ -7,11 +7,12 @@ import { Driver } from '../driver/driver';
 import { IBrowserProvider } from '../browser/i-browser-provider';
 import { AbstractStore } from '../data/abstract-store';
 import { PipelineIoc } from '../pipeline-ioc';
-import { StringGenerator } from '../util/string.generator';
 import { DataContextResolver } from '../data/data-context-resolver';
+import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 
 export abstract class AbstractCommand implements Selectable {
 	private _nextCommand: AbstractCommand;
+	private _commandAnalyzer: AbstractCommandAnalyzer;
 
 	protected store: AbstractStore;
 	protected driver: Driver;
@@ -26,10 +27,11 @@ export abstract class AbstractCommand implements Selectable {
 		this.browserProvider = ioc.get<BrowserProvider>(ROOT_TYPES.IBrowserProvider);
 		this.queryProviderFactory = ioc.get<QueryProviderFactory>(ROOT_TYPES.QueryProviderFactory);
 		this.contextResolver = ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
-		this.uuid = StringGenerator.generate();
 		this.ioc = ioc;
+		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
 	}
 
+	public cmd: string;
 	public selector: string;
 	public timeout = 1;
 	public uuid: string;
@@ -39,6 +41,7 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public async execute(): Promise<void> {
+		await this._commandAnalyzer.endCommand(this);
 		await this.afterExecute();
 	}
 
@@ -48,11 +51,16 @@ export abstract class AbstractCommand implements Selectable {
 		}
 	}
 
-	getSelector(): string {
+	public getManagedKeys(): string[] {
+		return ['cmd', 'timeout'];
+	}
+
+	public getSelector(): string {
 		return this.selector;
 	}
 
-	getQueryProvider(): QueryProvider {
+	public getQueryProvider(): QueryProvider {
 		return this.queryProviderFactory.resolve(this);
 	}
+
 }

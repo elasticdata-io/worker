@@ -13,6 +13,7 @@ const TYPES = {
 	HttpDataClient: Symbol.for("HttpDataClient"),
 	PipelineIoc: Symbol.for("PipelineIoc"),
 	DataServiceUrl: Symbol.for("DataServiceUrl"),
+	AbstractCommandAnalyzer: Symbol.for("AbstractCommandAnalyzer"),
 };
 
 export { TYPES };

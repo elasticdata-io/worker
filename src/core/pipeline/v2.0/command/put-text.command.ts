@@ -9,4 +9,9 @@ export class PutTextCommand extends AbstractCommand {
 		await this.driver.setElValue(this, this.text);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['selector', 'text']);
+	}
 }

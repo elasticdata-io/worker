@@ -11,4 +11,9 @@ export class ScrollToCommand extends AbstractCommand {
 		await this.driver.scrollBy(this.position, this.px);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['position', 'px']);
+	}
 }

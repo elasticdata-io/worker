@@ -9,4 +9,9 @@ export class GetScreenshotCommand extends AbstractCommand {
 		await this.store.putFile(this.key, buffer, 'png', this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['key', 'selector']);
+	}
 }

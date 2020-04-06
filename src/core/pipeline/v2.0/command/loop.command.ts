@@ -31,4 +31,9 @@ export class LoopCommand extends AbstractCommand {
 		const commandsContext = `${loopContext}${currentContext}.${this.index}`;
 		contextResolver.setChildCommandsContext(this.commands, commandsContext);
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['index', 'max', 'context']);
+	}
 }

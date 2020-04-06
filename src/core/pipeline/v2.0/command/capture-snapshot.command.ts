@@ -9,4 +9,9 @@ export class CaptureSnapshotCommand extends AbstractCommand {
 		await this.store.putFile(this.key, Buffer.from(captureSnapshot.toString()), 'mhtml', this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['key']);
+	}
 }

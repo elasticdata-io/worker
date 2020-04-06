@@ -23,6 +23,7 @@ import { inject } from 'inversify';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { CaptureSnapshotCommand } from './capture-snapshot.command';
+import { StringGenerator } from '../../util/string.generator';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -30,7 +31,13 @@ export class CommandFactory extends ICommandFactory {
 		super();
 	}
 
-	createChainCommands(commandsJson: string): AbstractCommand[] {
+	public appendUuidToCommands(commandsJson: string): string {
+		return commandsJson.replace(/"cmd":\s?("[a-z]+")/ig, function (match) {
+			return `"uuid": "${StringGenerator.generate()}", ${match}`;
+		});
+	}
+
+	public createChainCommands(commandsJson: string): AbstractCommand[] {
 		const commands = this.getCommands(commandsJson);
 		this.linksCommands(commands);
 		this.initDataContext(commands);
@@ -50,7 +57,6 @@ export class CommandFactory extends ICommandFactory {
 		const commands = JSON.parse(commandsJson) || [];
 		return commands.map(config => {
 			const cmd = config.cmd;
-			delete config.cmd;
 			let command: AbstractCommand = null;
 			const ioc = this._ioc;
 			switch (cmd.toLocaleLowerCase()) {

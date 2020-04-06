@@ -6,4 +6,9 @@ export class ClickCommand extends AbstractCommand {
 		await this.driver.domClick(this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['selector']);
+	}
 }

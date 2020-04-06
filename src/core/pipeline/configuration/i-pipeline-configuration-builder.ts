@@ -4,5 +4,6 @@ import { SettingsConfiguration } from './settings-configuration';
 export interface IPipelineConfigurationBuilder {
 	buildFromJson(json: any): IPipelineConfigurationBuilder;
 	readonly commands: AbstractCommand[];
+	readonly commandsJson: string;
 	readonly settings: SettingsConfiguration;
 }

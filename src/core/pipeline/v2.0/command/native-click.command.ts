@@ -6,4 +6,9 @@ export class NativeClickCommand extends AbstractCommand {
 		await this.driver.nativeClick(this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['selector']);
+	}
 }

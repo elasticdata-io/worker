@@ -8,4 +8,9 @@ export class GetHtmlCommand extends AbstractCommand {
 		await this.store.put(this.key, html, this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['key', 'selector']);
+	}
 }

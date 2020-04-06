@@ -9,4 +9,9 @@ export class ReplaceTextCommand extends AbstractCommand {
 		// todo: replaced text logic
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['selector', 'text']);
+	}
 }

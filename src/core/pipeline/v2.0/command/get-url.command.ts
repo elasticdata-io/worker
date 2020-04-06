@@ -9,4 +9,9 @@ export class GetUrlCommand extends AbstractCommand {
 		await this.store.put(this.key, url, this);
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['key']);
+	}
 }

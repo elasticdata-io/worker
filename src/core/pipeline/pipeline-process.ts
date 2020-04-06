@@ -5,6 +5,7 @@ import { AbstractStore } from './data/abstract-store';
 import { TYPES } from './types';
 import { DataResult } from './data/dto/data.result';
 import { AbstractBrowser } from './browser/abstract-browser';
+import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 
 export class PipelineProcess {
 
@@ -12,12 +13,15 @@ export class PipelineProcess {
 	protected store: AbstractStore;
 
 	public isAborted = false;
+	private _commandAnalyzer: AbstractCommandAnalyzer;
 
-	constructor(private _commands: AbstractCommand[],
+	constructor(private _commandsJson: string,
+				private _commands: AbstractCommand[],
 				private _browserProvider: BrowserProvider,
 				private _ioc: PipelineIoc) {
 		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
 		this.browser = this._ioc.get<AbstractBrowser>(TYPES.AbstractBrowser);
+		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
 	}
 
 	async run(): Promise<void> {
@@ -28,7 +32,11 @@ export class PipelineProcess {
 			}
 			const command = this._commands[0];
 			await this._browserProvider.execute(command);
+			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
+			console.log(commandsAnalyzed, JSON.stringify(JSON.parse(this._commandsJson), null, ));
 		} catch (e) {
+			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
+			console.log(commandsAnalyzed);
 			throw e;
 		} finally {
 			await this.destroy();

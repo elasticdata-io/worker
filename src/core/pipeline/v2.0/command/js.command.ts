@@ -12,4 +12,9 @@ export class JsCommand extends AbstractCommand {
 		}
 		await super.execute();
 	}
+
+	public getManagedKeys(): string[] {
+		const keys = super.getManagedKeys();
+		return keys.concat(['key', 'script']);
+	}
 }
