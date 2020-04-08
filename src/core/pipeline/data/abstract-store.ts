@@ -2,7 +2,7 @@ import { AbstractCommand } from '../command/abstract-command';
 import { injectable } from 'inversify';
 import { DataContextResolver } from './data-context-resolver';
 import { StringGenerator } from '../util/string.generator';
-import { DataResult } from './dto/data.result';
+import { TaskResult } from './dto/task.result';
 
 @injectable()
 export abstract class AbstractStore {
@@ -18,6 +18,8 @@ export abstract class AbstractStore {
 	abstract putAll(data: any[], command: AbstractCommand): Promise<void>;
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
 	abstract putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void>;
+	abstract attachFile(file: Buffer, fileExtension: string, metaData: any, command: AbstractCommand): Promise<string>;
+	abstract attachJsonFile(json: any, command: AbstractCommand): Promise<string>;
 	abstract getDocument(): Promise<any>;
-	abstract commit(): Promise<DataResult>;
+	abstract commit(): Promise<TaskResult>;
 }

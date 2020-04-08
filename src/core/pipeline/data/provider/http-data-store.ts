@@ -5,7 +5,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import { DataContextResolver } from '../data-context-resolver';
 import { Environment } from '../../environment';
-import { DataResult } from '../dto/data.result';
+import { TaskResult } from '../dto/task.result';
 
 @injectable()
 export class HttpDataStore extends AbstractStore {
@@ -52,11 +52,27 @@ export class HttpDataStore extends AbstractStore {
 		});
 	}
 
+	async attachJsonFile(json: any, command: AbstractCommand): Promise<string> {
+		const buffer = Buffer.from(JSON.stringify(json, null, 4));
+		const metadata = {'content-type': 'application/json;charset=UTF-8'};
+		return await this.attachFile(buffer, '.json', metadata, command);
+	}
+
+	async attachFile(file: Buffer, fileExtension: string, metadata: any, command: AbstractCommand): Promise<string> {
+		return await this.httpDataClient.attachFile({
+			file: file,
+			fileExtension: fileExtension,
+			id: this.id,
+			userUuid: this.userUuid,
+			metadata: metadata,
+		});
+	}
+
 	async getDocument(): Promise<any>  {
 		return this.httpDataClient.getDocument(this.id, this.userUuid);
 	}
 
-	async commit(): Promise<DataResult>  {
+	async commit(): Promise<TaskResult>  {
 		return this.httpDataClient.commit({
 			bucket: this.userUuid,
 			fileName: `${this.taskId}.json`,

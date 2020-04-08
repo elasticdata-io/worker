@@ -3,9 +3,10 @@ import { AbstractCommand } from './command/abstract-command';
 import { PipelineIoc } from './pipeline-ioc';
 import { AbstractStore } from './data/abstract-store';
 import { TYPES } from './types';
-import { DataResult } from './data/dto/data.result';
+import { TaskResult } from './data/dto/task.result';
 import { AbstractBrowser } from './browser/abstract-browser';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
+import { TaskInformation } from './analyzer/task.information';
 
 export class PipelineProcess {
 
@@ -24,26 +25,40 @@ export class PipelineProcess {
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
 	}
 
-	async run(): Promise<void> {
+	async run(): Promise<TaskInformation> {
+		if (this._commands.length === 0) {
+			console.warn(`commands is empty list`);
+			return;
+		}
+		const command = this._commands[0];
 		try {
-			if (this._commands.length === 0) {
-				console.warn(`commands is empty list`);
-				return;
-			}
-			const command = this._commands[0];
 			await this._browserProvider.execute(command);
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
-			console.log(commandsAnalyzed, JSON.stringify(JSON.parse(this._commandsJson), null, ));
+			const taskCommandsInfo = {
+				json: JSON.parse(this._commandsJson),
+				analyzed: commandsAnalyzed,
+			};
+			const file = await this.store.attachJsonFile(taskCommandsInfo, command);
+			return {
+				commandsInformationLink: file
+			};
 		} catch (e) {
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
-			console.log(commandsAnalyzed);
-			throw e;
+			const taskCommandsInfo = {
+				json: JSON.parse(this._commandsJson),
+				analyzed: commandsAnalyzed,
+			};
+			const file = await this.store.attachJsonFile(taskCommandsInfo, command);
+			return {
+				commandsInformationLink: file,
+				failureReason: e.toString(),
+			};
 		} finally {
 			await this.destroy();
 		}
 	}
 
-	async commit(): Promise<DataResult> {
+	async commit(): Promise<TaskResult> {
 		return this.store.commit();
 	}
 

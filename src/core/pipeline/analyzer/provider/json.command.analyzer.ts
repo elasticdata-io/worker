@@ -1,7 +1,7 @@
 import { AbstractCommandAnalyzer } from '../abstract.command.analyzer';
 import { AbstractCommand } from '../../command/abstract-command';
 import { inject, injectable } from 'inversify';
-import { CommandInfo } from '../command.info';
+import { CommandInformation } from '../command.information';
 import moment = require('moment');
 import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
@@ -10,8 +10,8 @@ import { DataContextResolver } from '../../data/data-context-resolver';
 export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
 	private _dataContextResolver: DataContextResolver;
-	private readonly _commands: CommandInfo[];
-	private readonly _tmpCommands: { [key: string]: CommandInfo };
+	private readonly _commands: CommandInformation[];
+	private readonly _tmpCommands: { [key: string]: CommandInformation };
 
 	constructor(@inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver) {
 		super();
@@ -45,17 +45,17 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		command
 		  .getManagedKeys()
 		  .forEach(key => params[key] = command[key]);
-		const info = {
+		const result = {
 			startOnUtc: moment().utc().toDate(),
 			uuid: command.uuid,
 			name: command.constructor.name,
 			dataContext: this._dataContextResolver.resolveContext(command),
 			json: params,
-		} as CommandInfo;
-		this._tmpCommands[command.uuid] = info;
+		} as CommandInformation;
+		this._tmpCommands[command.uuid] = result;
 	}
 
-	public getCommands(): Promise<CommandInfo[]> {
+	public getCommands(): Promise<CommandInformation[]> {
 		return Promise.resolve(this._commands);
 	}
 }

@@ -4,8 +4,9 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
 import { KeyValueData } from '../dto/key.value.data';
 import { KeyFileData } from '../dto/key.file.data';
-import { DataResult } from '../dto/data.result';
+import { TaskResult } from '../dto/task.result';
 import { CommitDocument } from '../dto/commit.document';
+import { AttachFile } from '../dto/attach.file';
 
 @injectable()
 export class HttpDataClient {
@@ -59,6 +60,26 @@ export class HttpDataClient {
 		}
 	}
 
+	async attachFile(data: AttachFile): Promise<string> {
+		try {
+			const url = new URL(`${this._serviceUrl}${this._servicePath}/attach/${data.id}/${data.fileExtension}`);
+			const form = new FormData();
+			const file = data.file;
+			form.append('file', file, { filename: 'file' });
+			const config = {
+				headers: {
+					...form.getHeaders(),
+					userUuid: data.userUuid,
+					metadata: JSON.stringify(data.metadata),
+				},
+			};
+			const result = await axios.post(url.href, form, config);
+			return result.data && result.data.file;
+		} catch (e) {
+			throw `attachFile data is failed: ${e.message}`
+		}
+	}
+
 	async getDocument(storeId: string, userUuid: string): Promise<any> {
 		try {
 			const config = {
@@ -73,7 +94,7 @@ export class HttpDataClient {
 		}
 	}
 
-	async commit(data: CommitDocument): Promise<DataResult> {
+	async commit(data: CommitDocument): Promise<TaskResult> {
 		try {
 			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);
 			return res.data;

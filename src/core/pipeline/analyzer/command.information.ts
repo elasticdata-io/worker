@@ -1,4 +1,4 @@
-export class CommandInfo {
+export class CommandInformation {
 	name: string;
 	uuid: string;
 	json: { [key: string]: any };

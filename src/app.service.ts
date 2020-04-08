@@ -4,7 +4,7 @@ import { PipelineBuilderFactory } from './core/pipeline/pipeline-builder-factory
 import { Environment } from './core/pipeline/environment';
 import { TaskService } from './task/task.service';
 import { RunTaskDto } from './dto/run.task';
-import { DataResult } from './core/pipeline/data/dto/data.result';
+import { TaskResult } from './core/pipeline/data/dto/task.result';
 import { PipelineProcess } from './core/pipeline/pipeline-process';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class AppService {
 		return false;
 	}
 
-	public async runPipelineTask(dto: RunTaskDto): Promise<DataResult> {
+	public async runPipelineTask(dto: RunTaskDto): Promise<TaskResult> {
 		try {
 			this._currentTaskId = dto.taskId;
 			return await this.runTask(dto);
@@ -44,7 +44,7 @@ export class AppService {
 		return false;
 	}
 
-	private async runTask(dto: RunTaskDto): Promise<DataResult> {
+	private async runTask(dto: RunTaskDto): Promise<TaskResult> {
 		this.beforeRunTask(dto.taskId);
 		const env = {
 			userUuid: dto.userUuid,
@@ -57,13 +57,19 @@ export class AppService {
 		  .setPipelineJson(dto.json)
 		  .setProxies(dto.proxies)
 		  .build();
-		await this._pipelineProcess.run();
+		const taskInformation = await this._pipelineProcess.run();
+		if (taskInformation.failureReason) {
+			throw taskInformation.failureReason;
+		}
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
-			return {} as DataResult;
+			return {} as TaskResult;
 		}
 		const data = await this._pipelineProcess.commit();
-		await this.afterRunTask(dto.taskId, data);
+		await this.afterRunTask(dto.taskId, {
+			...data,
+			taskInformation: taskInformation,
+		});
 		await this._pipelineProcess.destroy();
 		return data;
 	}
@@ -84,7 +90,7 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 	}
 
-	private async afterRunTask(taskId: string, data: DataResult): Promise<void> {
+	private async afterRunTask(taskId: string, taskResult: TaskResult): Promise<void> {
 		const patch = [
 			{
 				op: "replace",
@@ -94,22 +100,27 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/docsUrl",
-				value: data.fileLink
+				value: taskResult.fileLink
 			},
 			{
 				op: "replace",
 				path: "/docsCount",
-				value: data.rootLines || 0
+				value: taskResult.rootLines || 0
 			},
 			{
 				op: "replace",
 				path: "/docsBytes",
-				value: data.bytes
+				value: taskResult.bytes
 			},
 			{
 				op: "replace",
 				path: "/endOnUtc",
 				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
+			},
+			{
+				op: "replace",
+				path: "/commandsInformationLink",
+				value: taskResult.taskInformation.commandsInformationLink,
 			}
 		];
 		await this._taskService.update(taskId, patch);
