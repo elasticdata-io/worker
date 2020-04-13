@@ -123,7 +123,7 @@ export class ChromiumDriver implements Driver {
 				return count > 0;
 			});
 		} catch (e) {
-			throw `${command.constructor.name} terminated after: ${skipAfterTimeout} ms, ${getCountFn.toString()}`
+			throw `${command.cmd} terminated after: ${skipAfterTimeout} ms, ${getCountFn.toString()}`
 		}
 	}
 
