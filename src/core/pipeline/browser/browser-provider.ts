@@ -5,6 +5,7 @@ import { PipelineIoc } from '../pipeline-ioc';
 import { AbstractBrowser } from './abstract-browser';
 import { inject, injectable } from 'inversify';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
+import { SystemError } from '../command/exception/system-error';
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {
@@ -26,6 +27,9 @@ export class BrowserProvider extends IBrowserProvider {
 			await command.execute();
 		} catch (e) {
 			await this._commandAnalyzer.errorCommand(command, e.toString());
+			if (e instanceof SystemError) {
+				throw e;
+			}
 			throw `ERROR of ${command.constructor.name}: ${e}`
 		}
 	}

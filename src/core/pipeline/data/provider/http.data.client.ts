@@ -7,6 +7,7 @@ import { KeyFileData } from '../dto/key.file.data';
 import { TaskResult } from '../dto/task.result';
 import { CommitDocument } from '../dto/commit.document';
 import { AttachFile } from '../dto/attach.file';
+import { SystemError } from '../../command/exception/system-error';
 
 @injectable()
 export class HttpDataClient {
@@ -22,7 +23,7 @@ export class HttpDataClient {
 		try {
 			await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data);
 		} catch (e) {
-			throw `putAll data is failed: ${e.message}`
+			throw new SystemError(`putAll data is failed: ${e?.response?.data?.message || e.message}`);
 		}
 	}
 
@@ -35,10 +36,10 @@ export class HttpDataClient {
 			};
 			const res = await axios.post(`${this._serviceUrl}${this._servicePath}`, data, config);
 			if (!res.data.success) {
-				throw res.data.message;
+				throw new SystemError(res.data.message);
 			}
 		} catch (e) {
-			throw `put data is failed: ${e.message}`
+			throw new SystemError(`put data is failed: ${e?.response?.data?.message || e.message}`)
 		}
 	}
 
@@ -56,7 +57,7 @@ export class HttpDataClient {
 			};
 			await axios.post(url.href, form, config);
 		} catch (e) {
-			throw `putFile data is failed: ${e.message}`
+			throw new SystemError(`putFile data is failed: ${e?.response?.data?.message || e.message}`);
 		}
 	}
 
@@ -76,7 +77,7 @@ export class HttpDataClient {
 			const result = await axios.post(url.href, form, config);
 			return result.data && result.data.file;
 		} catch (e) {
-			throw `attachFile data is failed: ${e.message}`
+			throw new SystemError(`attachFile data is failed: ${e?.response?.data?.message || e.message}`);
 		}
 	}
 
@@ -90,7 +91,7 @@ export class HttpDataClient {
 			const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`, config);
 			return res.data;
 		} catch (e) {
-			throw `getDocument data is failed: ${e.message}`
+			throw new SystemError(`getDocument data is failed: ${e.message}`);
 		}
 	}
 
@@ -99,7 +100,7 @@ export class HttpDataClient {
 			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);
 			return res.data;
 		} catch (e) {
-			throw `commit data is failed: ${e.message}`
+			throw new SystemError(`commit data is failed: ${e?.response?.data?.message || e.message}`);
 		}
 	}
 }

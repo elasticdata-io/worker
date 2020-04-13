@@ -1,6 +1,7 @@
 import { AbstractCommand } from '../../command/abstract-command';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
+import { SystemError } from '../../command/exception/system-error';
 
 export class LoopCommand extends AbstractCommand {
 
@@ -19,6 +20,9 @@ export class LoopCommand extends AbstractCommand {
 				this.index++;
 			}
 		} catch (e) {
+			if (e instanceof SystemError) {
+				throw e;
+			}
 			console.error(e);
 		}
 		await super.execute();
