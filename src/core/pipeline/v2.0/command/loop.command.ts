@@ -14,7 +14,7 @@ export class LoopCommand extends AbstractCommand {
 		try {
 			this.index = 0;
 			for (let i = 0; i < this.max; i++) {
-				await this.applyChildCommandsContext();
+				await this.applyChildrenContext();
 				const firstCommand = this.commands[0];
 				await this.browserProvider.execute(firstCommand);
 				this.index++;
@@ -28,12 +28,9 @@ export class LoopCommand extends AbstractCommand {
 		await super.execute();
 	}
 
-	private async applyChildCommandsContext() {
+	private async applyChildrenContext() {
 		const contextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
-		const loopContext = contextResolver.resolveContext(this);
-		const currentContext = this.context ? `.${this.context}` : '';
-		const commandsContext = `${loopContext}${currentContext}.${this.index}`;
-		contextResolver.setChildCommandsContext(this.commands, commandsContext);
+		contextResolver.setLoopChildrenContext(this);
 	}
 
 	public getManagedKeys(): string[] {

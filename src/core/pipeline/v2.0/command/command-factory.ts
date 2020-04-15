@@ -139,8 +139,7 @@ export class CommandFactory extends ICommandFactory {
 	}
 
 	private initDataContext(commands: AbstractCommand[]) {
-		commands.forEach(command => {
-			this._contextResolver.setRootContext(command);
-		})
+		commands
+		  .forEach(command => this._contextResolver.setRootContext(command));
 	}
 }
