@@ -1,3 +1,5 @@
+import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
+
 const TYPES = {
 	IPipelineBuilder: Symbol.for("IPipelineBuilder"),
 	ICommandFactory: Symbol.for("ICommandFactory"),
@@ -8,8 +10,12 @@ const TYPES = {
 	IBrowserProvider: Symbol.for("IBrowserProvider"),
 	AbstractStore: Symbol.for("AbstractStore"),
 	IPipelineConfigurationBuilder: Symbol.for("IPipelineConfigurationBuilder"),
+	XpathQueryProvider: Symbol.for("XpathQueryProvider"),
+	CssQueryProvider: Symbol.for("CssQueryProvider"),
 	QueryProviderFactory: Symbol.for("QueryProviderFactory"),
 	DataContextResolver: Symbol.for("DataContextResolver"),
+	CssLoopSelection: Symbol.for("CssLoopSelection"),
+	XpathLoopSelection: Symbol.for("XpathLoopSelection"),
 	HttpDataClient: Symbol.for("HttpDataClient"),
 	PipelineIoc: Symbol.for("PipelineIoc"),
 	DataServiceUrl: Symbol.for("DataServiceUrl"),

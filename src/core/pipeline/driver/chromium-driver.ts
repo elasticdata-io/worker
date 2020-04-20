@@ -41,7 +41,7 @@ export class ChromiumDriver implements Driver {
 	async domClick(command: AbstractCommand): Promise<void> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, `.click()`);
-		await this._page.evaluate(getElFn);
+		await this.pageEvaluate(getElFn);
 	}
 
 	async executeAsyncScript(script: string, ...args: any[]): Promise<string> {
@@ -61,19 +61,19 @@ export class ChromiumDriver implements Driver {
 	async getElAttribute(command: AbstractCommand, attributeName: string): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, `.getAttribute('${attributeName}')`);
-		return await this._page.evaluate(getElFn) as Promise<string>;
+		return await this.pageEvaluate(getElFn);
 	}
 
 	async getElText(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, '.innerText');
-		return await this._page.evaluate(getElFn) as Promise<string>;
+		return await this.pageEvaluate(getElFn);
 	}
 
 	async getElHtml(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, '.innerHtml');
-		return await this._page.evaluate(getElFn) as Promise<string>;
+		return await this.pageEvaluate(getElFn);
 	}
 
 	async getElementsCount(command: AbstractCommand): Promise<number> {
@@ -119,8 +119,8 @@ export class ChromiumDriver implements Driver {
 		const getCountFn = queryProvider.getElementsFn(command, '.length');
 		try {
 			await this.wait(skipAfterTimeout, interval, async () => {
-				const count = await this._page.evaluate(getCountFn) as number;
-				return count > 0;
+				const count = await this.pageEvaluate(getCountFn);
+				return parseInt(count, 10) > 0;
 			});
 		} catch (e) {
 			throw `${command.cmd} terminated after: ${skipAfterTimeout} ms, ${getCountFn.toString()}`
@@ -179,7 +179,7 @@ export class ChromiumDriver implements Driver {
 		this._hasBeenExited = true;
 	}
 
-	hasBeenExited(): boolean {
+	public hasBeenExited(): boolean {
 		return this._hasBeenExited;
 	}
 
@@ -190,5 +190,13 @@ export class ChromiumDriver implements Driver {
 	async captureSnapshot(): Promise<string> {
 		const result = await this._cdpSession.send('Page.captureSnapshot') as any;
 		return result.data.toString();
+	}
+
+	protected async pageEvaluate(fn: any): Promise<string> {
+		try {
+			return await this._page.evaluate(fn) as Promise<string>;
+		} catch (e) {
+			throw `${e} --- ${fn}`;
+		}
 	}
 }

@@ -21,6 +21,10 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import { JsonCommandAnalyzer } from './analyzer/provider/json.command.analyzer';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
+import { CssQueryProvider } from './query/css/css-query-provider';
+import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
+import { CssLoopSelection } from './query/css/css-loop-selection';
+import { XpathLoopSelection } from './query/xpath/xpath-loop-selection';
 
 @Injectable()
 export class PipelineBuilderFactory {
@@ -53,6 +57,22 @@ export class PipelineBuilderFactory {
 		ioc
 		  .bind<IBrowserProvider>(TYPES.IBrowserProvider)
 		  .to(BrowserProvider)
+		  .inSingletonScope();
+		ioc
+		  .bind<XpathQueryProvider>(TYPES.XpathQueryProvider)
+		  .to(XpathQueryProvider)
+		  .inSingletonScope();
+		ioc
+		  .bind<CssLoopSelection>(TYPES.CssLoopSelection)
+		  .to(CssLoopSelection)
+		  .inSingletonScope();
+		ioc
+		  .bind<XpathLoopSelection>(TYPES.XpathLoopSelection)
+		  .to(XpathLoopSelection)
+		  .inSingletonScope();
+		ioc
+		  .bind<CssQueryProvider>(TYPES.CssQueryProvider)
+		  .to(CssQueryProvider)
 		  .inSingletonScope();
 		ioc
 		  .bind<QueryProviderFactory>(TYPES.QueryProviderFactory)

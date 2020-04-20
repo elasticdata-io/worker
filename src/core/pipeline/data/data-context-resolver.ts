@@ -1,7 +1,6 @@
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
 import { LoopCommand } from '../v2.0/command/loop.command';
-import { TYPES as ROOT_TYPES } from '../types';
 import { SystemError } from '../command/exception/system-error';
 
 @injectable()
@@ -27,8 +26,15 @@ export class DataContextResolver {
 		});
 	}
 
-	public resolveIndex(command: AbstractCommand): number {
+	public resolveIndex(command: AbstractCommand, contextName: string): number {
 		const context = this.commands[command.uuid];
+		if (contextName) {
+			const contexts = context.split(`${contextName}.`);
+			if (contexts.length !== 2) {
+				throw new SystemError(`contextName: '${contextName}' is not correct with context: ${context}`);
+			}
+			return parseInt(contexts[1], 10);
+		}
 		return context.replace(/^.*([0-9]+)$/, "$1");
 	}
 
@@ -50,6 +56,10 @@ export class DataContextResolver {
 		} catch (e) {
 			throw new SystemError(e);
 		}
+	}
+
+	public setContext(command: AbstractCommand, context: string) {
+		this.commands[command.uuid] = context;
 	}
 
 	public setLoopChildrenContext(command: LoopCommand) {
