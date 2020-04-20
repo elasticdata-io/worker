@@ -116,14 +116,14 @@ export class ChromiumDriver implements Driver {
 		const skipAfterTimeout = command.timeout * 1000;
 		const interval = 250;
 		const queryProvider = command.getQueryProvider();
-		const getCountFn = queryProvider.getElementsFn(command, '.length');
+		const getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
 		try {
 			await this.wait(skipAfterTimeout, interval, async () => {
-				const count = await this.pageEvaluate(getCountFn);
-				return parseInt(count, 10) > 0;
+				const html = await this.pageEvaluate(getOuterHTMLFn);
+				return Boolean(html);
 			});
 		} catch (e) {
-			throw `${command.cmd} terminated after: ${skipAfterTimeout} ms, ${getCountFn.toString()}`
+			throw `${command.cmd} terminated after: ${skipAfterTimeout} ms, ${getOuterHTMLFn.toString()}`
 		}
 	}
 
