@@ -46,7 +46,10 @@ export class XpathLoopSelection extends AbstractLoopSelection {
 			const loopElement = loopElements.shift();
 			jsExpression += `${loopElement.jsExpression}\n`;
 			if (loopElements.length === 0) {
-				jsExpression += `return ${loopElement.variableName}`;
+				const hasLoopIndex = isNaN(loopElement.loopIndex) == false;
+				jsExpression += hasLoopIndex
+				  ? `return Array.of(${loopElement.variableName})`
+				  : `return ${loopElement.variableName}`;
 				break;
 			}
 		}
