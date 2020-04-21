@@ -134,8 +134,11 @@ export class ChromiumDriver implements Driver {
 		return Buffer.from(base64, 'base64');
 	}
 
-	async scrollBy(position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void> {
-		return undefined;
+	async scrollBy(position: 'top' | 'bottom', px: number): Promise<void> {
+		const distance = position === 'bottom' ? px : -px;
+		const expression = `window.scrollBy(0, ${distance})`;
+		const fn = new Function(expression);
+		await this.pageEvaluate(fn);
 	}
 
 	protected async delay(time: number) {
