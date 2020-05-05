@@ -8,6 +8,7 @@ import { TaskResult } from '../dto/task.result';
 import { CommitDocument } from '../dto/commit.document';
 import { AttachFile } from '../dto/attach.file';
 import { SystemError } from '../../command/exception/system-error';
+import { DataRule } from '../dto/data-rule';
 
 @injectable()
 export class HttpDataClient {
@@ -108,6 +109,18 @@ export class HttpDataClient {
 		try {
 			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);
 			return res.data;
+		} catch (e) {
+			throw new SystemError(`commit data is failed: ${e?.response?.data?.message || e.message}`);
+		}
+	}
+
+	/**
+	 * Sets data rules to storage.
+	 * @param config
+	 */
+	async setDataRules(config: { rules: Array<DataRule>, storageId: string }): Promise<void> {
+		try {
+			await axios.post(`${this._serviceUrl}${this._servicePath}/rule`, config);
 		} catch (e) {
 			throw new SystemError(`commit data is failed: ${e?.response?.data?.message || e.message}`);
 		}

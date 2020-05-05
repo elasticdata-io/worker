@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 import { DataContextResolver } from './data-context-resolver';
 import { StringGenerator } from '../util/string.generator';
 import { TaskResult } from './dto/task.result';
+import { DataRule } from './dto/data-rule';
 
 @injectable()
 export abstract class AbstractStore {
@@ -21,4 +22,5 @@ export abstract class AbstractStore {
 	abstract attachFile(file: Buffer, fileExtension: string, metaData: any, command: AbstractCommand): Promise<string>;
 	abstract attachJsonFile(json: any, command: AbstractCommand): Promise<string>;
 	abstract commit(): Promise<TaskResult>;
+	abstract setDataRules(dataRules: Array<DataRule>): Promise<void>;
 }

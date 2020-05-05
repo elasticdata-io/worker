@@ -6,6 +6,7 @@ import { TYPES } from '../../types';
 import { DataContextResolver } from '../data-context-resolver';
 import { Environment } from '../../environment';
 import { TaskResult } from '../dto/task.result';
+import { DataRule } from '../dto/data-rule';
 
 @injectable()
 export class HttpDataStore extends AbstractStore {
@@ -108,6 +109,17 @@ export class HttpDataStore extends AbstractStore {
 			bucket: this.userUuid,
 			fileName: `${this.taskId}.json`,
 			storeId: this.id,
+		});
+	}
+
+	/**
+	 * Sets data rules to storage.
+	 * @param dataRules
+	 */
+	async setDataRules(dataRules: Array<DataRule>): Promise<void>  {
+		return this.httpDataClient.setDataRules({
+			rules: dataRules,
+			storageId: this.id,
 		});
 	}
 }

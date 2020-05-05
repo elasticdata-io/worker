@@ -3,6 +3,7 @@ import { ICommandFactory } from '../../command/i-command-factory';
 import { SettingsConfiguration } from '../../configuration/settings-configuration';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../types';
+import { DataRule } from '../../data/dto/data-rule';
 
 @injectable()
 export class PipelineConfigurationBuilder implements IPipelineConfigurationBuilder {
@@ -12,7 +13,7 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 
 	public _commandsJson: string;
 	public _commands: any[];
-	public _transform: any[];
+	public _dataRules: Array<DataRule>;
 	public _settings: SettingsConfiguration;
 	public _version: string;
 
@@ -28,8 +29,8 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 		return this._settings;
 	}
 
-	get transform(): any[] {
-		return this._transform;
+	get dataRules(): Array<DataRule> {
+		return this._dataRules;
 	}
 
 	buildFromJson(json: any): IPipelineConfigurationBuilder {
@@ -39,6 +40,7 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 		this._commandsJson = this._commandFactory.appendUuidToCommands(commandsJson);
 		this._commands = this._commandFactory.createChainCommands(this._commandsJson);
 		this._settings = pipeline.settings || {} as SettingsConfiguration;
+		this._dataRules = pipeline.dataRules;
 		this._version = pipeline.version;
 		this.validate();
 		return this;

@@ -7,6 +7,7 @@ import { TaskResult } from './data/dto/task.result';
 import { AbstractBrowser } from './browser/abstract-browser';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 import { TaskInformation } from './analyzer/task.information';
+import { DataRule } from './data/dto/data-rule';
 
 export class PipelineProcess {
 
@@ -18,6 +19,7 @@ export class PipelineProcess {
 
 	constructor(private _commandsJson: string,
 				private _commands: AbstractCommand[],
+				private _dataRules: Array<DataRule>,
 				private _browserProvider: BrowserProvider,
 				private _ioc: PipelineIoc) {
 		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
@@ -32,6 +34,7 @@ export class PipelineProcess {
 		}
 		const command = this._commands[0];
 		try {
+			await this.store.setDataRules(this._dataRules);
 			await this._browserProvider.execute(command);
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
 			const taskCommandsInfo = {
@@ -63,7 +66,7 @@ export class PipelineProcess {
 	}
 
 	async abort(): Promise<void> {
-		this.destroy();
+		await this.destroy();
 		this.isAborted = true;
 	}
 
