@@ -19,6 +19,12 @@ export class HttpDataClient {
 		this._serviceUrl = serviceUrl;
 	}
 
+	/**
+	 * Put array to store with context.
+	 * Used in the import command.
+	 * @param context
+	 * @param data
+	 */
 	async putAll(context: string, data: any[]): Promise<void> {
 		try {
 			await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data);
@@ -27,6 +33,10 @@ export class HttpDataClient {
 		}
 	}
 
+	/**
+	 * Put key-value data to store.
+	 * @param data
+	 */
 	async put(data: KeyValueData): Promise<void> {
 		try {
 			const config = {
@@ -43,6 +53,10 @@ export class HttpDataClient {
 		}
 	}
 
+	/**
+	 * Attach file in user folder with command context.
+	 * @param data
+	 */
 	async putFile(data: KeyFileData): Promise<void> {
 		try {
 			const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.fileExtension}/${data.key}`);
@@ -61,6 +75,11 @@ export class HttpDataClient {
 		}
 	}
 
+	/**
+	 * Attach file without context but in user folder.
+	 * Return file public link.
+	 * @param data
+	 */
 	async attachFile(data: AttachFile): Promise<string> {
 		try {
 			const url = new URL(`${this._serviceUrl}${this._servicePath}/attach/${data.id}/${data.fileExtension}`);
@@ -81,20 +100,10 @@ export class HttpDataClient {
 		}
 	}
 
-	async getDocument(storeId: string, userUuid: string): Promise<any> {
-		try {
-			const config = {
-				headers: {
-					userUuid: userUuid,
-				},
-			};
-			const res = await axios.get(`${this._serviceUrl}${this._servicePath}/${storeId}`, config);
-			return res.data;
-		} catch (e) {
-			throw new SystemError(`getDocument data is failed: ${e.message}`);
-		}
-	}
-
+	/**
+	 * Freezing all data and return.
+	 * @param data
+	 */
 	async commit(data: CommitDocument): Promise<TaskResult> {
 		try {
 			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/commit`, data);

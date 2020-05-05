@@ -20,6 +20,5 @@ export abstract class AbstractStore {
 	abstract putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void>;
 	abstract attachFile(file: Buffer, fileExtension: string, metaData: any, command: AbstractCommand): Promise<string>;
 	abstract attachJsonFile(json: any, command: AbstractCommand): Promise<string>;
-	abstract getDocument(): Promise<any>;
 	abstract commit(): Promise<TaskResult>;
 }

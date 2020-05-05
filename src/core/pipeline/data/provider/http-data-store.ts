@@ -23,14 +23,25 @@ export class HttpDataStore extends AbstractStore {
 		this.httpDataClient = httpDataClient;
 	}
 
+	/**
+	 * Put array to store with context.
+	 * Used in the import command.
+	 * @param data
+	 * @param command
+	 */
 	async putAll(data: any[], command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
 		await this.httpDataClient.putAll(context, data);
 	}
 
+	/**
+	 * Put key-value data to store.
+	 * @param key
+	 * @param value
+	 * @param command
+	 */
 	async put(key: string, value: string, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
-		console.log(`context: ${context}, command: ${command}`);
 		await this.httpDataClient.put({
 			key: key,
 			value: value,
@@ -40,6 +51,13 @@ export class HttpDataStore extends AbstractStore {
 		});
 	}
 
+	/**
+	 * Attach file in user folder with command context.
+	 * @param key
+	 * @param file
+	 * @param fileExtension
+	 * @param command
+	 */
 	async putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
 		await this.httpDataClient.putFile({
@@ -52,12 +70,26 @@ export class HttpDataStore extends AbstractStore {
 		});
 	}
 
+	/**
+	 * Attach JSON file without context but in user folder.
+	 * Return JSON file public link.
+	 * @param json
+	 * @param command
+	 */
 	async attachJsonFile(json: any, command: AbstractCommand): Promise<string> {
 		const buffer = Buffer.from(JSON.stringify(json, null, 4));
 		const metadata = {'content-type': 'application/json;charset=UTF-8'};
 		return await this.attachFile(buffer, '.json', metadata, command);
 	}
 
+	/**
+	 * Attach file without context but in user folder.
+	 * Return file public link.
+	 * @param file
+	 * @param fileExtension
+	 * @param metadata
+	 * @param command
+	 */
 	async attachFile(file: Buffer, fileExtension: string, metadata: any, command: AbstractCommand): Promise<string> {
 		return await this.httpDataClient.attachFile({
 			file: file,
@@ -68,10 +100,9 @@ export class HttpDataStore extends AbstractStore {
 		});
 	}
 
-	async getDocument(): Promise<any>  {
-		return this.httpDataClient.getDocument(this.id, this.userUuid);
-	}
-
+	/**
+	 * Freezing all data and return.
+	 */
 	async commit(): Promise<TaskResult>  {
 		return this.httpDataClient.commit({
 			bucket: this.userUuid,
