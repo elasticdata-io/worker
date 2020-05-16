@@ -72,7 +72,7 @@ export class ChromiumDriver implements Driver {
 
 	async getElHtml(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, '.innerHtml');
+		const getElFn = queryProvider.getElementFn(command, '.innerHTML');
 		return await this.pageEvaluate(getElFn);
 	}
 
