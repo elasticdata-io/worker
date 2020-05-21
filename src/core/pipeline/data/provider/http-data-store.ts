@@ -117,6 +117,9 @@ export class HttpDataStore extends AbstractStore {
 	 * @param dataRules
 	 */
 	async setDataRules(dataRules: Array<DataRule>): Promise<void>  {
+		if (!dataRules || !dataRules.length) {
+			return;
+		}
 		return this.httpDataClient.setDataRules({
 			rules: dataRules,
 			storageId: this.id,
