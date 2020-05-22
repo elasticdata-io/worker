@@ -19,6 +19,10 @@ export class AppConsumer {
 		const connectionString = this._configService.get<string>('AMQP_CONNECTION_STRING');
 		Amqp.log.transports.console.level = this._configService.get<string>('AMQP_LOG_LEVEL');
 		const connection = new Amqp.Connection(connectionString);
+		connection.on('close', () => {
+			console.error('Lost connection to RMQ.  Reconnecting in 60 seconds...');
+			return setTimeout(this.init, 20 * 1000);
+		});
 		const runTaskQueue = connection.declareQueue(runTaskQueueName, { noCreate: true, prefetch: 1 });
 		runTaskQueue
 		  	.activateConsumer(message => this.runTaskConsume(message), { noAck: false })
