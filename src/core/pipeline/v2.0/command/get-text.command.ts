@@ -2,8 +2,8 @@ import { AbstractCommand } from '../../command/abstract-command';
 
 export class GetTextCommand extends AbstractCommand {
 
-	public key: string | AbstractCommand;
-	public attribute: string;
+	public key: string | AbstractCommand = '';
+	public attribute = '';
 
 	async execute(): Promise<void> {
 		let text;

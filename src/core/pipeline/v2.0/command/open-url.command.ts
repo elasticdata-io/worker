@@ -7,7 +7,7 @@ export class OpenUrlCommand extends AbstractCommand {
 	private _linkCommand: AbstractCommand;
 
 	public timeout = 30;
-	public link: string | AbstractCommand;
+	public link: string | AbstractCommand = '';
 
 	public set linkCommand (command: AbstractCommand) {
 		this._linkCommand = command;

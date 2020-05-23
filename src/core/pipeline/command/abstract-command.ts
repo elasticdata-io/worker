@@ -32,11 +32,11 @@ export abstract class AbstractCommand implements Selectable {
 		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
 	}
 
-	public cmd: string;
-	public key: string | AbstractCommand;
-	public selector: string;
+	public cmd = '';
+	public key: string | AbstractCommand = '';
+	public selector = '';
 	public timeout = 1;
-	public uuid: string;
+	public uuid = '';
 
 	public setKeyCommand (command: AbstractCommand) {
 		this._keyCommand = command;

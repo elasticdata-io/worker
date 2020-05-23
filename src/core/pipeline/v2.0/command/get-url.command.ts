@@ -2,7 +2,7 @@ import { AbstractCommand } from '../../command/abstract-command';
 
 export class GetUrlCommand extends AbstractCommand {
 
-	public key: string | AbstractCommand;
+	public key: string | AbstractCommand = '';
 
 	async execute(): Promise<void> {
 		const url = await this.driver.getCurrentUrl();

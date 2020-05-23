@@ -8,7 +8,7 @@ export class LoopCommand extends AbstractCommand {
 	context?: string = '';
 	index?: number = 0;
 	max?: number = 20;
-	commands: AbstractCommand[];
+	commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {
 		try {

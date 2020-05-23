@@ -24,6 +24,7 @@ import { TYPES as ROOT_TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { CaptureSnapshotCommand } from './capture-snapshot.command';
 import { StringGenerator } from '../../util/string.generator';
+import { SystemError } from '../../command/exception/system-error';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -133,6 +134,10 @@ export class CommandFactory extends ICommandFactory {
 				  || key === 'truecommands'
 				  || key === 'falsecommands';
 				if (!ignoreKeys) {
+					if (!(key in command)) {
+						console.log(Object.getOwnPropertyNames(command))
+						throw new SystemError(`command: ${config.cmd} not supporting property: ${key}`)
+					}
 					command[key] = value;
 				}
 			}
