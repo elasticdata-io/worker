@@ -2,7 +2,7 @@ import { AbstractCommand } from '../../command/abstract-command';
 
 export class JsCommand extends AbstractCommand {
 
-	key: string;
+	key: string | AbstractCommand;
 	script: string;
 
 	async execute(): Promise<void> {

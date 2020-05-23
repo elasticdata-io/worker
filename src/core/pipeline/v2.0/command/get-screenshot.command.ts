@@ -2,7 +2,7 @@ import { AbstractCommand } from '../../command/abstract-command';
 
 export class GetScreenshotCommand extends AbstractCommand {
 
-	public key: string;
+	public key: string | AbstractCommand;
 
 	async execute(): Promise<void> {
 		const buffer = await this.driver.getScreenshot(this);
