@@ -18,6 +18,8 @@ export abstract class AbstractStore {
 
 	abstract putAll(data: any[], command: AbstractCommand): Promise<void>;
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
+	abstract get(key: string, command: AbstractCommand): Promise<string>;
+	abstract remove(key: string, command: AbstractCommand): Promise<void>;
 	abstract putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void>;
 	abstract attachFile(file: Buffer, fileExtension: string, metaData: any, command: AbstractCommand): Promise<string>;
 	abstract attachJsonFile(json: any, command: AbstractCommand): Promise<string>;

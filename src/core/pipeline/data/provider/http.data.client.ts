@@ -9,6 +9,7 @@ import { CommitDocument } from '../dto/commit.document';
 import { AttachFile } from '../dto/attach.file';
 import { SystemError } from '../../command/exception/system-error';
 import { DataRule } from '../dto/data-rule';
+import { KeyData } from '../dto/key.data';
 
 @injectable()
 export class HttpDataClient {
@@ -51,6 +52,49 @@ export class HttpDataClient {
 			}
 		} catch (e) {
 			throw new SystemError(`put data is failed: ${e?.response?.data?.message || e.message}`)
+		}
+	}
+
+	/**
+	 * Get value by key of store.
+	 * @param data
+	 */
+	async get(data: KeyData): Promise<any> {
+		try {
+			const config = {
+				headers: {
+					userUuid: data.userUuid,
+				},
+			};
+			const url = `${this._serviceUrl}${this._servicePath}/get`;
+			const res = await axios.post(url, data, config);
+			if (!res.data) {
+				throw new SystemError(res.data.message);
+			}
+			return res.data;
+		} catch (e) {
+			throw new SystemError(`get data is failed: ${e?.response?.data?.message || e.message}`)
+		}
+	}
+
+	/**
+	 * Remove value from store by key.
+	 * @param data
+	 */
+	async remove(data: KeyData): Promise<void> {
+		try {
+			const config = {
+				headers: {
+					userUuid: data.userUuid,
+				},
+			};
+			const url = `${this._serviceUrl}${this._servicePath}/remove`;
+			const res = await axios.post(url, data, config);
+			if (!res.data.success) {
+				throw new SystemError(res.data.message);
+			}
+		} catch (e) {
+			throw new SystemError(`remove data is failed: ${e?.response?.data?.message || e.message}`)
 		}
 	}
 

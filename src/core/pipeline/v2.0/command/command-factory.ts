@@ -38,13 +38,13 @@ export class CommandFactory extends ICommandFactory {
 	}
 
 	public createChainCommands(commandsJson: string): AbstractCommand[] {
-		const commands = this.getCommands(commandsJson);
-		this.linksCommands(commands);
-		this.initDataContext(commands);
+		const commands = this._createCommands(commandsJson);
+		this._linksCommands(commands);
+		this._initDataContext(commands);
 		return commands;
 	}
 
-	private linksCommands(commands: AbstractCommand[]) {
+	private _linksCommands(commands: AbstractCommand[]) {
 		commands.forEach((command, index) => {
 			const nextCommand = commands[index + 1];
 			if (nextCommand) {
@@ -53,92 +53,104 @@ export class CommandFactory extends ICommandFactory {
 		});
 	}
 
-	private getCommands(commandsJson: string) {
+	private _createCommands(commandsJson: string) {
 		const commands = JSON.parse(commandsJson) || [];
-		return commands.map(config => {
-			const cmd = config.cmd;
-			let command: AbstractCommand = null;
-			const ioc = this._ioc;
-			switch (cmd.toLocaleLowerCase()) {
-				case 'gettext':
-					command = new GetTextCommand(ioc);
-					break;
-				case 'click':
-					command = new ClickCommand(ioc);
-					break;
-				case 'checkdata':
-					command = new CheckDataCommand(ioc);
-					break;
-				case 'condition':
-					command = new ConditionCommand(ioc);
-					break;
-				case 'gethtml':
-					command = new GetHtmlCommand(ioc);
-					break;
-				case 'getscreenshot':
-					command = new GetScreenshotCommand(ioc);
-					break;
-				case 'geturl':
-					command = new GetUrlCommand(ioc);
-					break;
-				case 'hover':
-					command = new HoverCommand(ioc);
-					break;
-				case 'import':
-					command = new ImportCommand(ioc);
-					break;
-				case 'js':
-					command = new JsCommand(ioc);
-					break;
-				case 'loop':
-					const loop = new LoopCommand(ioc);
-					const commandsJson = JSON.stringify(config.commands);
-					loop.commands = this.createChainCommands(commandsJson);
-					command = loop;
-					break;
-				case 'nativeclick':
-					command = new NativeClickCommand(ioc);
-					break;
-				case 'pause':
-					command = new PauseCommand(ioc);
-					break;
-				case 'puttext':
-					command = new PutTextCommand(ioc);
-					break;
-				case 'replacetext':
-					command = new ReplaceTextCommand(ioc);
-					break;
-				case 'scrollto':
-					command = new ScrollToCommand(ioc);
-					break;
-				case 'openurl':
-					command = new OpenUrlCommand(ioc);
-					break;
-				case 'waitelement':
-					command = new WaitElementCommand(ioc);
-					break;
-				case 'snapshot':
-					command = new CaptureSnapshotCommand(ioc);
-					break;
-				default:
-					throw new Error(`command: ${cmd} not supported`)
-			}
-			if (command) {
-				for(const [key, value] of Object.entries(config)) {
-					const ignoreKeys = key === 'commands'
-						|| key === 'condition'
-						|| key === 'truecommands'
-						|| key === 'falsecommands';
-					if (!ignoreKeys) {
-						command[key] = value;
-					}
-				}
-			}
-			return command;
-		});
+		return commands.map(config => this._creteCommand(config));
 	}
 
-	private initDataContext(commands: AbstractCommand[]) {
+	private _creteCommand(config: any): AbstractCommand {
+		const cmd = config.cmd;
+		let command: AbstractCommand = null;
+		const ioc = this._ioc;
+		switch (cmd.toLocaleLowerCase()) {
+			case 'gettext':
+				command = new GetTextCommand(ioc);
+				break;
+			case 'click':
+				command = new ClickCommand(ioc);
+				break;
+			case 'checkdata':
+				command = new CheckDataCommand(ioc);
+				break;
+			case 'condition':
+				command = new ConditionCommand(ioc);
+				break;
+			case 'gethtml':
+				command = new GetHtmlCommand(ioc);
+				break;
+			case 'getscreenshot':
+				command = new GetScreenshotCommand(ioc);
+				break;
+			case 'geturl':
+				command = new GetUrlCommand(ioc);
+				break;
+			case 'hover':
+				command = new HoverCommand(ioc);
+				break;
+			case 'import':
+				command = new ImportCommand(ioc);
+				break;
+			case 'js':
+				command = new JsCommand(ioc);
+				break;
+			case 'loop':
+				const loop = new LoopCommand(ioc);
+				const commandsJson = JSON.stringify(config.commands);
+				loop.commands = this.createChainCommands(commandsJson);
+				command = loop;
+				break;
+			case 'nativeclick':
+				command = new NativeClickCommand(ioc);
+				break;
+			case 'pause':
+				command = new PauseCommand(ioc);
+				break;
+			case 'puttext':
+				command = new PutTextCommand(ioc);
+				break;
+			case 'replacetext':
+				command = new ReplaceTextCommand(ioc);
+				break;
+			case 'scrollto':
+				command = new ScrollToCommand(ioc);
+				break;
+			case 'openurl':
+				command = new OpenUrlCommand(ioc);
+				break;
+			case 'waitelement':
+				command = new WaitElementCommand(ioc);
+				break;
+			case 'snapshot':
+				command = new CaptureSnapshotCommand(ioc);
+				break;
+			default:
+				throw new Error(`command: ${cmd} not supported`)
+		}
+		if (command) {
+			for(const [key, value] of Object.entries(config)) {
+				const ignoreKeys = key === 'commands'
+				  || key === 'condition'
+				  || key === 'truecommands'
+				  || key === 'falsecommands';
+				if (!ignoreKeys) {
+					command[key] = value;
+				}
+			}
+		}
+		this._buildInnerKeyCommand(command);
+		return command;
+	}
+
+	private _buildInnerKeyCommand(command: any): void {
+		const keyCommand = command.keyCommand;
+		if (typeof keyCommand === 'object') {
+			const innerCommand = this._creteCommand(keyCommand);
+			this._contextResolver.setRootContext(innerCommand)
+			command.keyCommand = innerCommand
+		}
+	}
+
+	private _initDataContext(commands: AbstractCommand[]) {
 		commands
 		  .forEach(command => this._contextResolver.setRootContext(command));
 	}

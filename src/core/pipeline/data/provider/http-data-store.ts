@@ -52,6 +52,27 @@ export class HttpDataStore extends AbstractStore {
 		});
 	}
 
+
+	async get(key: string, command: AbstractCommand): Promise<any> {
+		const context = this.contextResolver.resolveContext(command);
+		return await this.httpDataClient.get({
+			key: key,
+			context: context,
+			id: this.id,
+			userUuid: this.userUuid,
+		});
+	}
+
+	async remove(key: string, command: AbstractCommand): Promise<void> {
+		const context = this.contextResolver.resolveContext(command);
+		await this.httpDataClient.remove({
+			key: key,
+			context: context,
+			id: this.id,
+			userUuid: this.userUuid,
+		});
+	}
+
 	/**
 	 * Attach file in user folder with command context.
 	 * @param key

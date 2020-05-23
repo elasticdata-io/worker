@@ -32,6 +32,7 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public cmd: string;
+	public key?: string;
 	public selector: string;
 	public timeout = 1;
 	public uuid: string;
@@ -40,7 +41,7 @@ export abstract class AbstractCommand implements Selectable {
 		this._nextCommand = nextCommand;
 	}
 
-	public async execute(): Promise<void> {
+	public async execute(): Promise<any> {
 		await this._commandAnalyzer.endCommand(this);
 		await this.afterExecute();
 	}
@@ -63,4 +64,10 @@ export abstract class AbstractCommand implements Selectable {
 		return this.queryProviderFactory.resolve(this);
 	}
 
+	public async getKey() : Promise<string> {
+		if (this.key) {
+			return this.key;
+		}
+		return this.uuid;
+	}
 }
