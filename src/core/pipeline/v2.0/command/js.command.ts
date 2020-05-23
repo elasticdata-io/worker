@@ -8,7 +8,8 @@ export class JsCommand extends AbstractCommand {
 	async execute(): Promise<void> {
 		const result = await this.driver.executeScript(this.script, null);
 		if (result !== undefined && result !== null) {
-			await this.store.put(this.key, result, this);
+			const key = await this.getKey();
+			await this.store.put(key, result, this);
 		}
 		await super.execute();
 	}

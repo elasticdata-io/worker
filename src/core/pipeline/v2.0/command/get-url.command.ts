@@ -6,7 +6,8 @@ export class GetUrlCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		const url = await this.driver.getCurrentUrl();
-		await this.store.put(this.key, url, this);
+		const key = await this.getKey();
+		await this.store.put(key, url, this);
 		await super.execute();
 	}
 

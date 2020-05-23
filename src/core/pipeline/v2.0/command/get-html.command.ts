@@ -5,7 +5,8 @@ export class GetHtmlCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		const html = await this.driver.getElHtml(this);
-		await this.store.put(this.key, html, this);
+		const key = await this.getKey();
+		await this.store.put(key, html, this);
 		await super.execute();
 	}
 
