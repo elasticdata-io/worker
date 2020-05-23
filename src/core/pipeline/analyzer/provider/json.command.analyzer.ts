@@ -22,6 +22,9 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
 	public async endCommand(command: AbstractCommand): Promise<void> {
 		const info = this._tmpCommands[command.uuid];
+		if (!info) {
+			return;
+		}
 		info.endOnUtc = moment().utc().toDate();
 		info.status = 'success';
 		this._commands.push(info);

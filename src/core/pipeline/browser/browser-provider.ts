@@ -5,6 +5,7 @@ import { PipelineIoc } from '../pipeline-ioc';
 import { AbstractBrowser } from './abstract-browser';
 import { inject, injectable } from 'inversify';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
+import { DataContextResolver } from '../data/data-context-resolver';
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {
@@ -17,15 +18,25 @@ export class BrowserProvider extends IBrowserProvider {
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
 	}
 
-	async execute(command: AbstractCommand): Promise<void> {
+	async execute(command: AbstractCommand, config?: {silent: boolean, context: AbstractCommand}): Promise<void> {
+		const context = config && config.context;
+		const silent = config && config.silent;
 		try {
 			if (this._browser.isStopped()) {
 				return;
 			}
-			await this._commandAnalyzer.startCommand(command);
+			if (context) {
+				const contextResolver = this._ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
+				contextResolver.copyCommandContext(context, [command])
+			}
+			if (!silent) {
+				await this._commandAnalyzer.startCommand(command);
+			}
 			await command.execute();
 		} catch (e) {
-			await this._commandAnalyzer.errorCommand(command, e.toString());
+			if (!silent) {
+				await this._commandAnalyzer.errorCommand(command, e.toString());
+			}
 			throw e
 		}
 	}

@@ -26,7 +26,7 @@ export class GetTextCommand extends AbstractCommand {
 		}
 		if (this.keyCommand) {
 			const provider = this.ioc.get<IBrowserProvider>(ROOT_TYPES.IBrowserProvider);
-			await provider.execute(this.keyCommand)
+			await provider.execute(this.keyCommand, {silent: true, context: this});
 			const key = await this.keyCommand.getKey()
 			const keyValue = await this.store.get(key, this.keyCommand);
 			await this.store.remove(key, this.keyCommand);

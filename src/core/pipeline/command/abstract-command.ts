@@ -42,7 +42,9 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public async execute(): Promise<any> {
-		await this._commandAnalyzer.endCommand(this);
+		if (this._commandAnalyzer) {
+			await this._commandAnalyzer.endCommand(this);
+		}
 		await this.afterExecute();
 	}
 

@@ -72,4 +72,13 @@ export class DataContextResolver {
 			throw new SystemError(e);
 		}
 	}
+
+	public copyCommandContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]): void {
+		try {
+			const originContext = this.resolveContext(originCommand);
+			this.setChildrenContext(targetCommands, originContext);
+		} catch (e) {
+			throw new SystemError(e);
+		}
+	}
 }
