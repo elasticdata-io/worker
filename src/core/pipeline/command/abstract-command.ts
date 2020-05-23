@@ -13,6 +13,7 @@ import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 export abstract class AbstractCommand implements Selectable {
 	private _nextCommand: AbstractCommand;
 	private _commandAnalyzer: AbstractCommandAnalyzer;
+	private _keyCommand: AbstractCommand;
 
 	protected store: AbstractStore;
 	protected driver: Driver;
@@ -32,10 +33,14 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public cmd: string;
-	public key?: string;
+	public key: string | AbstractCommand;
 	public selector: string;
 	public timeout = 1;
 	public uuid: string;
+
+	public set keyCommand (command: AbstractCommand) {
+		this._keyCommand = command;
+	}
 
 	public setNextCommand(nextCommand: AbstractCommand): void {
 		this._nextCommand = nextCommand;
@@ -66,10 +71,19 @@ export abstract class AbstractCommand implements Selectable {
 		return this.queryProviderFactory.resolve(this);
 	}
 
-	public async getKey() : Promise<string> {
-		if (this.key) {
+	public async getKey(): Promise<string> {
+		if (typeof this.key === 'string') {
 			return this.key;
+		}
+		const keyCommand = this._keyCommand;
+		if (keyCommand) {
+			await this.browserProvider.execute(keyCommand, {silent: true, context: this});
+			const key = await keyCommand.getKey()
+			const keyValue = await this.store.get(key, keyCommand);
+			await this.store.remove(key, keyCommand);
+			return keyValue;
 		}
 		return this.uuid;
 	}
+
 }

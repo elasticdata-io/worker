@@ -138,6 +138,7 @@ export class CommandFactory extends ICommandFactory {
 			}
 		}
 		this._buildInnerKeyCommand(command);
+		this._buildLinkCommand(command)
 		return command;
 	}
 
@@ -147,6 +148,16 @@ export class CommandFactory extends ICommandFactory {
 			const innerCommand = this._creteCommand(keyCommand);
 			this._contextResolver.setRootContext(innerCommand)
 			command.keyCommand = innerCommand
+		}
+	}
+
+	private _buildLinkCommand(command: AbstractCommand): void {
+		if (command instanceof OpenUrlCommand) {
+			if (typeof command.link === 'object') {
+				const innerCommand = this._creteCommand(command.link);
+				this._contextResolver.setRootContext(innerCommand)
+				command.linkCommand = innerCommand
+			}
 		}
 	}
 
