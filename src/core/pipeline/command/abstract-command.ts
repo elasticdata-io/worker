@@ -38,7 +38,7 @@ export abstract class AbstractCommand implements Selectable {
 	public timeout = 1;
 	public uuid: string;
 
-	public set keyCommand (command: AbstractCommand) {
+	public setKeyCommand (command: AbstractCommand) {
 		this._keyCommand = command;
 	}
 

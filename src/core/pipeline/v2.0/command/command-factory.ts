@@ -143,11 +143,11 @@ export class CommandFactory extends ICommandFactory {
 	}
 
 	private _buildInnerKeyCommand(command: any): void {
-		const keyCommand = command.keyCommand;
-		if (typeof keyCommand === 'object') {
-			const innerCommand = this._creteCommand(keyCommand);
+		const key = command.key;
+		if (typeof key === 'object') {
+			const innerCommand = this._creteCommand(key);
 			this._contextResolver.setRootContext(innerCommand)
-			command.keyCommand = innerCommand
+			command.setKeyCommand(innerCommand)
 		}
 	}
 
