@@ -25,14 +25,14 @@
     "@nestjs/config": "^0.4.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
-    "@types/puppeteer": "^2.0.1",
+    "@types/puppeteer": "^2.1.1",
     "amqp-ts": "^1.8.0",
     "axios": "^0.19.2",
     "chalk": "^4.0.0",
     "form-data": "^3.0.0",
     "inversify": "^5.0.1",
     "moment": "^2.24.0",
-    "puppeteer": "^2.1.1",
+    "puppeteer": "^3.1.0",
     "puppeteer-tsd": "0.0.2",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
@@ -75,6 +75,8 @@
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "setupFiles": ["./jest-setup-file.ts"]
+    "setupFiles": [
+      "./jest-setup-file.ts"
+    ]
   }
 }
