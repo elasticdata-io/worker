@@ -72,7 +72,7 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public async getKey(): Promise<string> {
-		if (typeof this.key === 'string') {
+		if (typeof this.key === 'string' && this.key.length > 0) {
 			return this.key;
 		}
 		const keyCommand = this._keyCommand;
