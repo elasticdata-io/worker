@@ -105,7 +105,11 @@ export class ChromiumDriver implements Driver {
 	}
 
 	async setElValue(command: AbstractCommand, value: string): Promise<void> {
-		return undefined;
+		const queryProvider = command.getQueryProvider();
+		// todo : input, textarea, select
+		const getElFn = queryProvider.getElementFn(command, `.value = \`${value}\`;`);
+		// await this._page.focus('#lst-ib')
+		await this.pageEvaluate(getElFn);
 	}
 
 	async switchToFrame(command: AbstractCommand): Promise<void> {
