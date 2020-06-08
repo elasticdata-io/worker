@@ -9,7 +9,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 
 	private _driver: Driver;
 
-	async create(): Promise<Driver> {
+	public async create(): Promise<Driver> {
 		try {
 			const args = await puppeteer.defaultArgs()
 			  .filter(x => x !== '--enable-automation');
@@ -45,11 +45,11 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 		}
 	}
 
-	async stop(): Promise<void> {
+	public async stop(): Promise<void> {
 		await this._driver.exit()
 	}
 
-	isStopped(): boolean {
+	public isStopped(): boolean {
 		return this._driver.hasBeenExited();
 	}
 }
