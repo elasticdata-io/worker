@@ -5,7 +5,7 @@ export class CaptureSnapshotCommand extends AbstractCommand {
 	public key: string | AbstractCommand = '';
 
 	async execute(): Promise<void> {
-		const captureSnapshot = await this.driver.captureSnapshot();
+		const captureSnapshot = await this.driver.captureSnapshot(this);
 		const key = await this.getKey();
 		await this.store.putFile(key, Buffer.from(captureSnapshot.toString()), 'mhtml', this);
 		await super.execute();

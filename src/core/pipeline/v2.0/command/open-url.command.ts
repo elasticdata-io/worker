@@ -15,7 +15,7 @@ export class OpenUrlCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		const link = await this._getLink();
-		await this.driver.goToUrl(link, this.timeout);
+		await this.driver.goToUrl(this, link, this.timeout);
 		await super.execute();
 	}
 

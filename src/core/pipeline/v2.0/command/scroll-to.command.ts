@@ -7,7 +7,7 @@ export class ScrollToCommand extends AbstractCommand {
 	public px?: number = 50;
 
 	async execute(): Promise<void> {
-		await this.driver.scrollBy(this.position, this.px);
+		await this.driver.scrollBy(this, this.position, this.px);
 		await super.execute();
 	}
 
