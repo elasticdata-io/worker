@@ -25,6 +25,8 @@ import { DataContextResolver } from '../../data/data-context-resolver';
 import { CaptureSnapshotCommand } from './capture-snapshot.command';
 import { StringGenerator } from '../../util/string.generator';
 import { SystemError } from '../../command/exception/system-error';
+import { OpenTabCommand } from './open-tab.command';
+import { OpenWindowCommand } from './open-window.command';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -117,6 +119,12 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'openurl':
 				command = new OpenUrlCommand(ioc);
+				break;
+			case 'opentab':
+				command = new OpenTabCommand(ioc);
+				break;
+			case 'openwindow':
+				command = new OpenWindowCommand(ioc);
 				break;
 			case 'waitelement':
 				command = new WaitElementCommand(ioc);
