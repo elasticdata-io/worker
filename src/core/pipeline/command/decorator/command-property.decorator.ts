@@ -3,12 +3,9 @@ import { AbstractCommand } from '../abstract-command';
 export function CmdProperty() {
     return function(target: AbstractCommand, key: string | symbol) {
       let val = target[key];
-      const getter = () =>  {
-        return val;
-      };
+      const getter = () =>  val;
       const setter = (next) => {
-        console.log('updating flavor...');
-        val = `🍦 ${next} 🍦`;
+        val = next;
       };
       Object.defineProperty(target, key, {
         get: getter,
