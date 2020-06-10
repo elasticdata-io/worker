@@ -143,7 +143,6 @@ export class CommandFactory extends ICommandFactory {
 				  || key === 'falsecommands';
 				if (!ignoreKeys) {
 					if (!(key in command)) {
-						console.log(Object.getOwnPropertyNames(command))
 						throw new SystemError(
 							`command: ${config.cmd} not supporting property: ${key},
 							 supporting only keys: ${Object.keys(config).join(',')}`
