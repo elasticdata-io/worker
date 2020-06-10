@@ -5,10 +5,10 @@ import { SystemError } from '../../command/exception/system-error';
 
 export class LoopCommand extends AbstractCommand {
 
-	context?: string = '';
-	index?: number = 0;
-	max?: number = 20;
-	commands: AbstractCommand[] = [];
+	public context?: string = '';
+	public index?: number = 0;
+	public max?: number = 20;
+	public commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {
 		try {
