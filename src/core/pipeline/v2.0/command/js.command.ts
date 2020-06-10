@@ -2,8 +2,8 @@ import { AbstractCommand } from '../../command/abstract-command';
 
 export class JsCommand extends AbstractCommand {
 
-	key: string | AbstractCommand;
-	script: string;
+	public key: string | AbstractCommand;
+	public script: string;
 
 	async execute(): Promise<void> {
 		const result = await this.driver.executeScript(this, null);
