@@ -1,12 +1,14 @@
 import { AbstractCommand } from '../../command/abstract-command';
-import { CommandProperty } from '../../command/decorator/command-property.decorator';
+import { CmdProperty } from '../../command/decorator/command-property.decorator';
+import { Cmd } from '../../command/decorator/command.decorator';
 
+@Cmd({cmd: 'js'})
 export class JsCommand extends AbstractCommand {
 
-	@CommandProperty()
+	@CmdProperty()
 	public key: string | AbstractCommand;
 
-	@CommandProperty()
+	@CmdProperty()
 	public script: string;
 
 	async execute(): Promise<void> {

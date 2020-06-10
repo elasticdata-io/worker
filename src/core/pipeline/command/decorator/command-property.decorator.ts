@@ -1,6 +1,6 @@
 import { AbstractCommand } from '../abstract-command';
 
-export function CommandProperty() {
+export function CmdProperty() {
     return function(target: AbstractCommand, key: string | symbol) {
       let val = target[key];
       const getter = () =>  {
