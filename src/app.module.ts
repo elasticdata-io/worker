@@ -6,11 +6,13 @@ import { TaskModule } from './task/task.module';
 import { AppConsumer } from './app.consumer';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
+import { DocumentationModule } from './documentation/documentation.module';
 
 @Module({
 	imports: [
 	  	PipelineModule,
 		TaskModule,
+		DocumentationModule,
 		ConfigModule.forRoot({
 			load: [configuration],
 		}),

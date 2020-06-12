@@ -2,7 +2,7 @@ import { AbstractCommand } from '../../command/abstract-command';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 import { Cmd } from '../../command/decorator/command.decorator';
 
-@Cmd({cmd: 'gettext'})
+@Cmd({cmd: 'gettext', version: '2.0'})
 export class GetTextCommand extends AbstractCommand {
 
 	@Assignable({required: false})

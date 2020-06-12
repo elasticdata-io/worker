@@ -5,7 +5,7 @@ import { SystemError } from '../../command/exception/system-error';
 import { Cmd } from '../../command/decorator/command.decorator';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 
-@Cmd({cmd: 'loop'})
+@Cmd({cmd: 'loop', version: '2.0'})
 export class LoopCommand extends AbstractCommand {
 
 	@Assignable({required: false})

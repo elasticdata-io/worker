@@ -4,7 +4,7 @@ import { TYPES as ROOT_TYPES } from '../../types';
 import { Cmd } from '../../command/decorator/command.decorator';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 
-@Cmd({cmd: 'openurl'})
+@Cmd({cmd: 'openurl', version: '2.0'})
 export class OpenUrlCommand extends AbstractCommand {
 
 	private _linkCommand: AbstractCommand;
