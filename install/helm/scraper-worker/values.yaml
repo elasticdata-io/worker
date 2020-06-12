@@ -17,7 +17,14 @@ service:
   port: 80
 
 ingress:
-  enabled: false
+  enabled: true
+  annotations: {}
+  host: app.elasticdata.io
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
 env:
   DATA_SERVICE_URL: http://data-service

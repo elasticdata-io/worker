@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "scraper-worker.fullname" . }}-minion
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.org/mergeable-ingress-type: minion
+spec:
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /worker
+            backend:
+              serviceName: {{ template "scraper-worker.fullname" . }}
+              servicePort: {{ .Values.service.port }}
