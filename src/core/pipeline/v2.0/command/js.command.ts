@@ -1,14 +1,14 @@
 import { AbstractCommand } from '../../command/abstract-command';
-import { CmdProperty } from '../../command/decorator/command-property.decorator';
+import { Assignable } from '../../command/decorator/assignable.decorator';
 import { Cmd } from '../../command/decorator/command.decorator';
 
 @Cmd({cmd: 'js'})
 export class JsCommand extends AbstractCommand {
 
-	@CmdProperty()
+	@Assignable({required: false})
 	public key: string | AbstractCommand;
 
-	@CmdProperty()
+	@Assignable()
 	public script: string;
 
 	async execute(): Promise<void> {

@@ -2,12 +2,22 @@ import { AbstractCommand } from '../../command/abstract-command';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { SystemError } from '../../command/exception/system-error';
+import { Cmd } from '../../command/decorator/command.decorator';
+import { Assignable } from '../../command/decorator/assignable.decorator';
 
+@Cmd({cmd: 'loop'})
 export class LoopCommand extends AbstractCommand {
 
+	@Assignable({required: false})
 	public context?: string = '';
+
+	@Assignable({required: false})
 	public index?: number = 0;
+
+	@Assignable({required: false})
 	public max?: number = 20;
+
+	@Assignable()
 	public commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {
