@@ -7,6 +7,7 @@ export interface CommandSpec {
 	$class: string;
 	version: string;
 	cmd: string;
+	summary?: string;
 	props: CommandPropertySpec[]
 }
 
