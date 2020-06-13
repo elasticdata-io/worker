@@ -1,6 +1,13 @@
 import { AbstractCommand } from '../../command/abstract-command';
+import { Assignable } from '../../command/decorator/assignable.decorator';
 
 export class HoverCommand extends AbstractCommand {
+
+	@Assignable({required: false})
+	public timeout = 3;
+
+	@Assignable()
+	public selector: string;
 
 	async execute(): Promise<void> {
 		await this.driver.waitElement(this);

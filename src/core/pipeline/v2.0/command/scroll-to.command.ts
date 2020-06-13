@@ -6,6 +6,9 @@ import { Assignable } from '../../command/decorator/assignable.decorator';
 export class ScrollToCommand extends AbstractCommand {
 
 	@Assignable({required: false})
+	public timeout = 3;
+
+	@Assignable({required: false})
 	public position: 'top' | 'bottom' | 'left' | 'right' = 'bottom';
 
 	@Assignable({required: false})

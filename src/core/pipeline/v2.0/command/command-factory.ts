@@ -27,6 +27,7 @@ import { StringGenerator } from '../../util/string.generator';
 import { SystemError } from '../../command/exception/system-error';
 import { OpenTabCommand } from './open-tab.command';
 import { OpenWindowCommand } from './open-window.command';
+import { Checker, CommandSpecification } from '../../documentation/specification';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -142,10 +143,12 @@ export class CommandFactory extends ICommandFactory {
 				  || key === 'truecommands'
 				  || key === 'falsecommands';
 				if (!ignoreKeys) {
-					if (!(key in command)) {
+					const exists = Checker.checkAssignableProperty(command, key);
+					if (!exists) {
+						const allowProps = CommandSpecification.getAssignableProperties(command);
 						throw new SystemError(
 							`command: ${config.cmd} not supporting property: ${key},
-							 supporting only keys: ${Object.keys(config).join(',')}`
+							 supporting only keys: ${allowProps.join(',')}`
 						)
 					}
 					command[key] = value;

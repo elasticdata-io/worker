@@ -6,6 +6,9 @@ import { Cmd } from '../../command/decorator/command.decorator';
 export class ClickCommand extends AbstractCommand {
 
 	@Assignable({required: false})
+	public timeout = 3;
+
+	@Assignable({required: false})
 	public key: string | AbstractCommand = '';
 
 	@Assignable()

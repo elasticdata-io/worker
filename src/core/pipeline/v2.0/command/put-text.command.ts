@@ -4,6 +4,10 @@ import { Assignable } from '../../command/decorator/assignable.decorator';
 
 @Cmd({cmd: 'puttext', version: '2.0'})
 export class PutTextCommand extends AbstractCommand {
+
+	@Assignable({required: false})
+	public timeout = 3;
+
 	@Assignable()
 	public text = '';
 
