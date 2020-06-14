@@ -1,20 +1,28 @@
 import * as App from '../../documentation/specification';
+import { CommandType } from '../../documentation/specification';
 
-export function Cmd(config: { cmd: string, version: string, summary?: string }) {
+export function Cmd(config: {
+  cmd: string,
+  version: string,
+  summary?: string,
+  type: CommandType
+}) {
   return (ctor: Function) => {
-    const command = App.DOCUMENTATION.commands.find(x => x.$class === ctor.name);
-    if (command) {
-      command.version = config.version;
-      command.cmd = config.cmd;
-      command.summary = config?.summary;
+    const findCommand = App.DOCUMENTATION.commands.find(x => x.$class === ctor.name);
+    const findCommandIndex = App.DOCUMENTATION.commands.indexOf(findCommand);
+    const command = {
+      props: [],
+      ...findCommand,
+      version: config.version,
+      cmd: config.cmd,
+      summary: config?.summary,
+      type: config?.type,
+      $class: ctor.name,
+    }
+    if (!findCommand) {
+      App.DOCUMENTATION.commands.push(command);
     } else {
-      App.DOCUMENTATION.commands.push({
-        $class: ctor.name,
-        cmd: config.cmd,
-        summary: config?.summary,
-        version: config.version,
-        props: []
-      });
+      App.DOCUMENTATION.commands[findCommandIndex] = command;
     }
   }
 }

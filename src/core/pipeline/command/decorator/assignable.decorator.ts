@@ -9,6 +9,7 @@ export function Assignable(config?: { required?: boolean }) {
 				$class: target.constructor.name,
 				version: null,
 				cmd: null,
+				type: null,
 				props: []
 			})
 			command = App.DOCUMENTATION.commands.find(x => x.$class === target.constructor.name);

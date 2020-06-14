@@ -3,11 +3,13 @@ import { IBrowserProvider } from '../../browser/i-browser-provider';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { Cmd } from '../../command/decorator/command.decorator';
 import { Assignable } from '../../command/decorator/assignable.decorator';
+import { CommandType } from '../../documentation/specification';
 
 @Cmd({
 	cmd: 'openurl',
 	version: '2.0',
-	summary: 'Go to url page'
+	summary: 'Go to url page',
+	type: CommandType.ACTION,
 })
 export class OpenUrlCommand extends AbstractCommand {
 

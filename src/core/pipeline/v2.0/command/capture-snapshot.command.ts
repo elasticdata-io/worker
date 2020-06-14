@@ -1,8 +1,13 @@
 import { AbstractCommand } from '../../command/abstract-command';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 import { Cmd } from '../../command/decorator/command.decorator';
+import { CommandType } from '../../documentation/specification';
 
-@Cmd({cmd: 'snapshot', version: '2.0'})
+@Cmd({
+	cmd: 'snapshot',
+	version: '2.0',
+	type: CommandType.SELECTABLE
+})
 export class CaptureSnapshotCommand extends AbstractCommand {
 
 	@Assignable({required: false})

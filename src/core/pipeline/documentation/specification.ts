@@ -9,6 +9,7 @@ export interface CommandSpec {
 	$class: string;
 	version: string;
 	cmd: string;
+	type: CommandType;
 	summary?: string;
 	props: CommandPropertySpec[]
 }
@@ -20,6 +21,12 @@ export interface Specification {
 export const DOCUMENTATION = {
 	commands: []
 } as Specification
+
+export enum CommandType {
+	SELECTABLE = 'SELECTABLE',
+	ACTION = 'ACTION',
+	OTHER = 'OTHER',
+}
 
 export abstract class CommandSpecification {
 
