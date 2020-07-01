@@ -10,7 +10,11 @@ import { CommandType } from '../../documentation/specification';
 })
 export class GetUrlCommand extends AbstractCommand {
 
-	@Assignable({required: false, type: [String, AbstractCommand]})
+	@Assignable({
+		required: false,
+		type: [String, AbstractCommand],
+		default: '',
+	})
 	public key: string | AbstractCommand = '';
 
 	async execute(): Promise<void> {

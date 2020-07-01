@@ -10,10 +10,10 @@ import { CommandType } from '../../documentation/specification';
 })
 export class HoverCommand extends AbstractCommand {
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 3})
 	public timeout = 3;
 
-	@Assignable({type: String})
+	@Assignable({type: String, default: undefined})
 	public selector: string;
 
 	async execute(): Promise<void> {

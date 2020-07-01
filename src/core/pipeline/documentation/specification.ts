@@ -5,6 +5,7 @@ export interface CommandPropertySpec {
 	required: boolean
 	type: any | any[]
 	summary?: string
+	default?: string
 }
 
 export interface CommandSpec {

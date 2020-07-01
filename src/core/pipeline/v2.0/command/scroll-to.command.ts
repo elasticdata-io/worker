@@ -10,13 +10,17 @@ import { CommandType } from '../../documentation/specification';
 })
 export class ScrollToCommand extends AbstractCommand {
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 3})
 	public timeout = 3;
 
-	@Assignable({required: false, type: ['top', 'bottom', 'left', 'right']})
+	@Assignable({
+		required: false,
+		type: ['top', 'bottom', 'left', 'right'],
+		default: 'bottom'
+	})
 	public position: 'top' | 'bottom' | 'left' | 'right' = 'bottom';
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 50})
 	public px?: number = 50;
 
 	async execute(): Promise<void> {

@@ -5,6 +5,7 @@ export function Assignable(config: {
 	type: any | any[],
 	required?: boolean,
 	summary?: string
+	default: any
 }) {
 	const decorator = function(target: AbstractCommand, key: string | symbol) {
 		let command = App.DOCUMENTATION.commands.find(x => x.$class === target.constructor.name);
@@ -26,6 +27,7 @@ export function Assignable(config: {
 			required: config?.required === undefined ? true : config?.required,
 			summary: config?.summary,
 			type: type,
+			default: config?.default,
 		});
 	};
 	return decorator;

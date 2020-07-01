@@ -10,16 +10,20 @@ import { CommandType } from '../../documentation/specification';
 })
 export class GetTextCommand extends AbstractCommand {
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 3})
 	public timeout = 3;
 
-	@Assignable({required: false, type: [String, AbstractCommand]})
+	@Assignable({
+		required: false,
+		type: [String, AbstractCommand],
+		default: '',
+	})
 	public key: string | AbstractCommand = '';
 
-	@Assignable({type: String})
+	@Assignable({type: String, default: undefined})
 	public selector: string;
 
-	@Assignable({required: false, type: String})
+	@Assignable({required: false, type: String, default: ''})
 	public attribute = '';
 
 	async execute(): Promise<void> {

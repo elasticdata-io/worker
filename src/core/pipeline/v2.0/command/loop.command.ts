@@ -18,16 +18,17 @@ export class LoopCommand extends AbstractCommand {
 		required: false,
 		summary: `json ключ, для внутрішніх команд в блоці commands`,
 		type: String,
+		default: '',
 	})
 	public context?: string = '';
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 0})
 	public index?: number = 0;
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 20})
 	public max?: number = 20;
 
-	@Assignable({type: Array})
+	@Assignable({type: Array, default: []})
 	public commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {

@@ -10,7 +10,7 @@ import { CommandType } from '../../documentation/specification';
 })
 export class PauseCommand extends AbstractCommand {
 
-	@Assignable({required: false, type: Number})
+	@Assignable({required: false, type: Number, default: 5})
 	public timeout = 5;
 
 	async execute(): Promise<void> {

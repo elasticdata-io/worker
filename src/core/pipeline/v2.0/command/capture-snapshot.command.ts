@@ -10,7 +10,7 @@ import { CommandType } from '../../documentation/specification';
 })
 export class CaptureSnapshotCommand extends AbstractCommand {
 
-	@Assignable({required: false, type: String})
+	@Assignable({required: false, type: String, default: ''})
 	public key: string | AbstractCommand = '';
 
 	async execute(): Promise<void> {
