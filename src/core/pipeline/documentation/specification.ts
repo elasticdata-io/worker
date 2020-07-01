@@ -3,6 +3,8 @@ import { AbstractCommand } from '../command/abstract-command';
 export interface CommandPropertySpec {
 	name: string;
 	required: boolean
+	type: any | any[]
+	summary?: string
 }
 
 export interface CommandSpec {
@@ -23,7 +25,13 @@ export const DOCUMENTATION = {
 } as Specification
 
 export enum CommandType {
+	/**
+	 * select data from page. Immutable.
+	 */
 	SELECTABLE = 'SELECTABLE',
+	/**
+	 * any action in page with mutable state.
+	 */
 	ACTION = 'ACTION',
 	OTHER = 'OTHER',
 }

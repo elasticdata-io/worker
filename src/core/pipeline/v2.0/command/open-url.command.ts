@@ -15,10 +15,10 @@ export class OpenUrlCommand extends AbstractCommand {
 
 	private _linkCommand: AbstractCommand;
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: Number})
 	public timeout = 30;
 
-	@Assignable()
+	@Assignable({type: [String, AbstractCommand]})
 	public link: string | AbstractCommand = '';
 
 	public set linkCommand (command: AbstractCommand) {

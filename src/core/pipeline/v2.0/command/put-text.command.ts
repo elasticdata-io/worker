@@ -10,10 +10,10 @@ import { CommandType } from '../../documentation/specification';
 })
 export class PutTextCommand extends AbstractCommand {
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: Number})
 	public timeout = 3;
 
-	@Assignable()
+	@Assignable({type: String})
 	public text = '';
 
 	async execute(): Promise<void> {

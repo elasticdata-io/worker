@@ -10,13 +10,13 @@ import { CommandType } from '../../documentation/specification';
 })
 export class JsCommand extends AbstractCommand {
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: Number})
 	public timeout = 3;
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: [String, AbstractCommand]})
 	public key: string | AbstractCommand;
 
-	@Assignable()
+	@Assignable({type: String})
 	public script: string;
 
 	async execute(): Promise<void> {

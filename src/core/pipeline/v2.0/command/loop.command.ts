@@ -10,19 +10,24 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'loop',
 	version: '2.0',
 	type: CommandType.OTHER,
+	summary: `Команда дозволяє, в циклі, повторювати будь-які інструкції (команди)`
 })
 export class LoopCommand extends AbstractCommand {
 
-	@Assignable({required: false})
+	@Assignable({
+		required: false,
+		summary: `json ключ, для внутрішніх команд в блоці commands`,
+		type: String,
+	})
 	public context?: string = '';
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: Number})
 	public index?: number = 0;
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: Number})
 	public max?: number = 20;
 
-	@Assignable()
+	@Assignable({type: Array})
 	public commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {

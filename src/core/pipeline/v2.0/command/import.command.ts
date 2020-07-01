@@ -10,7 +10,7 @@ import { CommandType } from '../../documentation/specification';
 })
 export class ImportCommand extends AbstractCommand {
 
-	@Assignable()
+	@Assignable({type: Array})
 	public array: any[] = [];
 
 	async execute(): Promise<void> {

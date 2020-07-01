@@ -10,10 +10,10 @@ import { CommandType } from '../../documentation/specification';
 })
 export class WaitElementCommand extends AbstractCommand {
 
-	@Assignable({required: false})
+	@Assignable({required: false, type: Number})
 	public timeout = 5;
 
-	@Assignable()
+	@Assignable({type: String})
 	public selector: string;
 
 	async execute(): Promise<void> {
