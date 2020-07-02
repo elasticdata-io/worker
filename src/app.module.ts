@@ -17,6 +17,7 @@ import * as path from 'path';
 			parser: I18nJsonParser,
 			parserOptions: {
 				path: path.join(__dirname, 'i18n'),
+				watch: true,
 			},
 		}),
 	  	PipelineModule,
