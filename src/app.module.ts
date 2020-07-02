@@ -7,9 +7,18 @@ import { AppConsumer } from './app.consumer';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { DocumentationModule } from './documentation/documentation.module';
+import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
+import * as path from 'path';
 
 @Module({
 	imports: [
+		I18nModule.forRoot({
+			fallbackLanguage: 'en',
+			parser: I18nJsonParser,
+			parserOptions: {
+				path: path.join(__dirname, 'i18n'),
+			},
+		}),
 	  	PipelineModule,
 		TaskModule,
 		DocumentationModule,

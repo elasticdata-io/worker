@@ -32,7 +32,7 @@ export class CssLoopSelection extends AbstractLoopSelection {
 	public querySelector(command: AbstractCommand, resolver: DataContextResolver): string {
 		const selectors = this._getSelectorsWithIndex(command, resolver);
 		if (selectors.length === 1) {
-			const selector = selectors.pop().toString();;
+			const selector = selectors.pop().toString();
 			return this.getSingleSelector(selector);
 		}
 		const jsSelector = this._toJsSelector(selectors);

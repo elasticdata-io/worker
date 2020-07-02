@@ -15,6 +15,7 @@ export interface CommandSpec {
 	type: CommandType;
 	summary?: string;
 	props: CommandPropertySpec[]
+	examples?: any
 }
 
 export interface Specification {

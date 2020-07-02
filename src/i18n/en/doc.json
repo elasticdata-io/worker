@@ -1,0 +1,92 @@
+{
+	"LOOP": {
+		"SUMMARY": "The command allows, in a loop, to repeat any instructions (commands)",
+		"PROPS": {
+			"CONTEXT": {
+				"SUMMARY": "JSON key, for internal commands in the commands block"
+			},
+			"INDEX": {
+				"SUMMARY": "Start loop index"
+			},
+			"MAX": {
+				"SUMMARY": "Maximum loop index"
+			},
+			"COMMANDS": {
+				"SUMMARY": "Commands to be executed in a loop"
+			}
+		},
+		"EXAMPLES": [
+			{
+				"name": "use loop index in CSS/XPATH selector",
+				"code": {
+					"version": "2.0",
+					"commands": [
+						{
+							"cmd": "openurl",
+							"link": "https://sandbox.elasticdata.io/pagination/0"
+						},
+						{
+							"cmd": "loop",
+							"commands": [
+								{
+									"cmd": "gettext",
+									"key": "title",
+									"selector": ".card-title{$i}"
+								}
+							]
+						}
+					]
+				},
+				"outputData": [
+					{
+						"title": "Card title 1.1"
+					},
+					{
+						"title": "Card title 1.2"
+					},
+					{
+						"title": "Card title 1.3"
+					}
+				]
+			},
+			{
+				"name": "use loop context",
+				"code": {
+					"version": "2.0",
+					"commands": [
+						{
+							"cmd": "openurl",
+							"link": "https://sandbox.elasticdata.io/pagination/0"
+						},
+						{
+							"cmd": "loop",
+							"context": "cards",
+							"commands": [
+								{
+									"cmd": "gettext",
+									"key": "title",
+									"selector": ".card{$i} .card-title"
+								}
+							]
+						}
+					]
+				},
+				"outputData": [
+					{
+						"cards": [
+							{
+								"title": "Card title 1.1"
+							},
+							{
+								"title": "Card title 1.2"
+							},
+							{
+								"title": "Card title 1.3"
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+}

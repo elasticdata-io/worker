@@ -10,13 +10,13 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'loop',
 	version: '2.0',
 	type: CommandType.OTHER,
-	summary: `Команда дозволяє, в циклі, повторювати будь-які інструкції (команди)`
+	summary: `doc.LOOP.SUMMARY`
 })
 export class LoopCommand extends AbstractCommand {
 
 	@Assignable({
 		required: false,
-		summary: `json ключ, для внутрішніх команд в блоці commands`,
+		summary: `doc.LOOP.PROPS.CONTEXT.SUMMARY`,
 		type: String,
 		default: '',
 	})
@@ -26,7 +26,7 @@ export class LoopCommand extends AbstractCommand {
 		required: false,
 		type: Number,
 		default: 0,
-		summary: `start loop index`,
+		summary: `doc.LOOP.PROPS.INDEX.SUMMARY`,
 	})
 	public index?: number = 0;
 
@@ -34,14 +34,14 @@ export class LoopCommand extends AbstractCommand {
 		required: false,
 		type: Number,
 		default: 20,
-		summary: `Maximum loop index`,
+		summary: `doc.LOOP.PROPS.MAX.SUMMARY`,
 	})
 	public max?: number = 20;
 
 	@Assignable({
 		type: Array,
 		default: [],
-		summary: `commands to be executed in a loop`,
+		summary: `doc.LOOP.PROPS.COMMANDS.SUMMARY`,
 	})
 	public commands: AbstractCommand[] = [];
 
