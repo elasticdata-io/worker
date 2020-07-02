@@ -22,13 +22,27 @@ export class LoopCommand extends AbstractCommand {
 	})
 	public context?: string = '';
 
-	@Assignable({required: false, type: Number, default: 0})
+	@Assignable({
+		required: false,
+		type: Number,
+		default: 0,
+		summary: `start loop index`,
+	})
 	public index?: number = 0;
 
-	@Assignable({required: false, type: Number, default: 20})
+	@Assignable({
+		required: false,
+		type: Number,
+		default: 20,
+		summary: `Maximum loop index`,
+	})
 	public max?: number = 20;
 
-	@Assignable({type: Array, default: []})
+	@Assignable({
+		type: Array,
+		default: [],
+		summary: `commands to be executed in a loop`,
+	})
 	public commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {
