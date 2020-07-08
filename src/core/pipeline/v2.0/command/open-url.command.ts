@@ -49,7 +49,9 @@ export class OpenUrlCommand extends AbstractCommand {
 			await provider.execute(linkCommand, {silent: true, context: this});
 			const key = await linkCommand.getKey()
 			const keyValue = await this.store.get(key, linkCommand);
-			await this.store.remove(key, linkCommand);
+			if (key.startsWith('tmp_')) {
+				await this.store.remove(key, linkCommand);
+			}
 			return keyValue;
 		}
 	}

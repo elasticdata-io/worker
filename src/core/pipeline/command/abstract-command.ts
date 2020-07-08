@@ -12,7 +12,7 @@ import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 
 export abstract class AbstractCommand implements Selectable {
 	private _nextCommand: AbstractCommand;
-	private _commandAnalyzer: AbstractCommandAnalyzer;
+	private readonly _commandAnalyzer: AbstractCommandAnalyzer;
 	private _keyCommand: AbstractCommand;
 
 	protected store: AbstractStore;
@@ -80,10 +80,12 @@ export abstract class AbstractCommand implements Selectable {
 			await this.browserProvider.execute(keyCommand, {silent: true, context: this});
 			const key = await keyCommand.getKey()
 			const keyValue = await this.store.get(key, keyCommand);
-			await this.store.remove(key, keyCommand);
+			if (key.startsWith('tmp_')) {
+				await this.store.remove(key, keyCommand);
+			}
 			return keyValue;
 		}
-		return this.uuid;
+		return `tmp_${this.uuid}`;
 	}
 
 }

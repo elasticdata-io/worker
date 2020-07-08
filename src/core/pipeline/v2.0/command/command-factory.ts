@@ -99,9 +99,13 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'loop':
 				const loop = new LoopCommand(ioc);
-				const commandsJson = JSON.stringify(config.commands);
-				loop.commands = this.createChainCommands(commandsJson);
+				loop.commands = this.createChainCommands(JSON.stringify(config.commands));
 				command = loop;
+				break;
+			case 'opentab':
+				const openTabCommand = new OpenTabCommand(ioc);
+				openTabCommand.commands = this.createChainCommands(JSON.stringify(config.commands));
+				command = openTabCommand;
 				break;
 			case 'nativeclick':
 				command = new NativeClickCommand(ioc);
@@ -120,9 +124,6 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'openurl':
 				command = new OpenUrlCommand(ioc);
-				break;
-			case 'opentab':
-				command = new OpenTabCommand(ioc);
 				break;
 			case 'openwindow':
 				command = new OpenWindowCommand(ioc);

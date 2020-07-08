@@ -26,6 +26,20 @@ export class GetTextCommand extends AbstractCommand {
 	@Assignable({required: false, type: String, default: ''})
 	public attribute = '';
 
+	@Assignable({
+		required: false,
+		type: String,
+		default: ''
+	})
+	public suffix = '';
+
+	@Assignable({
+		required: false,
+		type: String,
+		default: ''
+	})
+	public prefix = '';
+
 	async execute(): Promise<void> {
 		let text;
 		if (this.attribute) {
@@ -34,7 +48,8 @@ export class GetTextCommand extends AbstractCommand {
 			text = await this.driver.getElText(this);
 		}
 		const key = await this.getKey();
-		await this.store.put(key, text, this);
+		const value = `${this.prefix}${text}${this.suffix}`
+		await this.store.put(key, value, this);
 		await super.execute();
 	}
 
