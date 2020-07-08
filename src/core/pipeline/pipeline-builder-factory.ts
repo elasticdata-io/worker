@@ -25,6 +25,7 @@ import { CssQueryProvider } from './query/css/css-query-provider';
 import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
 import { CssLoopSelection } from './query/css/css-loop-selection';
 import { XpathLoopSelection } from './query/xpath/xpath-loop-selection';
+import {PageContextResolver} from "./browser/page-context-resolver";
 
 @Injectable()
 export class PipelineBuilderFactory {
@@ -81,6 +82,10 @@ export class PipelineBuilderFactory {
 		ioc
 		  .bind<DataContextResolver>(TYPES.DataContextResolver)
 		  .to(DataContextResolver)
+		  .inSingletonScope();
+		ioc
+		  .bind<PageContextResolver>(TYPES.PageContextResolver)
+		  .to(PageContextResolver)
 		  .inSingletonScope();
 		ioc
 		  .bind<AbstractStore>(TYPES.AbstractStore)

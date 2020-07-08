@@ -14,6 +14,7 @@ const TYPES = {
 	CssQueryProvider: Symbol.for("CssQueryProvider"),
 	QueryProviderFactory: Symbol.for("QueryProviderFactory"),
 	DataContextResolver: Symbol.for("DataContextResolver"),
+	PageContextResolver: Symbol.for("PageContextResolver"),
 	CssLoopSelection: Symbol.for("CssLoopSelection"),
 	XpathLoopSelection: Symbol.for("XpathLoopSelection"),
 	HttpDataClient: Symbol.for("HttpDataClient"),

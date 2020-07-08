@@ -4,6 +4,7 @@ import {CommandType} from "../../documentation/specification";
 import {Assignable} from "../../command/decorator/assignable.decorator";
 import {DataContextResolver} from "../../data/data-context-resolver";
 import {TYPES as ROOT_TYPES} from "../../types";
+import {PageContextResolver} from "../../browser/page-context-resolver";
 
 /**
  * Open new tab with old browser session.
@@ -40,7 +41,9 @@ export class OpenTabCommand extends AbstractCommand {
 	}
 
 	private async applyChildrenContext() {
-		const contextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
-		contextResolver.copyCommandContext(this, this.commands);
+		const dataContextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
+		const pageContextResolver = this.ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
+		dataContextResolver.copyCommandContext(this, this.commands);
+		pageContextResolver.increaseCommandsContext(this, this.commands);
 	}
 }

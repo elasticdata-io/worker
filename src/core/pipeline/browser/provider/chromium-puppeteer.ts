@@ -3,18 +3,23 @@ import * as puppeteer from 'puppeteer';
 import { Injectable } from '@nestjs/common';
 import { Driver } from '../../driver/driver';
 import { ChromiumDriver } from '../../driver/chromium-driver';
+import {inject} from "inversify";
+import {TYPES as ROOT_TYPES} from "../../types";
+import {PipelineIoc} from "../../pipeline-ioc";
 
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {
 
 	private _driver: Driver;
 
+	constructor(
+		@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {
+		super();
+	}
+
 	public async create(): Promise<Driver> {
 		try {
-			const args = await puppeteer.defaultArgs()
-			  .filter(x => x !== '--enable-automation');
-			args.push('--no-sandbox');
-			args.push('--disable-setuid-sandbox');
+			const args = [];
 			if (this.windowWidth && this.windowHeight) {
 				args.push(`--window-size=${this.windowWidth},${this.windowHeight}`);
 			}
@@ -31,7 +36,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 				ignoreDefaultArgs: ['--enable-automation' /*'--no-sandbox'*/],
 				args: args,
 			});
-			this._driver = new ChromiumDriver(browser);
+			this._driver = new ChromiumDriver(browser, this._ioc);
 			await this._driver.init({
 				width: this.windowWidth,
 				height: this.windowHeight,

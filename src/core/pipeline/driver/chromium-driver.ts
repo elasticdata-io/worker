@@ -6,15 +6,18 @@ import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
 import { Timer } from '../util/timer';
 import { JsCommand } from '../v2.0/command/js.command';
+import {PageContextResolver} from "../browser/page-context-resolver";
+import {TYPES as ROOT_TYPES} from "../types";
+import {PipelineIoc} from "../pipeline-ioc";
 
 @injectable()
 export class ChromiumDriver implements Driver {
 	private _timer: Timer;
 	private _options: DriverOptions;
-	private _page: Page;
+	private _pages: Page[] = [];
 	private _hasBeenExited: boolean;
 
-	constructor(private _browser: Browser) {
+	constructor(private _browser: Browser, private _ioc: PipelineIoc) {
 		this._timer = new Timer();
 		this._timer.watchStopByFn(() => {
 			return this.hasBeenExited() === true;
@@ -25,82 +28,71 @@ export class ChromiumDriver implements Driver {
 
 	public async init(options: DriverOptions) {
 		this._options = options;
-		this._page = await this._browser.newPage();
-		if (this._options && this._options.width) {
-			await this._page.setViewport({
-				width: this._options.width,
-				height: this._options.height
-			});
-		}
-		if (this._options && this._options.language) {
-			await this._page.setExtraHTTPHeaders({
-				'Accept-Language': this._options.language
-			});
-		}
+		await this._createNewPage();
 	}
 
 	public async domClick(command: AbstractCommand): Promise<void> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, `.click()`);
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		await this.pageEvaluate(getElFn, page);
 	}
 
 	public async executeScript(command: JsCommand, ...args: any[]): Promise<any> {
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		return await page.evaluate((fnString) => {
 			return eval(fnString);
 		}, command.script);
 	}
 
 	public async getCurrentUrl(command: AbstractCommand): Promise<string> {
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		return page.url();
 	}
 
 	public async getElAttribute(command: AbstractCommand, attributeName: string): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, `.getAttribute('${attributeName}')`);
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
 
 	public async getElText(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, '.innerText');
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
 
 	public async getElHtml(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, '.innerHTML');
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
 
 	public async getElementsCount(command: AbstractCommand): Promise<number> {
 		const queryProvider = command.getQueryProvider();
 		const getCountFn = queryProvider.getElementsFn(command, '.length');
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		const count = await page.evaluate(getCountFn) as string;
 		return count && parseInt(count, 10) || 0;
 	}
 
 	public async goToUrl(command: AbstractCommand, url: string, timeoutSec = 1): Promise<void> {
 		const targetUrl = new URL(url);
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		await page.goto(targetUrl.href, {timeout: timeoutSec * 1000});
 	}
 
 	public async hover(command: AbstractCommand): Promise<void> {
 		// todo: supporting only CSS selector ?
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		await page.hover(command.selector);
 	}
 
 	public async nativeClick(command: AbstractCommand): Promise<void> {
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		await page.click(command.selector);
 	}
 
@@ -117,7 +109,7 @@ export class ChromiumDriver implements Driver {
 		// todo : input, textarea, select
 		const getElFn = queryProvider.getElementFn(command, `.value = \`${value}\`;`);
 		// await this._page.focus('#lst-ib')
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		await this.pageEvaluate(getElFn, page);
 	}
 
@@ -128,7 +120,7 @@ export class ChromiumDriver implements Driver {
 		const getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
 		try {
 			await this.wait(skipAfterTimeout, interval, async () => {
-				const page = this._resolvePage(command);
+				const page = await this._resolvePage(command);
 				const html = await this.pageEvaluate(getOuterHTMLFn, page);
 				return Boolean(html);
 			});
@@ -138,7 +130,7 @@ export class ChromiumDriver implements Driver {
 	}
 
 	public async getScreenshot(command: AbstractCommand): Promise<Buffer> {
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		const base64 = await page.screenshot({
 			encoding: 'base64',
 		});
@@ -149,7 +141,7 @@ export class ChromiumDriver implements Driver {
 		const distance = position === 'bottom' ? px : -px;
 		const expression = `window.scrollBy(0, ${distance})`;
 		const fn = new Function(expression);
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		await this.pageEvaluate(fn, page);
 	}
 
@@ -158,7 +150,7 @@ export class ChromiumDriver implements Driver {
 	 * @return {Promise<string>} MHTML page format
 	 */
 	public async captureSnapshot(command: AbstractCommand): Promise<string> {
-		const page = this._resolvePage(command);
+		const page = await this._resolvePage(command);
 		const cdpSession = await page.target().createCDPSession()
 		const result = await cdpSession.send('Page.captureSnapshot') as any;
 		return result.data.toString();
@@ -167,6 +159,11 @@ export class ChromiumDriver implements Driver {
 	public async exit(): Promise<void> {
 		if (this.hasBeenExited()) {
 			return;
+		}
+		for (const page of this._pages) {
+			try {
+				await page.close();
+			} catch (e) {}
 		}
 		await this._browser.close();
 		console.log(chalk.cyan('browser has been closed...'));
@@ -224,8 +221,31 @@ export class ChromiumDriver implements Driver {
 
 	//region Method: Private
 
-	private _resolvePage(command: AbstractCommand): Page {
-		return this._page;
+	private async _createNewPage(): Promise<Page> {
+		const page = await this._browser.newPage();
+		if (this._options && this._options.width) {
+			await page.setViewport({
+				width: this._options.width,
+				height: this._options.height
+			});
+		}
+		if (this._options && this._options.language) {
+			await page.setExtraHTTPHeaders({
+				'Accept-Language': this._options.language
+			});
+		}
+		this._pages.push(page);
+		return page;
+	}
+
+	private async _resolvePage(command: AbstractCommand): Promise<Page> {
+		const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
+		const context = pageContextResolver.resolvePageContext(command);
+		let page = this._pages[context];
+		if (!page) {
+			page = await this._createNewPage();
+		}
+		return page;
 	}
 
 	//endregion

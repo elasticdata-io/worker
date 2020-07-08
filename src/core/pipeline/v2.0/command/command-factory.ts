@@ -28,10 +28,12 @@ import { SystemError } from '../../command/exception/system-error';
 import { OpenTabCommand } from './open-tab.command';
 import { OpenWindowCommand } from './open-window.command';
 import { Checker, CommandSpecification } from '../../documentation/specification';
+import {PageContextResolver} from "../../browser/page-context-resolver";
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
-				@inject(ROOT_TYPES.DataContextResolver) private _contextResolver: DataContextResolver) {
+				@inject(ROOT_TYPES.DataContextResolver) private _dataContextResolver: DataContextResolver,
+				@inject(ROOT_TYPES.PageContextResolver) private _pageContextResolver: PageContextResolver) {
 		super();
 	}
 
@@ -45,6 +47,7 @@ export class CommandFactory extends ICommandFactory {
 		const commands = this._createCommands(commandsJson);
 		this._linksCommands(commands);
 		this._initDataContext(commands);
+		this._initPageContext(commands);
 		return commands;
 	}
 
@@ -165,7 +168,8 @@ export class CommandFactory extends ICommandFactory {
 		const key = command.key;
 		if (typeof key === 'object') {
 			const innerCommand = this._creteCommand(key);
-			this._contextResolver.setRootContext(innerCommand)
+			this._dataContextResolver.setRootContext(innerCommand)
+			this._pageContextResolver.setRootPageContext(innerCommand)
 			command.setKeyCommand(innerCommand)
 		}
 	}
@@ -174,7 +178,8 @@ export class CommandFactory extends ICommandFactory {
 		if (command instanceof OpenUrlCommand) {
 			if (typeof command.link === 'object') {
 				const innerCommand = this._creteCommand(command.link);
-				this._contextResolver.setRootContext(innerCommand)
+				this._dataContextResolver.setRootContext(innerCommand)
+				this._pageContextResolver.setRootPageContext(innerCommand)
 				command.linkCommand = innerCommand
 			}
 		}
@@ -182,6 +187,11 @@ export class CommandFactory extends ICommandFactory {
 
 	private _initDataContext(commands: AbstractCommand[]) {
 		commands
-		  .forEach(command => this._contextResolver.setRootContext(command));
+		  .forEach(command => this._dataContextResolver.setRootContext(command));
+	}
+
+	private _initPageContext(commands: AbstractCommand[]) {
+		commands
+		  .forEach(command => this._pageContextResolver.setRootPageContext(command));
 	}
 }
