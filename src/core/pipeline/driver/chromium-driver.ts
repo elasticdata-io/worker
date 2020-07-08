@@ -87,10 +87,10 @@ export class ChromiumDriver implements Driver {
 		return count && parseInt(count, 10) || 0;
 	}
 
-	public async goToUrl(command: AbstractCommand, url: string,
-											 timeoutSec = 1): Promise<void> {
+	public async goToUrl(command: AbstractCommand, url: string, timeoutSec = 1): Promise<void> {
+		const targetUrl = new URL(url);
 		const page = this._resolvePage(command);
-		await page.goto(url, {timeout: timeoutSec * 1000});
+		await page.goto(targetUrl.href, {timeout: timeoutSec * 1000});
 	}
 
 	public async hover(command: AbstractCommand): Promise<void> {
