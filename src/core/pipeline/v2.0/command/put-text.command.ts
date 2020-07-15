@@ -14,6 +14,9 @@ export class PutTextCommand extends AbstractCommand {
 	public timeout = 3;
 
 	@Assignable({type: String, default: ''})
+	public selector = '';
+
+	@Assignable({type: String, default: ''})
 	public text = '';
 
 	async execute(): Promise<void> {
