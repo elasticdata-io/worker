@@ -21,9 +21,9 @@ export class OpenTabCommand extends AbstractCommand {
 	@Assignable({
 		required: false,
 		type: Number,
-		default: 2
+		default: 30
 	})
-	public timeout = 2;
+	public timeout = 30;
 
 	@Assignable({
 		type: [String],
