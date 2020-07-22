@@ -45,9 +45,15 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
 	public async startCommand(command: AbstractCommand): Promise<void> {
 		const params = {};
-		command
-		  .getManagedKeys()
-		  .forEach(key => params[key] = command[key]);
+		const managedKeys = command
+		  .getManagedKeys();
+		for (const key of managedKeys) {
+			if ((typeof command[key]) === 'function') {
+				params[key] = await command[key].call(command);
+			} else {
+				params[key] = command[key]
+			}
+		}
 		const result = {
 			startOnUtc: moment().utc().toDate(),
 			uuid: command.uuid,

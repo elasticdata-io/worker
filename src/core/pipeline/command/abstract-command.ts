@@ -59,7 +59,7 @@ export abstract class AbstractCommand implements Selectable {
 		}
 	}
 
-	public getManagedKeys(): string[] {
+	public getManagedKeys(): any[] {
 		return ['cmd', 'timeout'];
 	}
 
