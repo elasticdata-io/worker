@@ -31,7 +31,11 @@ export class HttpDataStore extends AbstractStore {
 	 */
 	async replaceMacros(command: AbstractCommand, input: string): Promise<any> {
 		const context = this.contextResolver.resolveContext(command);
-		await this.httpDataClient.replaceMacros(context, input);
+		await this.httpDataClient.replaceMacros({
+			context: context,
+			input: input,
+			id: this.id,
+		});
 	}
 
 	/**

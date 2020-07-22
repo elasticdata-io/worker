@@ -23,14 +23,14 @@ export class HttpDataClient {
 
 	/**
 	 * Replace data macros, example ${line.[key]}.
-	 * @param context
-	 * @param input
+	 * @param config
 	 */
-	async replaceMacros(context: string, input: string): Promise<any> {
+	async replaceMacros(config: {context: string, id: string, input: string}): Promise<any> {
 		try {
 			await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
-				input: input,
-				context: context,
+				input: config.input,
+				context: config.context,
+				id: config.id,
 			});
 		} catch (e) {
 			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
