@@ -176,11 +176,15 @@ export class HttpDataClient {
 	 */
 	async replaceMacros(config: {context: string, id: string, input: string}): Promise<any> {
 		try {
-			return await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
+			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
 				input: config.input,
 				context: config.context,
 				id: config.id,
 			});
+			if (!res.data || res.data.message) {
+				throw new SystemError(`replaceMacros data is failed: ${res.data.message}`);
+			}
+			return res.data;
 		} catch (e) {
 			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
 		}
