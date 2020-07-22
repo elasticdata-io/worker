@@ -34,7 +34,7 @@ export class OpenUrlCommand extends AbstractCommand {
 		await super.execute();
 	}
 
-	public getManagedKeys(): string[] {
+	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
 		return keys.concat(['link']);
 	}

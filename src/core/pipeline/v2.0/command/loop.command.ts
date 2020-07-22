@@ -68,7 +68,7 @@ export class LoopCommand extends AbstractCommand {
 		contextResolver.setLoopChildrenContext(this);
 	}
 
-	public getManagedKeys(): string[] {
+	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
 		return keys.concat(['index', 'max', 'context']);
 	}
