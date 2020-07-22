@@ -22,22 +22,6 @@ export class HttpDataClient {
 	}
 
 	/**
-	 * Replace data macros, example ${line.[key]}.
-	 * @param config
-	 */
-	async replaceMacros(config: {context: string, id: string, input: string}): Promise<any> {
-		try {
-			await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
-				input: config.input,
-				context: config.context,
-				id: config.id,
-			});
-		} catch (e) {
-			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
-		}
-	}
-
-	/**
 	 * Put array to store with context.
 	 * Used in the import command.
 	 * @param context
@@ -185,4 +169,21 @@ export class HttpDataClient {
 			throw new SystemError(`commit data is failed: ${e?.response?.data?.message || e.message}`);
 		}
 	}
+
+	/**
+	 * Replace data macros, example ${line.[key]}.
+	 * @param config
+	 */
+	async replaceMacros(config: {context: string, id: string, input: string}): Promise<any> {
+		try {
+			await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
+				input: config.input,
+				context: config.context,
+				id: config.id,
+			});
+		} catch (e) {
+			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
+		}
+	}
+
 }
