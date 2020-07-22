@@ -25,6 +25,16 @@ export class HttpDataStore extends AbstractStore {
 	}
 
 	/**
+	 * Replace data macros, example ${line.[key]}.
+	 * @param command
+	 * @param input
+	 */
+	async replaceMacros(command: AbstractCommand, input: string): Promise<any> {
+		const context = this.contextResolver.resolveContext(command);
+		await this.httpDataClient.replaceMacros(context, input);
+	}
+
+	/**
 	 * Put array to store with context.
 	 * Used in the import command.
 	 * @param data
@@ -51,7 +61,6 @@ export class HttpDataStore extends AbstractStore {
 			userUuid: this.userUuid,
 		});
 	}
-
 
 	async get(key: string, command: AbstractCommand): Promise<any> {
 		const context = this.contextResolver.resolveContext(command);

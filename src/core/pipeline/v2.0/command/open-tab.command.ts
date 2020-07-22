@@ -5,6 +5,7 @@ import {Assignable} from "../../command/decorator/assignable.decorator";
 import {DataContextResolver} from "../../data/data-context-resolver";
 import {TYPES as ROOT_TYPES} from "../../types";
 import {PageContextResolver} from "../../browser/page-context-resolver";
+import { LineDataParser } from '../../data/line-data-parser';
 
 /**
  * Open new tab with old browser session.
@@ -45,7 +46,16 @@ export class OpenTabCommand extends AbstractCommand {
 	}
 
 	private async _goToUrl(): Promise<void> {
-		await this.driver.goToUrl(this, this.link, this.timeout);
+		const link = await this._getLink();
+		await this.driver.goToUrl(this, link, this.timeout);
+	}
+
+	private async _getLink(): Promise<string> {
+		const link = this.link;
+		if (LineDataParser.hasAnyMacros(link)) {
+			return await this.store.replaceMacros(this, link);
+		}
+		return link;
 	}
 
 	private async _executeCommands(): Promise<void> {

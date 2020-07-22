@@ -22,6 +22,21 @@ export class HttpDataClient {
 	}
 
 	/**
+	 * Replace data macros, example ${line.[key]}.
+	 * @param context
+	 * @param input
+	 */
+	async replaceMacros(context: string, input: string): Promise<any> {
+		try {
+			await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
+				input: input,
+			});
+		} catch (e) {
+			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
+		}
+	}
+
+	/**
 	 * Put array to store with context.
 	 * Used in the import command.
 	 * @param context

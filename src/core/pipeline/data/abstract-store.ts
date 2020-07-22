@@ -17,6 +17,7 @@ export abstract class AbstractStore {
 	}
 
 	abstract putAll(data: any[], command: AbstractCommand): Promise<void>;
+	abstract replaceMacros(command: AbstractCommand, input: string): Promise<any>;
 	abstract put(key: string, value: string, command: AbstractCommand): Promise<void>;
 	abstract get(key: string, command: AbstractCommand): Promise<string>;
 	abstract remove(key: string, command: AbstractCommand): Promise<void>;
