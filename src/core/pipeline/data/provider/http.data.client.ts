@@ -30,6 +30,7 @@ export class HttpDataClient {
 		try {
 			await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
 				input: input,
+				context: context,
 			});
 		} catch (e) {
 			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
