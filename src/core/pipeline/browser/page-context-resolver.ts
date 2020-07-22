@@ -27,6 +27,15 @@ export class PageContextResolver {
 		}
 	}
 
+	public increaseContext(originCommand: AbstractCommand) {
+		try {
+			const originPageContext = this.commands[originCommand.uuid];
+			this.commands[originCommand.uuid] = originPageContext + 1;
+		} catch (e) {
+			throw new SystemError(e);
+		}
+	}
+
 	public increaseCommandsContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]) {
 		try {
 			const originPageContext = this.commands[originCommand.uuid];

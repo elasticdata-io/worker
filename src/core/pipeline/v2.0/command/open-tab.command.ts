@@ -25,6 +25,12 @@ export class OpenTabCommand extends AbstractCommand {
 	public timeout = 2;
 
 	@Assignable({
+		type: [String],
+		default: '',
+	})
+	public link = '';
+
+	@Assignable({
 		required: true,
 		type: Array,
 		default: []
@@ -32,18 +38,28 @@ export class OpenTabCommand extends AbstractCommand {
 	public commands: AbstractCommand[] = [];
 
 	async execute(): Promise<void> {
-		if (this.commands.length) {
-			await this.applyChildrenContext();
-			const firstCommand = this.commands[0];
-			await firstCommand.execute();
-		}
+		await this._setCommandsContext();
+		await this._goToUrl();
+		await this._executeCommands();
 		await super.execute();
 	}
 
-	private async applyChildrenContext() {
+	private async _goToUrl(): Promise<void> {
+		await this.driver.goToUrl(this, this.link, this.timeout);
+	}
+
+	private async _executeCommands(): Promise<void> {
+		if (this.commands.length) {
+			const firstCommand = this.commands[0];
+			await firstCommand.execute();
+		}
+	}
+
+	private async _setCommandsContext() {
 		const dataContextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
 		const pageContextResolver = this.ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		dataContextResolver.copyCommandContext(this, this.commands);
 		pageContextResolver.increaseCommandsContext(this, this.commands);
+		pageContextResolver.increaseContext(this);
 	}
 }
