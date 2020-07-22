@@ -38,9 +38,18 @@ export class OpenTabCommand extends AbstractCommand {
 	})
 	public commands: AbstractCommand[] = [];
 
-	public getManagedKeys(): any[] {
+	/**
+	 * @override
+	 */
+	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
-		return keys.concat([() => this._getLink]);
+		return keys.concat([
+			'link',
+			{
+				key: 'link_runtime',
+				fn: this._getLink
+			}
+		]);
 	}
 
 	public async execute(): Promise<void> {
