@@ -55,7 +55,7 @@ export class OpenTabCommand extends AbstractCommand {
 		if (LineDataParser.hasAnyMacros(link)) {
 			const replacedLink = await this.store.replaceMacros(this, link);
 			console.log(replacedLink)
-			return JSON.stringify(replacedLink);
+			return replacedLink;
 		}
 		return link;
 	}
