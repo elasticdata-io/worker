@@ -176,7 +176,7 @@ export class HttpDataClient {
 	 */
 	async replaceMacros(config: {context: string, id: string, input: string}): Promise<any> {
 		try {
-			await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
+			return await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
 				input: config.input,
 				context: config.context,
 				id: config.id,
