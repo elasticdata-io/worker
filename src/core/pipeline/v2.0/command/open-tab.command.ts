@@ -38,27 +38,6 @@ export class OpenTabCommand extends AbstractCommand {
 	})
 	public commands: AbstractCommand[] = [];
 
-	/**
-	 * @override
-	 */
-	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
-		const keys = super.getManagedKeys();
-		return keys.concat([
-			'link',
-			{
-				key: 'link_runtime',
-				fn: this._getLink
-			}
-		]);
-	}
-
-	public async execute(): Promise<void> {
-		await this._setCommandsContext();
-		await this._goToUrl();
-		await this._executeCommands();
-		await super.execute();
-	}
-
 	private async _goToUrl(): Promise<void> {
 		const link = await this._getLink();
 		await this.driver.goToUrl(this, link, this.timeout);
@@ -87,5 +66,26 @@ export class OpenTabCommand extends AbstractCommand {
 		dataContextResolver.copyCommandContext(this, this.commands);
 		pageContextResolver.increaseCommandsContext(this, this.commands);
 		pageContextResolver.increaseContext(this);
+	}
+
+	public async execute(): Promise<void> {
+		await this._setCommandsContext();
+		await this._goToUrl();
+		await this._executeCommands();
+		await super.execute();
+	}
+
+	/**
+	 * @override
+	 */
+	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
+		const keys = super.getManagedKeys();
+		return keys.concat([
+			'link',
+			{
+				key: 'link_runtime',
+				fn: this._getLink
+			}
+		]);
 	}
 }
