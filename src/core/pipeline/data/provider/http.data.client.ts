@@ -174,10 +174,10 @@ export class HttpDataClient {
 	 * Replace data macros, example ${line.[key]}.
 	 * @param config
 	 */
-	async replaceMacros(config: {context: string, id: string, input: string}): Promise<any> {
+	async replaceMacros(config: {context: string, id: string, inputWithMacros: string}): Promise<any> {
 		try {
 			const res = await axios.post(`${this._serviceUrl}${this._servicePath}/replace-macros`, {
-				input: config.input,
+				inputWithMacros: config.inputWithMacros,
 				context: config.context,
 				id: config.id,
 			});
