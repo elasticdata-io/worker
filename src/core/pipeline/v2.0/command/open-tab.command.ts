@@ -44,6 +44,7 @@ export class OpenTabCommand extends AbstractCommand {
 	}
 
 	private async _getLink(): Promise<string> {
+		// todo: two requests to data service: for command and command analyzer
 		return await this.replaceMacros(this.link, this);
 	}
 
@@ -73,13 +74,16 @@ export class OpenTabCommand extends AbstractCommand {
 	 * @override
 	 */
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
-		const keys = super.getManagedKeys();
-		return keys.concat([
+		const keys = [
+			...super.getManagedKeys(),
 			'link',
-			{
+		];
+		if (LineMacrosParser.hasAnyMacros(this.link)) {
+			keys.push({
 				key: 'link_runtime',
 				fn: this._getLink
-			}
-		]);
+			});
+		}
+		return keys;
 	}
 }
