@@ -44,13 +44,7 @@ export class OpenTabCommand extends AbstractCommand {
 	}
 
 	private async _getLink(): Promise<string> {
-		const link = this.link;
-		if (LineMacrosParser.hasAnyMacros(link)) {
-			const replacedLink = await this.store.replaceMacros(this, link);
-			console.log(`replacedLink: ${replacedLink}`);
-			return replacedLink;
-		}
-		return link;
+		return await this.replaceMacros(this.link, this);
 	}
 
 	private async _executeCommands(): Promise<void> {

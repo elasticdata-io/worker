@@ -41,7 +41,7 @@ export class OpenUrlCommand extends AbstractCommand {
 
 	private async _getLink(): Promise<string> {
 		if (typeof this.link === 'string') {
-			return this.link;
+			return await this.replaceMacros(this.link, this);
 		}
 		const linkCommand = this._linkCommand;
 		if (linkCommand) {

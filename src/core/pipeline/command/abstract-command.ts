@@ -9,6 +9,7 @@ import { AbstractStore } from '../data/abstract-store';
 import { PipelineIoc } from '../pipeline-ioc';
 import { DataContextResolver } from '../data/data-context-resolver';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
+import {LineMacrosParser} from "../data/line-macros-parser";
 
 export abstract class AbstractCommand implements Selectable {
 	private _nextCommand: AbstractCommand;
@@ -86,6 +87,15 @@ export abstract class AbstractCommand implements Selectable {
 			return keyValue;
 		}
 		return `tmp_${this.uuid}`;
+	}
+
+	public async replaceMacros(inputWithMacros: string, command: AbstractCommand): Promise<any> {
+		if (LineMacrosParser.hasAnyMacros(inputWithMacros)) {
+			const replaced = await this.store.replaceMacros(command, inputWithMacros);
+			console.log(`from: ${inputWithMacros}, to: ${replaced}`);
+			return replaced;
+		}
+		return inputWithMacros;
 	}
 
 }
