@@ -1,8 +1,9 @@
 export abstract class LineDataParser {
 
-  protected static LINE_MACROS_PATTERN = /\{\$line\.([^}.]+)\}/gi;
+  public static readonly LINE_MACROS_PATTERN = '\\{\\$line\\.([^}.]+)\\}';
 
   public static hasAnyMacros(input: string): boolean {
-    return this.LINE_MACROS_PATTERN.test(input);
+    const pattern = new RegExp(LineDataParser.LINE_MACROS_PATTERN, 'gi').compile();
+    return pattern.test(input);
   }
 }
