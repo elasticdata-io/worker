@@ -5,7 +5,7 @@ import {Assignable} from "../../command/decorator/assignable.decorator";
 import {DataContextResolver} from "../../data/data-context-resolver";
 import {TYPES as ROOT_TYPES} from "../../types";
 import {PageContextResolver} from "../../browser/page-context-resolver";
-import { LineDataParser } from '../../data/line-data-parser';
+import { LineMacrosParser } from '../../data/line-macros-parser';
 
 /**
  * Open new tab with old browser session.
@@ -45,8 +45,9 @@ export class OpenTabCommand extends AbstractCommand {
 
 	private async _getLink(): Promise<string> {
 		const link = this.link;
-		if (LineDataParser.hasAnyMacros(link)) {
+		if (LineMacrosParser.hasAnyMacros(link)) {
 			const replacedLink = await this.store.replaceMacros(this, link);
+			console.log(`replacedLink: ${replacedLink}`);
 			return replacedLink;
 		}
 		return link;

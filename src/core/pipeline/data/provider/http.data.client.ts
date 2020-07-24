@@ -181,12 +181,12 @@ export class HttpDataClient {
 				context: config.context,
 				id: config.id,
 			});
-			if (!res.data || res.data.message) {
-				throw new SystemError(`replaceMacros data is failed: ${res.data.message}`);
+			if (!res.data) {
+				throw new SystemError(`request 'replaceMacros' is failed: ${res.data.message}`);
 			}
 			return res.data;
 		} catch (e) {
-			throw new SystemError(`replaceMacros data is failed: ${e?.response?.data?.message || e.message}`);
+			throw new SystemError(`request 'replaceMacros' is failed: ${e?.response?.data?.message || e.message}`);
 		}
 	}
 
