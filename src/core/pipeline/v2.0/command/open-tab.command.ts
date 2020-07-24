@@ -76,10 +76,10 @@ export class OpenTabCommand extends AbstractCommand {
 		const keys = super.getManagedKeys();
 		return keys.concat([
 			'link',
-			/*{
+			{
 				key: 'link_runtime',
 				fn: this._getLink
-			}*/
+			}
 		]);
 	}
 }
