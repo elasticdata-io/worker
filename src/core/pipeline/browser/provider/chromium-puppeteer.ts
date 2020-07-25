@@ -33,7 +33,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			console.log(options);
 			const pageFactory = new ChromiumPageFactory(options);
 			const opts = {
-				max: 4,
+				max: 3,
 				min: 1
 			};
 			const pool: Pool<{page: Page, browser: Browser}> = genericPool.createPool(pageFactory, opts);
