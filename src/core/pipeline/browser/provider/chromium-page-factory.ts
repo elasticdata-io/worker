@@ -65,7 +65,8 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 
 	private async _createNewPage(browser: Browser): Promise<Page> {
 		const config = this._config;
-		const page = await browser.newPage();
+		const pages = await browser.pages();
+		const page = pages[0];
 		if (config && config.windowWidth) {
 			await page.setViewport({
 				width: config.windowWidth,
