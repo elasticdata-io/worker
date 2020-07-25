@@ -13,6 +13,7 @@ import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
 
 export abstract class AbstractCommand implements Selectable {
+
 	private _nextCommand: AbstractCommand;
 	private readonly _commandAnalyzer: AbstractCommandAnalyzer;
 	private _keyCommand: AbstractCommand;
@@ -100,5 +101,4 @@ export abstract class AbstractCommand implements Selectable {
 		}
 		return inputWithMacros;
 	}
-
 }

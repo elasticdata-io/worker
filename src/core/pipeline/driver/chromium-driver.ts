@@ -9,8 +9,8 @@ import { JsCommand } from '../v2.0/command/js.command';
 import {PageContextResolver} from "../browser/page-context-resolver";
 import {TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
-import {OpenTabCommand} from "../v2.0/command/open-tab.command";
 import {Pool} from "generic-pool";
+import {SystemError} from "../command/exception/system-error";
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -173,7 +173,10 @@ export class ChromiumDriver implements Driver {
 		if (this.hasBeenExited()) {
 			return;
 		}
-		await this._pool.release(this._pages[0]);
+		const mainPage = this._pages[0];
+		if (mainPage) {
+			await this._pool.release(this._pages[0]);
+		}
 		const waitPoolTimeout = 10 * 60 * 60 * 1000;
 		await this.wait(waitPoolTimeout, 2000, () => {
 			return this._pool.pending === 0 && this._pool.borrowed === 0;
@@ -247,7 +250,10 @@ export class ChromiumDriver implements Driver {
 		let resource = this._pages[context];
 		if (!resource) {
 			resource = await this._createNewResource();
-			this._pages.push(resource);
+			if (this._pages[context]) {
+				throw new SystemError(`resource with context: ${context} has been created`);
+			}
+			this._pages[context] = resource;
 		}
 		return resource.page;
 	}

@@ -2,10 +2,10 @@ import { AbstractCommand } from '../../command/abstract-command';
 import {Cmd} from "../../command/decorator/command.decorator";
 import {CommandType} from "../../documentation/specification";
 import {Assignable} from "../../command/decorator/assignable.decorator";
-import {DataContextResolver} from "../../data/data-context-resolver";
-import {TYPES as ROOT_TYPES} from "../../types";
-import {PageContextResolver} from "../../browser/page-context-resolver";
+import { TYPES as ROOT_TYPES } from "../../types";
 import { LineMacrosParser } from '../../data/line-macros-parser';
+import {CommandFactory} from "./command-factory";
+import {StringGenerator} from "../../util/string.generator";
 
 /**
  * Open new tab with old browser session.
@@ -36,8 +36,7 @@ export class OpenTabCommand extends AbstractCommand {
 		type: Array,
 		default: []
 	})
-	public commands: AbstractCommand[];
-	public createCommandsFactory: () => AbstractCommand[];
+	public commands: string;
 
 	private async _goToUrl(): Promise<void> {
 		const link = await this._getLink();
@@ -49,35 +48,49 @@ export class OpenTabCommand extends AbstractCommand {
 		return await this.replaceMacros(this.link, this);
 	}
 
-	private async _executeCommands(pageContext: number, dataContext: string): Promise<void> {
-		try {
-			const commands = this.createCommandsFactory();
-			if (commands.length) {
-				commands.forEach(command => this.contextResolver.setContext(command, dataContext));
-				this.pageContextResolver.setPageContext(commands, pageContext);
-				await commands[0].execute();
-			}
-		} finally {
-			await this._releasePageContext(pageContext);
+	private async _executeCommands(commands: AbstractCommand[]): Promise<void> {
+		if (commands.length) {
+			const pageContext = this.pageContextResolver.resolvePageContext(this);
+			const dataContext = this.contextResolver.resolveContext(this);
+			commands.forEach(command => {
+				this.contextResolver.setContext(command, dataContext);
+			});
+			this.pageContextResolver.setPageContext(commands, pageContext);
+			await commands[0].execute();
 		}
-	}
-
-	private _increasePageContext(): void {
-		this.pageContextResolver.increaseContext(this);
 	}
 
 	private async _releasePageContext(pageContext: number) {
 		await this.driver.releasePageContext(pageContext);
 	}
 
-	public async execute(): Promise<void> {
-		this._increasePageContext();
-		const pageContext = this.pageContextResolver.resolvePageContext(this);
-		const dataContext = this.contextResolver.resolveContext(this)
+	private async _execute(pageContext: number, dataContext: string): Promise<void> {
+		const commandFactory = this.ioc.get<CommandFactory>(ROOT_TYPES.ICommandFactory);
+		const commands = commandFactory.createChainCommands(this.commands);
 		this._goToUrl()
-			.then(() => this._executeCommands(pageContext, dataContext))
+			.then(() => this._executeCommands(commands))
 			.then(() => super.execute())
 			.then(() => console.log(`FINISH pageContext: ${pageContext}, dataContext: ${dataContext}`))
+			.catch((error) => console.error(error))
+			.finally(() => this._releasePageContext(pageContext))
+	}
+
+	/**
+	 * Create new opentab command with inner commands.
+	 * OpenTab command running in async mode and not block main tab thread
+	 */
+	public async execute(): Promise<void> {
+		const commandsJSON = JSON.stringify(this.commands);
+		const openTabCommand = new OpenTabCommand(this.ioc);
+		openTabCommand.commands = commandsJSON;
+		openTabCommand.link = this.link;
+		openTabCommand.timeout = this.timeout;
+		openTabCommand.uuid = StringGenerator.generate();
+		this.pageContextResolver.increaseContext(openTabCommand);
+		this.contextResolver.copyCommandContext(this, [openTabCommand]);
+		const pageContext = this.pageContextResolver.resolvePageContext(openTabCommand);
+		const dataContext = this.contextResolver.resolveContext(openTabCommand);
+		this._execute.apply(openTabCommand, [pageContext, dataContext]);
 	}
 
 	/**
