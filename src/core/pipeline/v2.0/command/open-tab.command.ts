@@ -52,8 +52,8 @@ export class OpenTabCommand extends AbstractCommand {
 		if (this.commands.length) {
 			const firstCommand = this.commands[0];
 			await firstCommand.execute();
-			// todo: new tab per opentab command
-			console.log('INNER FINISHED');
+			console.log('INNER COMMANDS FINISHED');
+			// todo : handle throw exceptions
 		}
 	}
 
