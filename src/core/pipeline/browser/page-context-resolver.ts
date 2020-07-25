@@ -20,6 +20,16 @@ export class PageContextResolver {
 		}
 	}
 
+	public setPageContext(commands: AbstractCommand[], pageContext: number) {
+		try {
+			commands.forEach(command => {
+				this.commands[command.uuid] = pageContext;
+			})
+		} catch (e) {
+			throw new SystemError(e);
+		}
+	}
+
 	public setRootPageContext(command: AbstractCommand) {
 		try {
 			this.commands[command.uuid] = 0;
@@ -30,20 +40,8 @@ export class PageContextResolver {
 
 	public async increaseContext(originCommand: OpenTabCommand): Promise<void> {
 		try {
-			const originPageContext = Math.max(...Object.values(this.commands));
-			this.commands[originCommand.uuid] = originPageContext + 1;
-			this._increaseCommandsContext(originCommand, originCommand.commands);
-		} catch (e) {
-			throw new SystemError(e);
-		}
-	}
-
-	private _increaseCommandsContext(originCommand: OpenTabCommand, targetCommands: AbstractCommand[]) {
-		try {
-			const originPageContext = this.commands[originCommand.uuid];
-			targetCommands.forEach(targetCommand => {
-				this.commands[targetCommand.uuid] = originPageContext;
-			});
+			const maxPageContext = Math.max(...Object.values(this.commands));
+			this.commands[originCommand.uuid] = maxPageContext + 1;
 		} catch (e) {
 			throw new SystemError(e);
 		}

@@ -1,11 +1,15 @@
 import { AbstractBrowser } from '../abstract-browser';
-import * as puppeteer from 'puppeteer';
 import { Injectable } from '@nestjs/common';
 import { Driver } from '../../driver/driver';
 import { ChromiumDriver } from '../../driver/chromium-driver';
 import {inject} from "inversify";
 import {TYPES as ROOT_TYPES} from "../../types";
 import {PipelineIoc} from "../../pipeline-ioc";
+import * as genericPool from "generic-pool";
+import {ChromiumPageFactory} from "./chromium-page-factory";
+import {PageFactoryOptions} from "../model/page-factory-options";
+import {Pool} from "generic-pool";
+import {Browser, Page} from "puppeteer";
 
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {
@@ -19,34 +23,21 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 
 	public async create(): Promise<Driver> {
 		try {
-			const args = await puppeteer.defaultArgs()
-			  .filter(x => x !== '--enable-automation');
-			args.push('--no-sandbox');
-			args.push('--disable-setuid-sandbox');
-			if (this.windowWidth && this.windowHeight) {
-				args.push(`--window-size=${this.windowWidth},${this.windowHeight}`);
-			}
-			if (this.language) {
-				args.push(`--lang=${this.language}`);
-			}
 			const proxies = this.proxies || [];
-			if (proxies.length) {
-				args.push(`--proxy-server=${proxies[0]}`);
-			}
-			let browser;
-			const headless = process.env.PUPPETEER_HEADLESS === undefined || process.env.PUPPETEER_HEADLESS === '1';
-			if (headless) {
-				browser = await puppeteer.launch({
-					headless: headless,
-					ignoreDefaultArgs: ['--enable-automation' /*'--no-sandbox'*/],
-					args: args,
-				});
-			} else {
-				browser = await puppeteer.launch({
-					headless: headless,
-				});
-			}
-			this._driver = new ChromiumDriver(browser, this._ioc);
+			const options = {
+				proxies,
+				windowWidth: this.windowWidth,
+				windowHeight: this.windowHeight,
+				language: this.language,
+			} as PageFactoryOptions;
+			console.log(options);
+			const pageFactory = new ChromiumPageFactory(options);
+			const opts = {
+				max: 4,
+				min: 1
+			};
+			const pool: Pool<{page: Page, browser: Browser}> = genericPool.createPool(pageFactory, opts);
+			this._driver = new ChromiumDriver(pool, this._ioc);
 			await this._driver.init({
 				width: this.windowWidth,
 				height: this.windowHeight,

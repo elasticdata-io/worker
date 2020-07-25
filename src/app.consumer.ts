@@ -43,6 +43,7 @@ export class AppConsumer {
 			message.ack();
 		} catch (e) {
 			console.error(chalk.red(e));
+			console.log(e);
 			message.reject();
 		}
 	}

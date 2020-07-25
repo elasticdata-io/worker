@@ -107,7 +107,8 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'opentab':
 				const openTabCommand = new OpenTabCommand(ioc);
-				openTabCommand.commands = this.createChainCommands(JSON.stringify(config.commands));
+				openTabCommand.createCommandsFactory = () => this.createChainCommands(JSON.stringify(config.commands));
+				// openTabCommand.commands = this.createChainCommands(JSON.stringify(config.commands));
 				command = openTabCommand;
 				break;
 			case 'nativeclick':

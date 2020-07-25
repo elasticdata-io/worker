@@ -10,16 +10,17 @@ import {PageContextResolver} from "../browser/page-context-resolver";
 import {TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {OpenTabCommand} from "../v2.0/command/open-tab.command";
+import {Pool} from "generic-pool";
 
 @injectable()
 export class ChromiumDriver implements Driver {
 	private _timer: Timer;
 	private _options: DriverOptions;
-	private _pages: Page[] = [];
+	private _pages: Array<{page: Page, browser: Browser}> = [];
 	private _hasBeenExited: boolean;
-	private _pageContextResolver: PageContextResolver
+	private _pageContextResolver: PageContextResolver;
 
-	constructor(private _browser: Browser, private _ioc: PipelineIoc) {
+	constructor(private _pool: Pool<{page: Page, browser: Browser}>, private _ioc: PipelineIoc) {
 		this._timer = new Timer();
 		this._timer.watchStopByFn(() => {
 			return this.hasBeenExited() === true;
@@ -31,7 +32,6 @@ export class ChromiumDriver implements Driver {
 
 	public async init(options: DriverOptions) {
 		this._options = options;
-		await this._createNewPage();
 	}
 
 	public async domClick(command: AbstractCommand): Promise<void> {
@@ -159,21 +159,28 @@ export class ChromiumDriver implements Driver {
 		return result.data.toString();
 	}
 
-	public async closePageContext(command: OpenTabCommand): Promise<void> {
-		const pageContext = this._pageContextResolver.resolvePageContext(command);
-		await this._pages[pageContext].close();
+	public async releasePageContext(pageContext: number): Promise<void> {
+		const resource = this._pages[pageContext];
+		if (resource) {
+			await this._pool.release(resource);
+		} else {
+			console.error(`resource with context: ${pageContext} not found`)
+		}
+		console.log(`this._pages.keys = ${Object.keys(this._pages)}`)
 	}
 
 	public async exit(): Promise<void> {
 		if (this.hasBeenExited()) {
 			return;
 		}
-		for (const page of this._pages) {
-			try {
-				await page.close();
-			} catch (e) {}
-		}
-		await this._browser.close();
+		await this._pool.release(this._pages[0]);
+		const waitPoolTimeout = 10 * 60 * 60 * 1000;
+		await this.wait(waitPoolTimeout, 2000, () => {
+			return this._pool.pending === 0 && this._pool.borrowed === 0;
+		});
+		await this._pool.drain();
+		await this._pool.clear();
+		this._pages = [];
 		console.log(chalk.cyan('browser has been closed...'));
 		this._hasBeenExited = true;
 	}
@@ -181,6 +188,7 @@ export class ChromiumDriver implements Driver {
 	public hasBeenExited(): boolean {
 		return this._hasBeenExited;
 	}
+
 	//endregion
 
 	//region Method: Protected
@@ -203,7 +211,7 @@ export class ChromiumDriver implements Driver {
 					const executeTime = end - start;
 					if (executeTime >= timeoutMs) {
 						clearInterval(intervalId);
-						reject();
+						reject(`max waiting timeout: ${timeoutMs}ms`);
 						return;
 					}
 					const value = await conditionFn();
@@ -229,31 +237,19 @@ export class ChromiumDriver implements Driver {
 
 	//region Method: Private
 
-	private async _createNewPage(): Promise<Page> {
-		const page = await this._browser.newPage();
-		if (this._options && this._options.width) {
-			await page.setViewport({
-				width: this._options.width,
-				height: this._options.height
-			});
-		}
-		if (this._options && this._options.language) {
-			await page.setExtraHTTPHeaders({
-				'Accept-Language': this._options.language
-			});
-		}
-		this._pages.push(page);
-		return page;
+	private async _createNewResource(): Promise<{page: Page, browser: Browser}> {
+		return await this._pool.acquire();
 	}
 
 	private async _resolvePage(command: AbstractCommand): Promise<Page> {
 		const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		const context = pageContextResolver.resolvePageContext(command);
-		let page = this._pages[context];
-		if (!page) {
-			page = await this._createNewPage();
+		let resource = this._pages[context];
+		if (!resource) {
+			resource = await this._createNewResource();
+			this._pages.push(resource);
 		}
-		return page;
+		return resource.page;
 	}
 
 	//endregion

@@ -10,6 +10,7 @@ import { PipelineIoc } from '../pipeline-ioc';
 import { DataContextResolver } from '../data/data-context-resolver';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 import {LineMacrosParser} from "../data/line-macros-parser";
+import {PageContextResolver} from "../browser/page-context-resolver";
 
 export abstract class AbstractCommand implements Selectable {
 	private _nextCommand: AbstractCommand;
@@ -21,6 +22,7 @@ export abstract class AbstractCommand implements Selectable {
 	protected queryProviderFactory: QueryProviderFactory;
 	protected browserProvider: IBrowserProvider;
 	protected contextResolver: DataContextResolver;
+	protected pageContextResolver: PageContextResolver;
 	protected ioc: PipelineIoc;
 
 	constructor(ioc: PipelineIoc) {
@@ -29,6 +31,7 @@ export abstract class AbstractCommand implements Selectable {
 		this.browserProvider = ioc.get<BrowserProvider>(ROOT_TYPES.IBrowserProvider);
 		this.queryProviderFactory = ioc.get<QueryProviderFactory>(ROOT_TYPES.QueryProviderFactory);
 		this.contextResolver = ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
+		this.pageContextResolver = ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this.ioc = ioc;
 		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
 	}

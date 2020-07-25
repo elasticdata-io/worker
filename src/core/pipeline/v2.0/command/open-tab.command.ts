@@ -36,7 +36,8 @@ export class OpenTabCommand extends AbstractCommand {
 		type: Array,
 		default: []
 	})
-	public commands: AbstractCommand[] = [];
+	public commands: AbstractCommand[];
+	public createCommandsFactory: () => AbstractCommand[];
 
 	private async _goToUrl(): Promise<void> {
 		const link = await this._getLink();
@@ -48,32 +49,36 @@ export class OpenTabCommand extends AbstractCommand {
 		return await this.replaceMacros(this.link, this);
 	}
 
-	private async _executeCommands(): Promise<void> {
-		if (this.commands.length) {
-			const firstCommand = this.commands[0];
-			await firstCommand.execute();
-			console.log('INNER COMMANDS FINISHED');
-			// todo : handle throw exceptions
+	private async _executeCommands(pageContext: number, dataContext: string): Promise<void> {
+		try {
+			const commands = this.createCommandsFactory();
+			if (commands.length) {
+				commands.forEach(command => this.contextResolver.setContext(command, dataContext));
+				this.pageContextResolver.setPageContext(commands, pageContext);
+				await commands[0].execute();
+			}
+		} finally {
+			await this._releasePageContext(pageContext);
 		}
 	}
 
-	private async _setCommandsContext() {
-		const dataContextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
+	private async _increasePageContext() {
 		const pageContextResolver = this.ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
-		dataContextResolver.copyCommandContext(this, this.commands);
 		await pageContextResolver.increaseContext(this);
 	}
 
-	private async _closePageContext() {
-		await this.driver.closePageContext(this);
+	private async _releasePageContext(pageContext: number) {
+		await this.driver.releasePageContext(pageContext);
 	}
 
 	public async execute(): Promise<void> {
-		await this._setCommandsContext();
-		await this._goToUrl();
-		await this._executeCommands();
-		await this._closePageContext();
-		await super.execute();
+		await this._increasePageContext();
+		const pageContext = this.pageContextResolver.resolvePageContext(this);
+		const dataContext = this.contextResolver.resolveContext(this)
+		this._goToUrl()
+			.then(() => this._executeCommands(pageContext, dataContext))
+			.then(() => super.execute())
+			.then(() => console.log(`FINISH pageContext: ${pageContext}, dataContext: ${dataContext}`))
 	}
 
 	/**

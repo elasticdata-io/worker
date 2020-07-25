@@ -11,7 +11,7 @@ import { CommandType } from '../../documentation/specification';
 export class GetTextCommand extends AbstractCommand {
 
 	@Assignable({required: false, type: Number, default: 3})
-	public timeout = 3;
+	public timeout = 7;
 
 	@Assignable({
 		required: false,
