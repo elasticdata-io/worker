@@ -56,7 +56,7 @@ export class OpenTabCommand extends AbstractCommand {
 				this.contextResolver.setContext(command, dataContext);
 			});
 			this.pageContextResolver.setPageContext(commands, pageContext);
-			await commands[0].execute();
+			await this.browserProvider.execute(commands[0]);
 		}
 	}
 
