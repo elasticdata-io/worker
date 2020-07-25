@@ -42,6 +42,7 @@ export class GetTextCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		let text;
+		await this.driver.waitElement(this);
 		if (this.attribute) {
 			text = await this.driver.getElAttribute(this, this.attribute);
 		} else {

@@ -11,7 +11,7 @@ import { CommandType } from '../../documentation/specification';
 export class GetHtmlCommand extends AbstractCommand {
 
 	@Assignable({required: false, type: Number, default: 3})
-	public timeout = 3;
+	public timeout = 7;
 
 	@Assignable({
 		required: false,
@@ -24,6 +24,7 @@ export class GetHtmlCommand extends AbstractCommand {
 	public selector: string;
 
 	async execute(): Promise<void> {
+		await this.driver.waitElement(this);
 		const html = await this.driver.getElHtml(this);
 		const key = await this.getKey();
 		await this.store.put(key, html, this);
