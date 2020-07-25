@@ -15,7 +15,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		args.push('--disable-setuid-sandbox');
 		args = [
 			...args,
-			/*
+			'--disable-dev-shm-usage',
 			'--disable-canvas-aa', // Disable antialiasing on 2d canvas
 			'--disable-2d-canvas-clip-aa', // Disable antialiasing on 2d canvas clips
 			'--disable-gl-drawing-for-tests', // BEST OPTION EVER! Disables GL drawing operations which produce pixel output. With this the GL output will not be correct but tests will run faster.
@@ -28,7 +28,6 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			'--no-first-run',
 			'--disable-infobars',
 			'--disable-breakpad',
-			*/
 			//'--ignore-gpu-blacklist'
 		]
 		if (config.windowWidth && config.windowHeight) {
