@@ -38,7 +38,7 @@ export class PageContextResolver {
 		}
 	}
 
-	public async increaseContext(originCommand: OpenTabCommand): Promise<void> {
+	public increaseContext(originCommand: OpenTabCommand): void {
 		try {
 			const maxPageContext = Math.max(...Object.values(this.commands));
 			this.commands[originCommand.uuid] = maxPageContext + 1;

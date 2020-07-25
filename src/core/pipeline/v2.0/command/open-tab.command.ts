@@ -62,9 +62,8 @@ export class OpenTabCommand extends AbstractCommand {
 		}
 	}
 
-	private async _increasePageContext() {
-		const pageContextResolver = this.ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
-		await pageContextResolver.increaseContext(this);
+	private _increasePageContext(): void {
+		this.pageContextResolver.increaseContext(this);
 	}
 
 	private async _releasePageContext(pageContext: number) {
@@ -72,7 +71,7 @@ export class OpenTabCommand extends AbstractCommand {
 	}
 
 	public async execute(): Promise<void> {
-		await this._increasePageContext();
+		this._increasePageContext();
 		const pageContext = this.pageContextResolver.resolvePageContext(this);
 		const dataContext = this.contextResolver.resolveContext(this)
 		this._goToUrl()
