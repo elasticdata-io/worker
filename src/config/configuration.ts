@@ -5,4 +5,5 @@ export default () => ({
 	STOP_TASK_QUEUE_NAME: process.env.STOP_TASK_QUEUE_NAME || 'DEV_PIPELINE_TASK_STOP_V2',
 	AMQP_CONNECTION_STRING: process.env.AMQP_CONNECTION_STRING || 'amqp://user:password@k8s:30403',
 	AMQP_LOG_LEVEL: process.env.AMQP_LOG_LEVEL || 'info',
+	PUPPETEER_HEADLESS: process.env.PUPPETEER_HEADLESS || '1',
 });

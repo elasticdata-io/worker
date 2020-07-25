@@ -61,14 +61,18 @@ export class OpenTabCommand extends AbstractCommand {
 		const dataContextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
 		const pageContextResolver = this.ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		dataContextResolver.copyCommandContext(this, this.commands);
-		pageContextResolver.increaseCommandsContext(this, this.commands);
-		pageContextResolver.increaseContext(this);
+		await pageContextResolver.increaseContext(this);
+	}
+
+	private async _closePageContext() {
+		await this.driver.closePageContext(this);
 	}
 
 	public async execute(): Promise<void> {
 		await this._setCommandsContext();
 		await this._goToUrl();
 		await this._executeCommands();
+		await this._closePageContext();
 		await super.execute();
 	}
 

@@ -1,5 +1,6 @@
 import { AbstractCommand } from '../command/abstract-command';
 import { DriverOptions } from './driver.options';
+import {OpenTabCommand} from "../v2.0/command/open-tab.command";
 
 export interface Driver {
 	init(options: DriverOptions): Promise<void>;
@@ -20,6 +21,7 @@ export interface Driver {
 	getCurrentUrl(command: AbstractCommand): Promise<string>;
 	scrollBy(command: AbstractCommand, position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void>;
 	captureSnapshot(command: AbstractCommand): Promise<string>;
+	closePageContext(command: OpenTabCommand): Promise<void>;
 
 	exit(): Promise<void>;
 	hasBeenExited(): boolean;

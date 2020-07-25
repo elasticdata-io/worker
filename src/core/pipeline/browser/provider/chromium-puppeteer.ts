@@ -33,12 +33,19 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			if (proxies.length) {
 				args.push(`--proxy-server=${proxies[0]}`);
 			}
-			// console.log(args);
-			const browser = await puppeteer.launch({
-				headless: true,
-				ignoreDefaultArgs: ['--enable-automation' /*'--no-sandbox'*/],
-				args: args,
-			});
+			let browser;
+			const headless = process.env.PUPPETEER_HEADLESS === undefined || process.env.PUPPETEER_HEADLESS === '1';
+			if (headless) {
+				browser = await puppeteer.launch({
+					headless: headless,
+					ignoreDefaultArgs: ['--enable-automation' /*'--no-sandbox'*/],
+					args: args,
+				});
+			} else {
+				browser = await puppeteer.launch({
+					headless: headless,
+				});
+			}
 			this._driver = new ChromiumDriver(browser, this._ioc);
 			await this._driver.init({
 				width: this.windowWidth,

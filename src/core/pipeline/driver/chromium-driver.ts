@@ -9,6 +9,7 @@ import { JsCommand } from '../v2.0/command/js.command';
 import {PageContextResolver} from "../browser/page-context-resolver";
 import {TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
+import {OpenTabCommand} from "../v2.0/command/open-tab.command";
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -16,12 +17,14 @@ export class ChromiumDriver implements Driver {
 	private _options: DriverOptions;
 	private _pages: Page[] = [];
 	private _hasBeenExited: boolean;
+	private _pageContextResolver: PageContextResolver
 
 	constructor(private _browser: Browser, private _ioc: PipelineIoc) {
 		this._timer = new Timer();
 		this._timer.watchStopByFn(() => {
 			return this.hasBeenExited() === true;
 		});
+		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 	}
 
 	//region Method: Public
@@ -154,6 +157,11 @@ export class ChromiumDriver implements Driver {
 		const cdpSession = await page.target().createCDPSession()
 		const result = await cdpSession.send('Page.captureSnapshot') as any;
 		return result.data.toString();
+	}
+
+	public async closePageContext(command: OpenTabCommand): Promise<void> {
+		const pageContext = this._pageContextResolver.resolvePageContext(command);
+		await this._pages[pageContext].close();
 	}
 
 	public async exit(): Promise<void> {

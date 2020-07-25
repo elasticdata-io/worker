@@ -1,6 +1,7 @@
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
 import { SystemError } from '../command/exception/system-error';
+import {OpenTabCommand} from "../v2.0/command/open-tab.command";
 
 @injectable()
 export class PageContextResolver {
@@ -27,20 +28,21 @@ export class PageContextResolver {
 		}
 	}
 
-	public increaseContext(originCommand: AbstractCommand) {
+	public async increaseContext(originCommand: OpenTabCommand): Promise<void> {
 		try {
-			const originPageContext = this.commands[originCommand.uuid];
+			const originPageContext = Math.max(...Object.values(this.commands));
 			this.commands[originCommand.uuid] = originPageContext + 1;
+			this._increaseCommandsContext(originCommand, originCommand.commands);
 		} catch (e) {
 			throw new SystemError(e);
 		}
 	}
 
-	public increaseCommandsContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]) {
+	private _increaseCommandsContext(originCommand: OpenTabCommand, targetCommands: AbstractCommand[]) {
 		try {
 			const originPageContext = this.commands[originCommand.uuid];
 			targetCommands.forEach(targetCommand => {
-				this.commands[targetCommand.uuid] = originPageContext + 1;
+				this.commands[targetCommand.uuid] = originPageContext;
 			});
 		} catch (e) {
 			throw new SystemError(e);
