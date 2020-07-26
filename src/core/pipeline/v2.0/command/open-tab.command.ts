@@ -53,7 +53,8 @@ export class OpenTabCommand extends AbstractCommand {
 			this.dataContextResolver.copyContext(this, commands);
 			this.pageContextResolver.copyContext(this, commands);
 			const firstCommand = commands[0];
-			await this.browserProvider.execute(firstCommand);
+			// await this.browserProvider.execute(firstCommand);
+			await firstCommand.execute();
 		}
 	}
 
@@ -99,14 +100,12 @@ export class OpenTabCommand extends AbstractCommand {
 			...super.getManagedKeys(),
 			'link',
 		];
-		// todo: problem
-		/*
 		if (LineMacrosParser.hasAnyMacros(this.link)) {
 			keys.push({
 				key: 'link_runtime',
 				fn: this._getLink
 			});
-		}*/
+		}
 		return keys;
 	}
 }
