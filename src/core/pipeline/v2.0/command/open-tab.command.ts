@@ -58,6 +58,7 @@ export class OpenTabCommand extends AbstractCommand {
 			await this.store.put('context', context, this);
 			await this.store.put('firstCommand context', firstCommandContext, this);
 			await this.browserProvider.execute(firstCommand);
+			// await firstCommand.execute()
 		}
 	}
 
@@ -68,14 +69,13 @@ export class OpenTabCommand extends AbstractCommand {
 	private async _execute(): Promise<void> {
 		const commandFactory = this.ioc.get<CommandFactory>(ROOT_TYPES.ICommandFactory);
 		const commands = commandFactory.createChainCommands(this.commands);
-		const pageContext = this.pageContextResolver.resolveContext(this);
-		const dataContext = this.dataContextResolver.resolveContext(this);
-		this._goToUrl()
+		return this._goToUrl()
 			.then(() => this._executeCommands(commands))
-			.then(() => super.execute())
-			.then(() => console.log(`FINISH pageContext: ${pageContext}, dataContext: ${dataContext}`))
 			.catch((error) => console.error(error))
-			.finally(() => this._releasePageContext(pageContext));
+			.finally(() => {
+				const pageContext = this.pageContextResolver.resolveContext(this);
+				this._releasePageContext(pageContext)
+			});
 	}
 
 	/**
@@ -91,7 +91,9 @@ export class OpenTabCommand extends AbstractCommand {
 		openTabCommand.uuid = StringGenerator.generate();
 		this.dataContextResolver.copyContext(this, [openTabCommand]);
 		this.pageContextResolver.increaseContext(openTabCommand);
-		this._execute.apply(openTabCommand);
+		this._execute
+			.apply(openTabCommand)
+			.then(() => super.execute());
 	}
 
 	/**
@@ -102,12 +104,14 @@ export class OpenTabCommand extends AbstractCommand {
 			...super.getManagedKeys(),
 			'link',
 		];
+		// todo: problem
+		/*
 		if (LineMacrosParser.hasAnyMacros(this.link)) {
 			keys.push({
 				key: 'link_runtime',
 				fn: this._getLink
 			});
-		}
+		}*/
 		return keys;
 	}
 }

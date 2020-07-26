@@ -179,10 +179,6 @@ export class ChromiumDriver implements Driver {
 		if (mainPage) {
 			await this._pool.release(this._pages[0]);
 		}
-		// const waitPoolTimeout = 10 * 60 * 60 * 1000;
-		// await this.wait(waitPoolTimeout, 2000, () => {
-		// 	return this._pool.pending === 0 && this._pool.borrowed === 0;
-		// });
 		await this._pool.drain();
 		await this._pool.clear();
 		this._pages = [];

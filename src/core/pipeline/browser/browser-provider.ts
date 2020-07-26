@@ -32,8 +32,8 @@ export class BrowserProvider extends IBrowserProvider {
 				return;
 			}
 			if (context) {
-				const contextResolver = this._ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
-				contextResolver.copyContext(context, [command])
+				const dataContextResolver = this._ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
+				dataContextResolver.copyContext(context, [command])
 			}
 			if (!silent) {
 				await this._commandAnalyzer.startCommand(command);
@@ -43,7 +43,8 @@ export class BrowserProvider extends IBrowserProvider {
 			if (!silent) {
 				await this._commandAnalyzer.errorCommand(command, e.toString());
 			}
-			throw e
+			console.error(e);
+			throw new Error(e)
 		}
 	}
 
