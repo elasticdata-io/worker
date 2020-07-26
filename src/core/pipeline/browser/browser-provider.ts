@@ -53,8 +53,6 @@ export class BrowserProvider extends IBrowserProvider {
 			const waitPoolInterval = 1 * 1000;
 			this._waitCompletedInterval = setInterval(() => {
 				const pollCompleted = this._isPollCompleted();
-				console.info(`pollCompleted: ${pollCompleted}`)
-				console.info(`this._browser.isStopped(): ${this._browser.isStopped()}`)
 				if (pollCompleted || this._browser.isStopped()) {
 					clearInterval(this._waitCompletedInterval);
 					resolve();

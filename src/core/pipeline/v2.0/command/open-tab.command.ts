@@ -53,12 +53,7 @@ export class OpenTabCommand extends AbstractCommand {
 			this.dataContextResolver.copyContext(this, commands);
 			this.pageContextResolver.copyContext(this, commands);
 			const firstCommand = commands[0];
-			const context = this.dataContextResolver.resolveContext(this);
-			const firstCommandContext = this.dataContextResolver.resolveContext(firstCommand);
-			await this.store.put('context', context, this);
-			await this.store.put('firstCommand context', firstCommandContext, this);
 			await this.browserProvider.execute(firstCommand);
-			// await firstCommand.execute()
 		}
 	}
 
