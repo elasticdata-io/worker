@@ -168,7 +168,6 @@ export class ChromiumDriver implements Driver {
 		} else {
 			console.error(`resource with context: ${pageContext} not found`)
 		}
-		console.log(`this._pages.keys = ${Object.keys(this._pages)}`)
 	}
 
 	public async exit(): Promise<void> {
