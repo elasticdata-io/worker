@@ -21,6 +21,7 @@ const TYPES = {
 	PipelineIoc: Symbol.for("PipelineIoc"),
 	DataServiceUrl: Symbol.for("DataServiceUrl"),
 	AbstractCommandAnalyzer: Symbol.for("AbstractCommandAnalyzer"),
+	BrowserPool: Symbol.for("BrowserPool"),
 };
 
 export { TYPES };

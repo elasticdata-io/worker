@@ -73,7 +73,7 @@ export class DataContextResolver {
 		}
 	}
 
-	public copyCommandContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]): void {
+	public copyContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]): void {
 		try {
 			const originContext = this.resolveContext(originCommand);
 			this.setChildrenContext(targetCommands, originContext);

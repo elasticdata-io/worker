@@ -50,13 +50,14 @@ export class OpenTabCommand extends AbstractCommand {
 
 	private async _executeCommands(commands: AbstractCommand[]): Promise<void> {
 		if (commands.length) {
-			const pageContext = this.pageContextResolver.resolvePageContext(this);
-			const dataContext = this.contextResolver.resolveContext(this);
-			commands.forEach(command => {
-				this.contextResolver.setContext(command, dataContext);
-			});
-			this.pageContextResolver.setPageContext(commands, pageContext);
-			await this.browserProvider.execute(commands[0]);
+			this.dataContextResolver.copyContext(this, commands);
+			this.pageContextResolver.copyContext(this, commands);
+			const firstCommand = commands[0];
+			const context = this.dataContextResolver.resolveContext(this);
+			const firstCommandContext = this.dataContextResolver.resolveContext(firstCommand);
+			await this.store.put('context', context, this);
+			await this.store.put('firstCommand context', firstCommandContext, this);
+			await this.browserProvider.execute(firstCommand);
 		}
 	}
 
@@ -64,15 +65,17 @@ export class OpenTabCommand extends AbstractCommand {
 		await this.driver.releasePageContext(pageContext);
 	}
 
-	private async _execute(pageContext: number, dataContext: string): Promise<void> {
+	private async _execute(): Promise<void> {
 		const commandFactory = this.ioc.get<CommandFactory>(ROOT_TYPES.ICommandFactory);
 		const commands = commandFactory.createChainCommands(this.commands);
+		const pageContext = this.pageContextResolver.resolveContext(this);
+		const dataContext = this.dataContextResolver.resolveContext(this);
 		this._goToUrl()
 			.then(() => this._executeCommands(commands))
 			.then(() => super.execute())
 			.then(() => console.log(`FINISH pageContext: ${pageContext}, dataContext: ${dataContext}`))
 			.catch((error) => console.error(error))
-			.finally(() => this._releasePageContext(pageContext))
+			.finally(() => this._releasePageContext(pageContext));
 	}
 
 	/**
@@ -86,11 +89,9 @@ export class OpenTabCommand extends AbstractCommand {
 		openTabCommand.link = this.link;
 		openTabCommand.timeout = this.timeout;
 		openTabCommand.uuid = StringGenerator.generate();
+		this.dataContextResolver.copyContext(this, [openTabCommand]);
 		this.pageContextResolver.increaseContext(openTabCommand);
-		this.contextResolver.copyCommandContext(this, [openTabCommand]);
-		const pageContext = this.pageContextResolver.resolvePageContext(openTabCommand);
-		const dataContext = this.contextResolver.resolveContext(openTabCommand);
-		this._execute.apply(openTabCommand, [pageContext, dataContext]);
+		this._execute.apply(openTabCommand);
 	}
 
 	/**

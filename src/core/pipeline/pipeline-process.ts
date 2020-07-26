@@ -36,6 +36,8 @@ export class PipelineProcess {
 		try {
 			await this.store.setDataRules(this._dataRules);
 			await this._browserProvider.execute(command);
+			await this._browserProvider.waitCompleted();
+			console.info('END MAIN THREAD');
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
 			const taskCommandsInfo = {
 				json: JSON.parse(this._commandsJson),

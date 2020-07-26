@@ -12,7 +12,7 @@ export class PageContextResolver {
 		this.commands = {};
 	}
 
-	public resolvePageContext(command: AbstractCommand): number {
+	public resolveContext(command: AbstractCommand): number {
 		try {
 			return this.commands[command.uuid];
 		} catch (e) {
@@ -20,7 +20,7 @@ export class PageContextResolver {
 		}
 	}
 
-	public setPageContext(commands: AbstractCommand[], pageContext: number) {
+	public setContext(commands: AbstractCommand[], pageContext: number) {
 		try {
 			commands.forEach(command => {
 				this.commands[command.uuid] = pageContext;
@@ -30,7 +30,7 @@ export class PageContextResolver {
 		}
 	}
 
-	public setRootPageContext(command: AbstractCommand) {
+	public setRootContext(command: AbstractCommand) {
 		try {
 			this.commands[command.uuid] = 0;
 		} catch (e) {
@@ -42,6 +42,20 @@ export class PageContextResolver {
 		try {
 			const maxPageContext = Math.max(...Object.values(this.commands));
 			this.commands[originCommand.uuid] = maxPageContext + 1;
+		} catch (e) {
+			throw new SystemError(e);
+		}
+	}
+
+	public copyContext(originCommand: OpenTabCommand, targetCommands: AbstractCommand[]): void {
+		try {
+			const originContext = this.commands[originCommand.uuid];
+			if (!originContext) {
+				throw new Error(`origin command: ${originCommand.constructor.name} page context not found`);
+			}
+			targetCommands.forEach(targetCommand => {
+				this.commands[targetCommand.uuid] = originContext;
+			});
 		} catch (e) {
 			throw new SystemError(e);
 		}

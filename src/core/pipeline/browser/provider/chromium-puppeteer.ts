@@ -10,6 +10,7 @@ import {ChromiumPageFactory} from "./chromium-page-factory";
 import {PageFactoryOptions} from "../model/page-factory-options";
 import {Pool} from "generic-pool";
 import {Browser, Page} from "puppeteer";
+import {Environment} from "../../environment";
 
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {
@@ -30,14 +31,17 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 				windowHeight: this.windowHeight,
 				language: this.language,
 			} as PageFactoryOptions;
-			console.log(options);
+			console.info(options);
 			const pageFactory = new ChromiumPageFactory(options);
 			const opts = {
 				max: 3,
 				min: 1
 			};
 			const pool: Pool<{page: Page, browser: Browser}> = genericPool.createPool(pageFactory, opts);
-			this._driver = new ChromiumDriver(pool, this._ioc);
+			this._ioc
+				.bind<Pool<{page: Page, browser: Browser}>>(ROOT_TYPES.BrowserPool)
+				.toConstantValue(pool);
+			this._driver = new ChromiumDriver(this._ioc);
 			await this._driver.init({
 				width: this.windowWidth,
 				height: this.windowHeight,
@@ -56,6 +60,6 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 	}
 
 	public isStopped(): boolean {
-		return this._driver.hasBeenExited();
+		return Boolean(this._driver.hasBeenExited());
 	}
 }

@@ -19,13 +19,15 @@ export class ChromiumDriver implements Driver {
 	private _pages: Array<{page: Page, browser: Browser}> = [];
 	private _hasBeenExited: boolean;
 	private _pageContextResolver: PageContextResolver;
+	private _pool: Pool<{page: Page, browser: Browser}>;
 
-	constructor(private _pool: Pool<{page: Page, browser: Browser}>, private _ioc: PipelineIoc) {
+	constructor(private _ioc: PipelineIoc) {
 		this._timer = new Timer();
 		this._timer.watchStopByFn(() => {
 			return this.hasBeenExited() === true;
 		});
 		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
+		this._pool = this._ioc.get<Pool<{page: Page, browser: Browser}>>(ROOT_TYPES.BrowserPool);
 	}
 
 	//region Method: Public
@@ -177,10 +179,10 @@ export class ChromiumDriver implements Driver {
 		if (mainPage) {
 			await this._pool.release(this._pages[0]);
 		}
-		const waitPoolTimeout = 10 * 60 * 60 * 1000;
-		await this.wait(waitPoolTimeout, 2000, () => {
-			return this._pool.pending === 0 && this._pool.borrowed === 0;
-		});
+		// const waitPoolTimeout = 10 * 60 * 60 * 1000;
+		// await this.wait(waitPoolTimeout, 2000, () => {
+		// 	return this._pool.pending === 0 && this._pool.borrowed === 0;
+		// });
 		await this._pool.drain();
 		await this._pool.clear();
 		this._pages = [];
@@ -246,7 +248,7 @@ export class ChromiumDriver implements Driver {
 
 	private async _resolvePage(command: AbstractCommand): Promise<Page> {
 		const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
-		const context = pageContextResolver.resolvePageContext(command);
+		const context = pageContextResolver.resolveContext(command);
 		let resource = this._pages[context];
 		if (!resource) {
 			resource = await this._createNewResource();

@@ -169,7 +169,7 @@ export class CommandFactory extends ICommandFactory {
 		if (typeof key === 'object') {
 			const innerCommand = this._creteCommand(key);
 			this._dataContextResolver.setRootContext(innerCommand)
-			this._pageContextResolver.setRootPageContext(innerCommand)
+			this._pageContextResolver.setRootContext(innerCommand)
 			command.setKeyCommand(innerCommand)
 		}
 	}
@@ -179,7 +179,7 @@ export class CommandFactory extends ICommandFactory {
 			if (typeof command.link === 'object') {
 				const innerCommand = this._creteCommand(command.link);
 				this._dataContextResolver.setRootContext(innerCommand)
-				this._pageContextResolver.setRootPageContext(innerCommand)
+				this._pageContextResolver.setRootContext(innerCommand)
 				command.linkCommand = innerCommand
 			}
 		}
@@ -192,6 +192,6 @@ export class CommandFactory extends ICommandFactory {
 
 	private _initPageContext(commands: AbstractCommand[]) {
 		commands
-		  .forEach(command => this._pageContextResolver.setRootPageContext(command));
+		  .forEach(command => this._pageContextResolver.setRootContext(command));
 	}
 }

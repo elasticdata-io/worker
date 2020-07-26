@@ -22,7 +22,7 @@ export abstract class AbstractCommand implements Selectable {
 	protected driver: Driver;
 	protected queryProviderFactory: QueryProviderFactory;
 	protected browserProvider: IBrowserProvider;
-	protected contextResolver: DataContextResolver;
+	protected dataContextResolver: DataContextResolver;
 	protected pageContextResolver: PageContextResolver;
 	protected ioc: PipelineIoc;
 
@@ -31,7 +31,7 @@ export abstract class AbstractCommand implements Selectable {
 		this.store = ioc.get<AbstractStore>(ROOT_TYPES.AbstractStore);
 		this.browserProvider = ioc.get<BrowserProvider>(ROOT_TYPES.IBrowserProvider);
 		this.queryProviderFactory = ioc.get<QueryProviderFactory>(ROOT_TYPES.QueryProviderFactory);
-		this.contextResolver = ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
+		this.dataContextResolver = ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
 		this.pageContextResolver = ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this.ioc = ioc;
 		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
