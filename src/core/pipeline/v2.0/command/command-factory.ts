@@ -29,7 +29,7 @@ import { OpenTabCommand } from './open-tab.command';
 import { OpenWindowCommand } from './open-window.command';
 import { Checker, CommandSpecification } from '../../documentation/specification';
 import {PageContextResolver} from "../../browser/page-context-resolver";
-import { OpenTabRuntimeCommand } from './async/open-tab-runtime.command';
+import { OpenTabAsyncCommand } from './async/open-tab.async.command';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -56,10 +56,10 @@ export class CommandFactory extends ICommandFactory {
 		openTabCommand: OpenTabCommand,
 		dataContext: string,
 		pageContext: number,
-	}): OpenTabRuntimeCommand {
+	}): OpenTabAsyncCommand {
 		const openTabCommand = config.openTabCommand;
 		const commandsJSON = JSON.stringify(openTabCommand.commands);
-		const openTabRuntimeCommand = new OpenTabRuntimeCommand(this._ioc);
+		const openTabRuntimeCommand = new OpenTabAsyncCommand(this._ioc);
 		openTabRuntimeCommand.link = openTabCommand.link;
 		openTabRuntimeCommand.timeout = openTabCommand.timeout;
 		openTabRuntimeCommand.uuid = StringGenerator.generate();

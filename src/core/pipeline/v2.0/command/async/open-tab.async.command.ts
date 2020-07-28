@@ -1,6 +1,6 @@
 import { AbstractCommand } from '../../../command/abstract-command';
 
-export class OpenTabRuntimeCommand extends AbstractCommand {
+export class OpenTabAsyncCommand extends AbstractCommand {
 
 	public timeout = 30;
 	public link = '';

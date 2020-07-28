@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
 import { SystemError } from '../command/exception/system-error';
-import { OpenTabRuntimeCommand } from '../v2.0/command/async/open-tab-runtime.command';
+import { OpenTabAsyncCommand } from '../v2.0/command/async/open-tab.async.command';
 
 @injectable()
 export class PageContextResolver {
@@ -38,7 +38,7 @@ export class PageContextResolver {
 		}
 	}
 
-	public increaseContext(originCommand: OpenTabRuntimeCommand): void {
+	public increaseContext(originCommand: OpenTabAsyncCommand): void {
 		try {
 			const maxPageContext = Math.max(...Object.values(this.commands));
 			this.commands[originCommand.uuid] = maxPageContext + 1;

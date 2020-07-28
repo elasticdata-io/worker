@@ -1,7 +1,7 @@
 import { AbstractCommand } from './abstract-command';
 import { injectable } from 'inversify';
 import { OpenTabCommand } from '../v2.0/command/open-tab.command';
-import { OpenTabRuntimeCommand } from '../v2.0/command/async/open-tab-runtime.command';
+import { OpenTabAsyncCommand } from '../v2.0/command/async/open-tab.async.command';
 
 @injectable()
 export abstract class ICommandFactory {
@@ -11,5 +11,5 @@ export abstract class ICommandFactory {
 		openTabCommand: OpenTabCommand,
 		dataContext: string,
 		pageContext: number,
-	}): OpenTabRuntimeCommand;
+	}): OpenTabAsyncCommand;
 }
