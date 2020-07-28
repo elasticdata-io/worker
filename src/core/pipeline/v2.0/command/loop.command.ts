@@ -72,4 +72,12 @@ export class LoopCommand extends AbstractCommand {
 		const keys = super.getManagedKeys();
 		return keys.concat(['index', 'max', 'context']);
 	}
+
+	/**
+	 * @override
+	 */
+	public setPageContext(pageContext: number) {
+		this.pageContextResolver.setContext(this, pageContext);
+		this.commands.forEach(command => command.setPageContext(pageContext));
+	}
 }

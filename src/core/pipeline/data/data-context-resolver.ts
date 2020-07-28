@@ -14,15 +14,15 @@ export class DataContextResolver {
 
 	private setRootLoopContext(command: LoopCommand) {
 		if (command.context) {
-			this.commands[command.uuid] = 'root.0';
+			command.setDataContext('root.0');
 			return;
 		}
-		this.commands[command.uuid] = 'root';
+		command.setDataContext('root');
 	}
 
 	private setChildrenDataContext(commands: AbstractCommand[], commandsContext: string) {
 		commands
-			.forEach(command => this.commands[command.uuid] = commandsContext);
+			.forEach(command => command.setDataContext(commandsContext));
 	}
 
 	public resolveIndex(command: AbstractCommand, contextName: string): number {
@@ -51,7 +51,7 @@ export class DataContextResolver {
 				this.setRootLoopContext(command);
 				return;
 			}
-			this.commands[command.uuid] = 'root.0';
+			command.setDataContext('root.0');
 		} catch (e) {
 			throw new SystemError(e);
 		}

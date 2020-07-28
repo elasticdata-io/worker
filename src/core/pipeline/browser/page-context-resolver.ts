@@ -20,11 +20,9 @@ export class PageContextResolver {
 		}
 	}
 
-	public setContext(commands: AbstractCommand[], pageContext: number) {
+	public setContext(command: AbstractCommand, pageContext: number) {
 		try {
-			commands.forEach(command => {
-				this.commands[command.uuid] = pageContext;
-			})
+			this.commands[command.uuid] = pageContext;
 		} catch (e) {
 			throw new SystemError(e);
 		}
@@ -32,7 +30,7 @@ export class PageContextResolver {
 
 	public setRootContext(command: AbstractCommand) {
 		try {
-			this.commands[command.uuid] = 0;
+			command.setPageContext(0);
 		} catch (e) {
 			throw new SystemError(e);
 		}
@@ -54,7 +52,7 @@ export class PageContextResolver {
 				throw new Error(`origin command: ${originCommand.constructor.name} page context not found`);
 			}
 			targetCommands
-				.forEach(targetCommand => this.commands[targetCommand.uuid] = originContext);
+				.forEach(targetCommand => targetCommand.setPageContext(originContext));
 		} catch (e) {
 			throw new SystemError(e);
 		}

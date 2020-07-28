@@ -107,6 +107,6 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public setPageContext(pageContext: number): void {
-		this.pageContextResolver.setContext([this], pageContext);
+		this.pageContextResolver.setContext(this, pageContext);
 	}
 }

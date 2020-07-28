@@ -31,7 +31,6 @@ export class OpenTabAsyncCommand extends AbstractCommand {
 	 * OpenTab command running in async mode and not block main tab thread
 	 */
 	public async execute(): Promise<void> {
-		this.pageContextResolver.increaseContext(this);
 		await this._goToUrl();
 		await this._executeCommands();
 		await this._releasePageContext();
@@ -66,8 +65,10 @@ export class OpenTabAsyncCommand extends AbstractCommand {
 	 * @override
 	 */
 	public setPageContext(pageContext: number) {
-		this.pageContextResolver.setContext([this], pageContext);
-		this.pageContextResolver.setContext(this.commands, pageContext);
+		this.pageContextResolver.setContext(this, pageContext);
+		this.pageContextResolver.increaseContext(this);
+		const increaseContext = this.pageContextResolver.resolveContext(this);
+		this.commands.forEach(command => command.setPageContext(increaseContext))
 	}
 
 	/**
