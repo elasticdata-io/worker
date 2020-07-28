@@ -62,7 +62,7 @@ export class PipelineProcess {
 				failureReason: e.toString(),
 			};
 		} finally {
-			await this.exit();
+			await this.destroy();
 		}
 	}
 
@@ -75,8 +75,8 @@ export class PipelineProcess {
 		this.isAborted = true;
 	}
 
-	async exit(): Promise<void> {
-		await this.browser.exit();
+	async destroy(): Promise<void> {
+		await this.browser.destroy();
 		this._ioc.unbindAll();
 	}
 }

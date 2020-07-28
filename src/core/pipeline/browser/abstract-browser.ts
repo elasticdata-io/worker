@@ -10,8 +10,8 @@ export abstract class AbstractBrowser {
 
 	public abstract create(): Promise<Driver>;
 	public abstract abort(): Promise<void>;
-	public abstract exit(): Promise<void>;
-	public abstract hasBeenExited(): boolean;
+	public abstract destroy(): Promise<void>;
+	public abstract hasBeenDestroyed(): boolean;
 	public abstract hasBeenAborted(): boolean;
 }
 

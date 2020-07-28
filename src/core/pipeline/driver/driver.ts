@@ -24,7 +24,7 @@ export interface Driver {
 	releasePageContext(pageContext: number): Promise<void>;
 
 	abort(): Promise<void>;
-	exit(): Promise<void>;
-	hasBeenExited(): boolean;
+	destroy(): Promise<void>;
+	hasBeenDestroyed(): boolean;
 	hasBeenAborted(): boolean;
 }

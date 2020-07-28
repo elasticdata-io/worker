@@ -27,7 +27,7 @@ export class BrowserProvider extends IBrowserProvider {
 		const context = config && config.context;
 		const silent = config && config.silent;
 		try {
-			if (this._browser.hasBeenExited() && this._browser.hasBeenAborted()) {
+			if (this._browser.hasBeenDestroyed() && this._browser.hasBeenAborted()) {
 				console.info(`SKIP COMMAND: ${command.constructor.name} because browser has been stopped`);
 				return;
 			}
@@ -53,7 +53,7 @@ export class BrowserProvider extends IBrowserProvider {
 			const waitPoolInterval = 1 * 1000;
 			this._waitCompletedInterval = setInterval(() => {
 				const pollCompleted = this._isPollCompleted();
-				if (pollCompleted || this._browser.hasBeenExited()) {
+				if (pollCompleted || this._browser.hasBeenDestroyed()) {
 					clearInterval(this._waitCompletedInterval);
 					resolve();
 				}

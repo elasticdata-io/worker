@@ -17,7 +17,7 @@ export class ChromiumDriver implements Driver {
 	private _timer: Timer;
 	private _options: DriverOptions;
 	private _pages: Array<{page: Page, browser: Browser}> = [];
-	private _hasBeenExited: boolean;
+	private _hasBeenDestroyed: boolean;
 	private _hasBeenAborted: boolean;
 	private _pageContextResolver: PageContextResolver;
 	private _pool: Pool<{page: Page, browser: Browser}>;
@@ -25,7 +25,7 @@ export class ChromiumDriver implements Driver {
 	constructor(private _ioc: PipelineIoc) {
 		this._timer = new Timer();
 		this._timer.watchStopByFn(() => {
-			return this.hasBeenExited() === true;
+			return this.hasBeenDestroyed() === true;
 		});
 		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this._pool = this._ioc.get<Pool<{page: Page, browser: Browser}>>(ROOT_TYPES.BrowserPool);
@@ -184,8 +184,8 @@ export class ChromiumDriver implements Driver {
 		await this._pool.drain();
 	}
 
-	public async exit(): Promise<void> {
-		if (this.hasBeenExited()) {
+	public async destroy(): Promise<void> {
+		if (this.hasBeenDestroyed()) {
 			return;
 		}
 		const mainPage = this._pages[0];
@@ -199,11 +199,11 @@ export class ChromiumDriver implements Driver {
 		}
 		this._pages = [];
 		console.log(chalk.cyan('browser has been closed...'));
-		this._hasBeenExited = true;
+		this._hasBeenDestroyed = true;
 	}
 
-	public hasBeenExited(): boolean {
-		return this._hasBeenExited;
+	public hasBeenDestroyed(): boolean {
+		return this._hasBeenDestroyed;
 	}
 
 	public hasBeenAborted(): boolean {

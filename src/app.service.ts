@@ -45,6 +45,7 @@ export class AppService {
 	private async stopTask(taskId?: string): Promise<boolean>  {
 		if (!taskId || this._currentTaskId === taskId) {
 			await this._pipelineProcess.abort();
+			await this._pipelineProcess.destroy();
 			await this.handleTaskStopped(taskId);
 			return true;
 		}
@@ -73,7 +74,7 @@ export class AppService {
 			throw taskInformation.failureReason;
 		}
 		if (this._pipelineProcess.isAborted) {
-			await this._pipelineProcess.exit();
+			await this._pipelineProcess.destroy();
 			return {} as TaskResult;
 		}
 		const data = await this._pipelineProcess.commit();
@@ -81,7 +82,7 @@ export class AppService {
 			...data,
 			taskInformation: taskInformation,
 		});
-		await this._pipelineProcess.exit();
+		await this._pipelineProcess.destroy();
 		return data;
 	}
 
