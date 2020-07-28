@@ -37,6 +37,9 @@ export class AppService {
 			this._currentTaskId = dto.taskId;
 			return await this.runTask(dto);
 		} catch (e) {
+			if (this._pipelineProcess.isAborted) {
+				return;
+			}
 			await this.handleErrorOfTask(dto.taskId, e);
 			throw e
 		}
