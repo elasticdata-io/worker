@@ -9,7 +9,8 @@ export abstract class AbstractBrowser {
 	public language = 'en';
 
 	public abstract create(): Promise<Driver>;
-	public abstract stop(): Promise<void>;
+	public abstract abortAndExit(): Promise<void>;
+	public abstract exit(): Promise<void>;
 	public abstract isStopped(): boolean;
 }
 

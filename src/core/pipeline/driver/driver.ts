@@ -23,6 +23,7 @@ export interface Driver {
 	captureSnapshot(command: AbstractCommand): Promise<string>;
 	releasePageContext(pageContext: number): Promise<void>;
 
+	abort(): Promise<void>;
 	exit(): Promise<void>;
 	hasBeenExited(): boolean;
 }

@@ -170,16 +170,29 @@ export class ChromiumDriver implements Driver {
 		}
 	}
 
+	public async abort(): Promise<void> {
+		if (this.hasBeenExited()) {
+			return;
+		}
+		for (const page of this._pages) {
+			await this._pool.release(page);
+		}
+		await this._pool.drain();
+	}
+
 	public async exit(): Promise<void> {
 		if (this.hasBeenExited()) {
 			return;
 		}
 		const mainPage = this._pages[0];
-		if (mainPage) {
-			await this._pool.release(this._pages[0]);
+		if (mainPage && this._pool.isBorrowedResource(mainPage)) {
+			await this._pool.release(mainPage);
 		}
 		await this._pool.drain();
 		await this._pool.clear();
+		for (const page of this._pages) {
+			await page.browser.close();
+		}
 		this._pages = [];
 		console.log(chalk.cyan('browser has been closed...'));
 		this._hasBeenExited = true;

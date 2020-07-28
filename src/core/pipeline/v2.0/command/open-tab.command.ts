@@ -51,7 +51,8 @@ export class OpenTabCommand extends AbstractCommand {
 		})
 		this.browserProvider
 		  .execute(openTabRuntimeCommand)
-		  .then(() => super.execute());
+		  .finally(() => super.execute())
+		  .catch((err) => console.log(err));
 	}
 
 	/**

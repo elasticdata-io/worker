@@ -55,7 +55,12 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 		}
 	}
 
-	public async stop(): Promise<void> {
+	public async abortAndExit(): Promise<void> {
+		await this._driver.abort()
+		await this._driver.exit()
+	}
+
+	public async exit(): Promise<void> {
 		await this._driver.exit()
 	}
 

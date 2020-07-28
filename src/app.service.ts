@@ -22,7 +22,7 @@ export class AppService {
 		this.USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
 	}
 
-	public async stopPipelineTask(taskId: string): Promise<boolean> {
+	public async stopPipelineTask(taskId?: string): Promise<boolean> {
 		try {
 			return await this.stopTask(taskId);
 		} catch (e) {
@@ -42,9 +42,9 @@ export class AppService {
 		}
 	}
 
-	private async stopTask(taskId: string): Promise<boolean>  {
-		if (this._currentTaskId === taskId) {
-			await this._pipelineProcess.abort();
+	private async stopTask(taskId?: string): Promise<boolean>  {
+		if (!taskId || this._currentTaskId === taskId) {
+			await this._pipelineProcess.abortAndExit();
 			await this.handleTaskStopped(taskId);
 			return true;
 		}
@@ -73,7 +73,7 @@ export class AppService {
 			throw taskInformation.failureReason;
 		}
 		if (this._pipelineProcess.isAborted) {
-			await this._pipelineProcess.destroy();
+			await this._pipelineProcess.exit();
 			return {} as TaskResult;
 		}
 		const data = await this._pipelineProcess.commit();
@@ -81,7 +81,7 @@ export class AppService {
 			...data,
 			taskInformation: taskInformation,
 		});
-		await this._pipelineProcess.destroy();
+		await this._pipelineProcess.exit();
 		return data;
 	}
 
@@ -145,7 +145,6 @@ export class AppService {
 	}
 
 	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {
-		console.log(`handleErrorOfTask, taskId: ${taskId}`);
 		if (this.USE_SIMPLE_WORKER) {
 			console.error(error);
 			return;
@@ -171,6 +170,9 @@ export class AppService {
 	}
 
 	private async handleTaskStopped(taskId: string): Promise<void> {
+		if (this.USE_SIMPLE_WORKER) {
+			return;
+		}
 		const patch = [
 			{
 				op: "replace",

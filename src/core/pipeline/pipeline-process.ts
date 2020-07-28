@@ -59,7 +59,7 @@ export class PipelineProcess {
 				failureReason: e.toString(),
 			};
 		} finally {
-			await this.destroy();
+			await this.exit();
 		}
 	}
 
@@ -67,14 +67,14 @@ export class PipelineProcess {
 		return this.store.commit();
 	}
 
-	async abort(): Promise<void> {
-		await this.destroy();
+	async abortAndExit(): Promise<void> {
+		await this.browser.abortAndExit();
+		this._ioc.unbindAll();
 		this.isAborted = true;
 	}
 
-	async destroy(): Promise<void> {
-		// todo: need implement
-		await this.browser.stop();
+	async exit(): Promise<void> {
+		await this.browser.exit();
 		this._ioc.unbindAll();
 	}
 }
