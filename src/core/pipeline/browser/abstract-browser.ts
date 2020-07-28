@@ -9,8 +9,9 @@ export abstract class AbstractBrowser {
 	public language = 'en';
 
 	public abstract create(): Promise<Driver>;
-	public abstract abortAndExit(): Promise<void>;
+	public abstract abort(): Promise<void>;
 	public abstract exit(): Promise<void>;
-	public abstract isStopped(): boolean;
+	public abstract hasBeenExited(): boolean;
+	public abstract hasBeenAborted(): boolean;
 }
 

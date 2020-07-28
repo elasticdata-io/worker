@@ -18,6 +18,7 @@ export class ChromiumDriver implements Driver {
 	private _options: DriverOptions;
 	private _pages: Array<{page: Page, browser: Browser}> = [];
 	private _hasBeenExited: boolean;
+	private _hasBeenAborted: boolean;
 	private _pageContextResolver: PageContextResolver;
 	private _pool: Pool<{page: Page, browser: Browser}>;
 
@@ -171,11 +172,14 @@ export class ChromiumDriver implements Driver {
 	}
 
 	public async abort(): Promise<void> {
-		if (this.hasBeenExited()) {
+		if (this.hasBeenAborted()) {
 			return;
 		}
+		this._hasBeenAborted = true;
 		for (const page of this._pages) {
-			await this._pool.release(page);
+			if (this._pool.isBorrowedResource(page)) {
+				await this._pool.release(page);
+			}
 		}
 		await this._pool.drain();
 	}
@@ -200,6 +204,10 @@ export class ChromiumDriver implements Driver {
 
 	public hasBeenExited(): boolean {
 		return this._hasBeenExited;
+	}
+
+	public hasBeenAborted(): boolean {
+		return this._hasBeenAborted;
 	}
 
 	//endregion

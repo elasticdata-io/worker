@@ -44,7 +44,7 @@ export class AppService {
 
 	private async stopTask(taskId?: string): Promise<boolean>  {
 		if (!taskId || this._currentTaskId === taskId) {
-			await this._pipelineProcess.abortAndExit();
+			await this._pipelineProcess.abort();
 			await this.handleTaskStopped(taskId);
 			return true;
 		}

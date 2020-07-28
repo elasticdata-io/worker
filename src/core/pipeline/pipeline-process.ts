@@ -48,6 +48,9 @@ export class PipelineProcess {
 				commandsInformationLink: file
 			};
 		} catch (e) {
+			if (this.isAborted) {
+				return;
+			}
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
 			const taskCommandsInfo = {
 				json: JSON.parse(this._commandsJson),
@@ -67,9 +70,8 @@ export class PipelineProcess {
 		return this.store.commit();
 	}
 
-	async abortAndExit(): Promise<void> {
-		await this.browser.abortAndExit();
-		this._ioc.unbindAll();
+	async abort(): Promise<void> {
+		await this.browser.abort();
 		this.isAborted = true;
 	}
 

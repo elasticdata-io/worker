@@ -26,4 +26,5 @@ export interface Driver {
 	abort(): Promise<void>;
 	exit(): Promise<void>;
 	hasBeenExited(): boolean;
+	hasBeenAborted(): boolean;
 }
