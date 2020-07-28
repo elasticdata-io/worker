@@ -96,9 +96,17 @@ export abstract class AbstractCommand implements Selectable {
 	public async replaceMacros(inputWithMacros: string, command: AbstractCommand): Promise<any> {
 		if (LineMacrosParser.hasAnyMacros(inputWithMacros)) {
 			const replaced = await this.store.replaceMacros(command, inputWithMacros);
-			console.log(`from: ${inputWithMacros}, to: ${replaced}`);
+			// console.log(`from: ${inputWithMacros}, to: ${replaced}`);
 			return replaced;
 		}
 		return inputWithMacros;
+	}
+
+	public setDataContext(dataContext: string): void {
+		this.dataContextResolver.setContext(this, dataContext);
+	}
+
+	public setPageContext(pageContext: number): void {
+		this.pageContextResolver.setContext([this], pageContext);
 	}
 }

@@ -29,6 +29,7 @@ import { OpenTabCommand } from './open-tab.command';
 import { OpenWindowCommand } from './open-window.command';
 import { Checker, CommandSpecification } from '../../documentation/specification';
 import {PageContextResolver} from "../../browser/page-context-resolver";
+import { OpenTabRuntimeCommand } from './async/open-tab-runtime.command';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -51,6 +52,26 @@ export class CommandFactory extends ICommandFactory {
 		return commands;
 	}
 
+	public createOpenTabRuntimeCommand(config: {
+		openTabCommand: OpenTabCommand,
+		dataContext: string,
+		pageContext: number,
+	}): OpenTabRuntimeCommand {
+		const openTabCommand = config.openTabCommand;
+		const commandsJSON = JSON.stringify(openTabCommand.commands);
+		const openTabRuntimeCommand = new OpenTabRuntimeCommand(this._ioc);
+		openTabRuntimeCommand.link = openTabCommand.link;
+		openTabRuntimeCommand.timeout = openTabCommand.timeout;
+		openTabRuntimeCommand.uuid = StringGenerator.generate();
+		const commands = this._createCommands(commandsJSON);
+		this._linksCommands(commands);
+		commands.forEach(command => command.uuid = StringGenerator.generate());
+		openTabRuntimeCommand.commands = commands;
+		openTabRuntimeCommand.setPageContext(config.pageContext);
+		openTabRuntimeCommand.setDataContext(config.dataContext);
+		return openTabRuntimeCommand;
+	}
+
 	private _linksCommands(commands: AbstractCommand[]) {
 		commands.forEach((command, index) => {
 			const nextCommand = commands[index + 1];
@@ -60,7 +81,7 @@ export class CommandFactory extends ICommandFactory {
 		});
 	}
 
-	private _createCommands(commandsJson: string) {
+	private _createCommands(commandsJson: string): AbstractCommand[] {
 		const commands = JSON.parse(commandsJson) || [];
 		return commands.map(config => this._creteCommand(config));
 	}

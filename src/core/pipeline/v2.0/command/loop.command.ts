@@ -65,7 +65,7 @@ export class LoopCommand extends AbstractCommand {
 
 	private async applyChildrenContext() {
 		const contextResolver = this.ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
-		contextResolver.setLoopChildrenContext(this);
+		contextResolver.setLoopChildrenDataContext(this);
 	}
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {

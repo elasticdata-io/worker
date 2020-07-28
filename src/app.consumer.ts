@@ -14,6 +14,10 @@ export class AppConsumer {
 	}
 
 	private init() {
+		const USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
+		if (USE_SIMPLE_WORKER) {
+			return;
+		}
 		const runTaskQueueName = this._configService.get<string>('RUN_TASK_QUEUE_NAME');
 		const stopTaskQueueName = this._configService.get<string>('STOP_TASK_QUEUE_NAME');
 		const connectionString = this._configService.get<string>('AMQP_CONNECTION_STRING');

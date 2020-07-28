@@ -1,7 +1,7 @@
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
 import { SystemError } from '../command/exception/system-error';
-import {OpenTabCommand} from "../v2.0/command/open-tab.command";
+import { OpenTabRuntimeCommand } from '../v2.0/command/async/open-tab-runtime.command';
 
 @injectable()
 export class PageContextResolver {
@@ -38,7 +38,7 @@ export class PageContextResolver {
 		}
 	}
 
-	public increaseContext(originCommand: OpenTabCommand): void {
+	public increaseContext(originCommand: OpenTabRuntimeCommand): void {
 		try {
 			const maxPageContext = Math.max(...Object.values(this.commands));
 			this.commands[originCommand.uuid] = maxPageContext + 1;
@@ -47,15 +47,14 @@ export class PageContextResolver {
 		}
 	}
 
-	public copyContext(originCommand: OpenTabCommand, targetCommands: AbstractCommand[]): void {
+	public copyContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]): void {
 		try {
 			const originContext = this.commands[originCommand.uuid];
 			if (!originContext) {
 				throw new Error(`origin command: ${originCommand.constructor.name} page context not found`);
 			}
-			targetCommands.forEach(targetCommand => {
-				this.commands[targetCommand.uuid] = originContext;
-			});
+			targetCommands
+				.forEach(targetCommand => this.commands[targetCommand.uuid] = originContext);
 		} catch (e) {
 			throw new SystemError(e);
 		}

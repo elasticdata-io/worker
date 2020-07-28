@@ -20,10 +20,9 @@ export class DataContextResolver {
 		this.commands[command.uuid] = 'root';
 	}
 
-	private setChildrenContext(commands: AbstractCommand[], commandsContext: string) {
-		commands.forEach(command => {
-			this.commands[command.uuid] = commandsContext;
-		});
+	private setChildrenDataContext(commands: AbstractCommand[], commandsContext: string) {
+		commands
+			.forEach(command => this.commands[command.uuid] = commandsContext);
 	}
 
 	public resolveIndex(command: AbstractCommand, contextName: string): number {
@@ -62,12 +61,12 @@ export class DataContextResolver {
 		this.commands[command.uuid] = context;
 	}
 
-	public setLoopChildrenContext(command: LoopCommand) {
+	public setLoopChildrenDataContext(command: LoopCommand) {
 		try {
 			const loopContext = this.resolveContext(command);
 			const currentContext = command.context ? `.${command.context}` : '';
 			const commandsContext = `${loopContext}${currentContext}.${command.index}`;
-			this.setChildrenContext(command.commands, commandsContext);
+			this.setChildrenDataContext(command.commands, commandsContext);
 		} catch (e) {
 			throw new SystemError(e);
 		}
@@ -76,7 +75,7 @@ export class DataContextResolver {
 	public copyContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]): void {
 		try {
 			const originContext = this.resolveContext(originCommand);
-			this.setChildrenContext(targetCommands, originContext);
+			this.setChildrenDataContext(targetCommands, originContext);
 		} catch (e) {
 			throw new SystemError(e);
 		}

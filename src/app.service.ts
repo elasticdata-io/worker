@@ -6,14 +6,21 @@ import { TaskService } from './task/task.service';
 import { RunTaskDto } from './dto/run.task';
 import { TaskResult } from './core/pipeline/data/dto/task.result';
 import { PipelineProcess } from './core/pipeline/pipeline-process';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
 	private _pipelineProcess: PipelineProcess;
+	private readonly USE_SIMPLE_WORKER: boolean;
 	private _currentTaskId: string;
 
-	constructor(private _pipelineBuilderFactory: PipelineBuilderFactory,
-				private _taskService: TaskService) {}
+	constructor(
+		private _pipelineBuilderFactory: PipelineBuilderFactory,
+		private _taskService: TaskService,
+		private _configService: ConfigService,
+	) {
+		this.USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
+	}
 
 	public async stopPipelineTask(taskId: string): Promise<boolean> {
 		try {
@@ -51,10 +58,14 @@ export class AppService {
 			taskId: dto.taskId
 		} as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
-		console.log(JSON.parse(dto.json));
+		let json: string = dto.json;
+		if (typeof json === 'object') {
+			json = JSON.stringify(dto.json, null, 4);
+		}
+		console.log(JSON.parse(json));
 		this._pipelineProcess = await pipelineBuilder
 		  .setEnvironment(env)
-		  .setPipelineJson(dto.json)
+		  .setPipelineJson(json)
 		  .setProxies(dto.proxies)
 		  .build();
 		const taskInformation = await this._pipelineProcess.run();
@@ -75,6 +86,9 @@ export class AppService {
 	}
 
 	private async beforeRunTask(taskId: string): Promise<void> {
+		if (this.USE_SIMPLE_WORKER) {
+			return;
+		}
 		const patch = [
 			{
 				op: "replace",
@@ -91,6 +105,9 @@ export class AppService {
 	}
 
 	private async afterRunTask(taskId: string, taskResult: TaskResult): Promise<void> {
+		if (this.USE_SIMPLE_WORKER) {
+			return;
+		}
 		const patch = [
 			{
 				op: "replace",
@@ -129,6 +146,10 @@ export class AppService {
 
 	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {
 		console.log(`handleErrorOfTask, taskId: ${taskId}`);
+		if (this.USE_SIMPLE_WORKER) {
+			console.error(error);
+			return;
+		}
 		const patch = [
 			{
 				op: "replace",
