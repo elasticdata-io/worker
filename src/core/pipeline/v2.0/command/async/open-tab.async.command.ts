@@ -33,11 +33,11 @@ export class OpenTabAsyncCommand extends AbstractCommand {
 	public async execute(): Promise<void> {
 		await this._goToUrl();
 		await this._executeCommands();
-		await this._releasePageContext();
+		await this._destroyPage();
 		await super.execute();
 	}
 
-	private async _releasePageContext() {
+	private async _destroyPage() {
 		const pageContext = this.pageContextResolver.resolveContext(this);
 		await this.driver.destroyPage(pageContext);
 	}
