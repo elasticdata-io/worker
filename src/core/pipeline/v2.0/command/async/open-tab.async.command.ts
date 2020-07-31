@@ -39,7 +39,7 @@ export class OpenTabAsyncCommand extends AbstractCommand {
 
 	private async _releasePageContext() {
 		const pageContext = this.pageContextResolver.resolveContext(this);
-		await this.driver.releasePageContext(pageContext);
+		await this.driver.destroyPage(pageContext);
 	}
 
 	/**

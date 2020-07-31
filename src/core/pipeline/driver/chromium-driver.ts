@@ -162,10 +162,10 @@ export class ChromiumDriver implements Driver {
 		return result.data.toString();
 	}
 
-	public async releasePageContext(pageContext: number): Promise<void> {
+	public async destroyPage(pageContext: number): Promise<void> {
 		const resource = this._pages[pageContext];
 		if (resource) {
-			await this._pool.release(resource);
+			await this._pool.destroy(resource);
 		} else {
 			console.error(`resource with context: ${pageContext} not found`)
 		}

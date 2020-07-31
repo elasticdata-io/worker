@@ -21,7 +21,7 @@ export interface Driver {
 	getCurrentUrl(command: AbstractCommand): Promise<string>;
 	scrollBy(command: AbstractCommand, position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void>;
 	captureSnapshot(command: AbstractCommand): Promise<string>;
-	releasePageContext(pageContext: number): Promise<void>;
+	destroyPage(pageContext: number): Promise<void>;
 
 	abort(): Promise<void>;
 	destroy(): Promise<void>;
