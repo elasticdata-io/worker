@@ -37,15 +37,20 @@ export class AppService {
 			this._currentTaskId = dto.taskId;
 			return await this.runTask(dto);
 		} catch (e) {
-			if (this._pipelineProcess.isAborted) {
+			if (this._pipelineProcess?.isAborted) {
 				return;
 			}
-			await this.handleErrorOfTask(dto.taskId, e);
+			if (this._pipelineProcess) {
+				await this.handleErrorOfTask(dto.taskId, e);
+			}
 			throw e
 		}
 	}
 
 	private async stopTask(taskId?: string): Promise<boolean>  {
+		if (!this._pipelineProcess) {
+			return false;
+		}
 		if (!taskId || this._currentTaskId === taskId) {
 			await this._pipelineProcess.abort();
 			await this._pipelineProcess.destroy();
@@ -81,6 +86,7 @@ export class AppService {
 			return {} as TaskResult;
 		}
 		const data = await this._pipelineProcess.commit();
+		console.log(taskInformation);
 		await this.afterRunTask(dto.taskId, {
 			...data,
 			taskInformation: taskInformation,

@@ -39,9 +39,13 @@ export class CommandFactory extends ICommandFactory {
 	}
 
 	public appendUuidToCommands(commandsJson: string): string {
-		return commandsJson.replace(/"cmd":\s?("[a-z]+")/ig, function (match) {
-			return `"uuid": "${StringGenerator.generate()}", ${match}`;
-		});
+		const replaceFn = function(match) {
+			return `"masterUuid": "${StringGenerator.generate()}", ${match}`;
+		};
+		this.appendUuidToCommands = (): string => {
+			throw new SystemError(`the function 'appendUuidToCommands' cannot be called more than once`);
+		};
+		return commandsJson.replace(/"cmd":\s?("[a-z]+")/ig, replaceFn);
 	}
 
 	public createChainCommands(commandsJson: string): AbstractCommand[] {
@@ -62,10 +66,11 @@ export class CommandFactory extends ICommandFactory {
 		const openTabRuntimeCommand = new OpenTabAsyncCommand(this._ioc);
 		openTabRuntimeCommand.link = openTabCommand.link;
 		openTabRuntimeCommand.timeout = openTabCommand.timeout;
-		openTabRuntimeCommand.uuid = StringGenerator.generate();
+		openTabRuntimeCommand.masterUuid = openTabCommand.masterUuid;
+		openTabRuntimeCommand.cmd = openTabCommand.cmd;
 		const commands = this._createCommands(commandsJSON);
 		this._linksCommands(commands);
-		commands.forEach(command => command.uuid = StringGenerator.generate());
+		// commands.forEach(command => command.uuid = StringGenerator.generate());
 		openTabRuntimeCommand.commands = commands;
 		openTabRuntimeCommand.setPageContext(config.pageContext);
 		openTabRuntimeCommand.setDataContext(config.dataContext);

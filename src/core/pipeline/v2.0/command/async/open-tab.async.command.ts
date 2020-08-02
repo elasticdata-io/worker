@@ -1,4 +1,5 @@
 import { AbstractCommand } from '../../../command/abstract-command';
+import { LineMacrosParser } from '../../../data/line-macros-parser';
 
 export class OpenTabAsyncCommand extends AbstractCommand {
 
@@ -50,14 +51,12 @@ export class OpenTabAsyncCommand extends AbstractCommand {
 			...super.getManagedKeys(),
 			'link',
 		];
-		/*
 		if (LineMacrosParser.hasAnyMacros(this.link)) {
 			keys.push({
 				key: 'link_runtime',
 				fn: this._getLink
 			});
 		}
-		*/
 		return keys;
 	}
 

@@ -11,6 +11,7 @@ import { DataContextResolver } from '../data/data-context-resolver';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
+import { StringGenerator } from '../util/string.generator';
 
 export abstract class AbstractCommand implements Selectable {
 
@@ -41,7 +42,8 @@ export abstract class AbstractCommand implements Selectable {
 	public key: string | AbstractCommand = '';
 	public selector = '';
 	public timeout = 1;
-	public uuid = '';
+	public uuid = StringGenerator.generate();
+	public masterUuid = '';
 
 	public setKeyCommand (command: AbstractCommand) {
 		this._keyCommand = command;

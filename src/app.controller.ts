@@ -13,7 +13,7 @@ export class AppController {
 			req.on('close', async () => await this.appService.stopPipelineTask());
 			return await this.appService.runPipelineTask(dto);
 		} catch (e) {
-			throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException(e.stack, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

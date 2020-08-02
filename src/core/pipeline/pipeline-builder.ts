@@ -52,14 +52,18 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._ioc
 		  .bind<Environment>(ROOT_TYPES.Environment)
 		  .toConstantValue(this._environment);
-		const pipelineConfiguration = this._pipelineConfigurationBuilder
-		  .buildFromJson(this._pipelineJson);
-		const browserProvider = new BrowserProvider(this._ioc);
-		const commands = pipelineConfiguration.commands;
-		const commandsJson = pipelineConfiguration.commandsJson;
-		const dataRules = pipelineConfiguration.dataRules;
-		this._pipelineProcess = new PipelineProcess(commandsJson, commands, dataRules, browserProvider, this._ioc);
-		return this._pipelineProcess;
+		try {
+			const pipelineConfiguration = this._pipelineConfigurationBuilder
+			  .buildFromJson(this._pipelineJson);
+			const browserProvider = new BrowserProvider(this._ioc);
+			const commands = pipelineConfiguration.commands;
+			const commandsJson = pipelineConfiguration.commandsJson;
+			const dataRules = pipelineConfiguration.dataRules;
+			this._pipelineProcess = new PipelineProcess(commandsJson, commands, dataRules, browserProvider, this._ioc);
+			return this._pipelineProcess;
+		} catch (e) {
+			throw e;
+		}
 	}
 
 	private setBrowserSettings(settings: SettingsConfiguration) {

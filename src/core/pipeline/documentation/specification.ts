@@ -51,9 +51,10 @@ export abstract class CommandSpecification {
 
 export abstract class Checker {
 
+	private static readonly IGNORED_KEYS = ['masterUuid', 'uuid', 'cmd'];
+
 	public static checkAssignableProperty(command: AbstractCommand, property: string): boolean {
-		const ignoreKeys = ['uuid', 'cmd'];
-		if (ignoreKeys.includes(property)) {
+		if (Checker.IGNORED_KEYS.includes(property)) {
 			return true;
 		}
 		const findCommand = DOCUMENTATION.commands.find(x => x.$class === command.constructor.name);
