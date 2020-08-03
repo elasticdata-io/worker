@@ -28,10 +28,10 @@ export abstract class JsonMaterializedPathsUtils {
 		uuidProp= 'uuid',
 		parentUuid = null
 	): Command[] {
-		commands.forEach(command => {
+		commands.forEach((command, index) => {
 			const id = parentUuid
-			  ? `${parentUuid}${this.DELIMITER}${StringGenerator.generate()}`
-			  : StringGenerator.generate();
+			  ? `${parentUuid}${this.DELIMITER}${index}`
+			  : `${index}`;
 			command[uuidProp] = id;
 			if (command[childProp]) {
 				this._appendMaterializedPaths(command[childProp], childProp, uuidProp, id);
