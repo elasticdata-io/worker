@@ -1,10 +1,12 @@
 export class CommandInformation {
 	name: string;
 	uuid: string;
-	json: { [key: string]: any };
+	runTimeConfig: { [key: string]: any };
+	designTimeConfig: { [key: string]: any };
 	startOnUtc: Date;
 	endOnUtc: Date;
 	status: 'success' | 'error';
 	failureReason?: string;
 	dataContext: string;
+	pageContext: number;
 }

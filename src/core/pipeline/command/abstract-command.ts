@@ -38,6 +38,7 @@ export abstract class AbstractCommand implements Selectable {
 		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
 	}
 
+	public designTimeConfig: any;
 	public cmd = '';
 	public key: string | AbstractCommand = '';
 	public selector = '';

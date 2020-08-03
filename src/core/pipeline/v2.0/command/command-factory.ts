@@ -68,6 +68,7 @@ export class CommandFactory extends ICommandFactory {
 		openTabRuntimeCommand.timeout = openTabCommand.timeout;
 		openTabRuntimeCommand.masterUuid = openTabCommand.masterUuid;
 		openTabRuntimeCommand.cmd = openTabCommand.cmd;
+		openTabRuntimeCommand.designTimeConfig = openTabCommand.designTimeConfig;
 		const commands = this._createCommands(commandsJSON);
 		this._linksCommands(commands);
 		// commands.forEach(command => command.uuid = StringGenerator.generate());
@@ -184,6 +185,7 @@ export class CommandFactory extends ICommandFactory {
 					command[key] = value;
 				}
 			}
+			command.designTimeConfig = config;
 		}
 		this._buildInnerKeyCommand(command);
 		this._buildLinkCommand(command)
