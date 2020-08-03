@@ -89,7 +89,16 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	public getCommands(): Promise<CommandInformation[]> {
-		return Promise.resolve(this._commands.filter(x => x.cmd));
+		const commands = this._commands.sort((a, b) => {
+			if (a.designTimeConfig.materializedUuidPath > b.designTimeConfig.materializedUuidPath) {
+				return 1;
+			}
+			if (a.designTimeConfig.materializedUuidPath < b.designTimeConfig.materializedUuidPath) {
+				return -1;
+			}
+			return 0 ;
+		});
+		return Promise.resolve(commands);
 	}
 
 	private isIgnoredCommand(command: AbstractCommand): boolean{
