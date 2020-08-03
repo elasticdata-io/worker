@@ -23,13 +23,13 @@ import { inject } from 'inversify';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { CaptureSnapshotCommand } from './capture-snapshot.command';
-import { StringGenerator } from '../../util/string.generator';
 import { SystemError } from '../../command/exception/system-error';
 import { OpenTabCommand } from './open-tab.command';
 import { OpenWindowCommand } from './open-window.command';
 import { Checker, CommandSpecification } from '../../documentation/specification';
 import {PageContextResolver} from "../../browser/page-context-resolver";
 import { OpenTabAsyncCommand } from './async/open-tab.async.command';
+import { JsonMaterializedPathsUtils } from '../../util/json-materialized-paths.utils';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -39,13 +39,14 @@ export class CommandFactory extends ICommandFactory {
 	}
 
 	public appendUuidToCommands(commandsJson: string): string {
-		const replaceFn = function(match) {
-			return `"masterUuid": "${StringGenerator.generate()}", ${match}`;
-		};
 		this.appendUuidToCommands = (): string => {
 			throw new SystemError(`the function 'appendUuidToCommands' cannot be called more than once`);
 		};
-		return commandsJson.replace(/"cmd":\s?("[a-z]+")/ig, replaceFn);
+		return JsonMaterializedPathsUtils.appendMaterializedPaths(
+		  JSON.parse(commandsJson),
+		  'commands',
+		  'materializedUuidPath'
+		);
 	}
 
 	public createChainCommands(commandsJson: string): AbstractCommand[] {
@@ -66,7 +67,7 @@ export class CommandFactory extends ICommandFactory {
 		const openTabRuntimeCommand = new OpenTabAsyncCommand(this._ioc);
 		openTabRuntimeCommand.link = openTabCommand.link;
 		openTabRuntimeCommand.timeout = openTabCommand.timeout;
-		openTabRuntimeCommand.masterUuid = openTabCommand.masterUuid;
+		openTabRuntimeCommand.materializedUuidPath = openTabCommand.materializedUuidPath;
 		openTabRuntimeCommand.cmd = openTabCommand.cmd;
 		openTabRuntimeCommand.designTimeConfig = openTabCommand.designTimeConfig;
 		const commands = this._createCommands(commandsJSON);

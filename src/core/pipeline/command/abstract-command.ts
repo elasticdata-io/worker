@@ -44,7 +44,7 @@ export abstract class AbstractCommand implements Selectable {
 	public selector = '';
 	public timeout = 1;
 	public uuid = StringGenerator.generate();
-	public masterUuid = '';
+	public materializedUuidPath = '';
 
 	public setKeyCommand (command: AbstractCommand) {
 		this._keyCommand = command;

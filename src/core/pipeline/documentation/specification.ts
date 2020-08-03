@@ -51,7 +51,7 @@ export abstract class CommandSpecification {
 
 export abstract class Checker {
 
-	private static readonly IGNORED_KEYS = ['masterUuid', 'uuid', 'cmd'];
+	private static readonly IGNORED_KEYS = ['materializedUuidPath', 'uuid', 'cmd'];
 
 	public static checkAssignableProperty(command: AbstractCommand, property: string): boolean {
 		if (Checker.IGNORED_KEYS.includes(property)) {

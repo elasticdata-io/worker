@@ -6,6 +6,7 @@ import moment = require('moment');
 import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
+import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
 
 @injectable()
 export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
@@ -14,6 +15,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	private _pageContextResolver: PageContextResolver;
 	private readonly _commands: CommandInformation[];
 	private readonly _tmpCommands: { [key: string]: CommandInformation };
+	private readonly COMMANDS_IGNORED = [OpenTabCommand];
 
 	constructor(
 	  @inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
@@ -27,6 +29,9 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	public async endCommand(command: AbstractCommand): Promise<void> {
+		if (this.isIgnoredCommand(command)) {
+			return;
+		}
 		const info = this._tmpCommands[command.uuid];
 		if (!info) {
 			return;
@@ -38,6 +43,9 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	public async errorCommand(command: AbstractCommand, failureReason: string): Promise<void> {
+		if (this.isIgnoredCommand(command)) {
+			return;
+		}
 		const info = this._tmpCommands[command.uuid];
 		if (!info) {
 			return;
@@ -50,6 +58,9 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	public async startCommand(command: AbstractCommand): Promise<void> {
+		if (this.isIgnoredCommand(command)) {
+			return;
+		}
 		const runTimeConfig = {};
 		const managedKeys = command.getManagedKeys();
 		for (const managedKey of managedKeys) {
@@ -79,5 +90,12 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
 	public getCommands(): Promise<CommandInformation[]> {
 		return Promise.resolve(this._commands.filter(x => x.cmd));
+	}
+
+	private isIgnoredCommand(command: AbstractCommand): boolean{
+		const find = this.COMMANDS_IGNORED.find(x => {
+			return command instanceof x;
+		});
+		return Boolean(find);
 	}
 }
