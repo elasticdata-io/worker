@@ -45,17 +45,20 @@ export class LoopCommand extends AbstractCommand {
 	})
 	public commands: AbstractCommand[] = [];
 
+	public currentIndex: number;
+
 	async execute(): Promise<void> {
 		try {
-			this.index = 0;
+			this.currentIndex = this.index;
 			for (let i = 0; i < this.max; i++) {
 				await this.applyChildrenContext();
 				const firstCommand = this.commands[0];
 				await this.browserProvider.execute(firstCommand);
-				this.index++;
+				this.currentIndex++;
 			}
 		} catch (e) {
-			if (e instanceof SystemError) {
+			const isFirstIteration = this.currentIndex === this.index;
+			if (e instanceof SystemError && isFirstIteration) {
 				throw e;
 			}
 			console.error(e);
@@ -70,7 +73,7 @@ export class LoopCommand extends AbstractCommand {
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
-		return keys.concat(['index', 'max', 'context']);
+		return keys.concat(['currentIndex', 'max', 'context']);
 	}
 
 	/**

@@ -65,7 +65,7 @@ export class DataContextResolver {
 		try {
 			const loopContext = this.resolveContext(command);
 			const currentContext = command.context ? `.${command.context}` : '';
-			const commandsContext = `${loopContext}${currentContext}.${command.index}`;
+			const commandsContext = `${loopContext}${currentContext}.${command.currentIndex}`;
 			this.setChildrenDataContext(command.commands, commandsContext);
 		} catch (e) {
 			throw new SystemError(e);
