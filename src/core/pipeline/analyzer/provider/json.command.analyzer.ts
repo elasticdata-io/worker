@@ -96,6 +96,12 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			if (a.designTimeConfig.materializedUuidPath < b.designTimeConfig.materializedUuidPath) {
 				return -1;
 			}
+			if (a.dataContext > b.dataContext) {
+				return 1;
+			}
+			if (a.dataContext < b.dataContext) {
+				return -1;
+			}
 			return 0 ;
 		});
 		return Promise.resolve(commands);
