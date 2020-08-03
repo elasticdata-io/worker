@@ -57,8 +57,7 @@ export class LoopCommand extends AbstractCommand {
 				this.currentIndex++;
 			}
 		} catch (e) {
-			const isFirstIteration = this.currentIndex === this.index;
-			if (e instanceof SystemError && isFirstIteration) {
+			if (e instanceof SystemError) {
 				throw e;
 			}
 			console.error(e);
