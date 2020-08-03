@@ -72,7 +72,7 @@ export class LoopCommand extends AbstractCommand {
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
-		return keys.concat(['context', 'currentIndex']);
+		return keys.concat(['max', 'context', 'index', 'currentIndex']);
 	}
 
 	/**
