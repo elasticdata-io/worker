@@ -65,9 +65,10 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			delete command.designTimeConfig.commands;
 		}
 		const commandInformation = {
+			cmd: command.cmd,
+			name: command.constructor.name,
 			startOnUtc: moment().utc().toDate(),
 			uuid: command.uuid,
-			name: command.constructor.name,
 			dataContext: this._dataContextResolver.resolveContext(command),
 			pageContext: this._pageContextResolver.resolveContext(command),
 			runTimeConfig: runTimeConfig,
@@ -77,6 +78,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	public getCommands(): Promise<CommandInformation[]> {
-		return Promise.resolve(this._commands);
+		return Promise.resolve(this._commands.filter(x => x.cmd));
 	}
 }

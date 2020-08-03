@@ -1,4 +1,5 @@
 export class CommandInformation {
+	cmd: string;
 	name: string;
 	uuid: string;
 	runTimeConfig: { [key: string]: any };
