@@ -102,7 +102,7 @@ export class HttpDataClient {
 	 * Attach file in user folder with command context.
 	 * @param data
 	 */
-	async putFile(data: KeyFileData): Promise<void> {
+	async putFile(data: KeyFileData): Promise<string> {
 		try {
 			const url = new URL(`${this._serviceUrl}${this._servicePath}/upload/${data.id}/${data.context}/${data.fileExtension}/${data.key}`);
 			const form = new FormData();
@@ -114,7 +114,7 @@ export class HttpDataClient {
 					userUuid: data.userUuid,
 				},
 			};
-			await axios.post(url.href, form, config);
+			return await axios.post(url.href, form, config);
 		} catch (e) {
 			throw new SystemError(`putFile data is failed: ${e?.response?.data?.message || e.message}`);
 		}

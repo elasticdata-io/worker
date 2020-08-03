@@ -7,6 +7,7 @@ import { DataContextResolver } from '../data-context-resolver';
 import { Environment } from '../../environment';
 import { TaskResult } from '../dto/task.result';
 import { DataRule } from '../dto/data-rule';
+import { AbstractCommandAnalyzer } from '../../analyzer/abstract.command.analyzer';
 
 @injectable()
 export class HttpDataStore extends AbstractStore {
@@ -14,14 +15,19 @@ export class HttpDataStore extends AbstractStore {
 	protected httpDataClient: HttpDataClient;
 	protected userUuid: string;
 	protected taskId: string;
+	protected commandAnalyzer: AbstractCommandAnalyzer;
 
-	constructor(@inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
-				@inject(TYPES.HttpDataClient) httpDataClient: HttpDataClient,
-				@inject(TYPES.Environment) env: Environment) {
+	constructor(
+		@inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
+		@inject(TYPES.HttpDataClient) httpDataClient: HttpDataClient,
+		@inject(TYPES.Environment) env: Environment,
+		@inject(TYPES.AbstractCommandAnalyzer) commandAnalyzer: AbstractCommandAnalyzer,
+	) {
 		super(dataContextResolver);
 		this.userUuid = env.userUuid;
 		this.taskId = env.taskId;
 		this.httpDataClient = httpDataClient;
+		this.commandAnalyzer = commandAnalyzer;
 	}
 
 	/**
@@ -64,6 +70,7 @@ export class HttpDataStore extends AbstractStore {
 			id: this.id,
 			userUuid: this.userUuid,
 		});
+		await this.commandAnalyzer.setCommandData(command, value);
 	}
 
 	async get(key: string, command: AbstractCommand): Promise<any> {
@@ -95,7 +102,7 @@ export class HttpDataStore extends AbstractStore {
 	 */
 	async putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
-		await this.httpDataClient.putFile({
+		const link = await this.httpDataClient.putFile({
 			key: key,
 			file: file,
 			fileExtension: fileExtension,
@@ -103,6 +110,7 @@ export class HttpDataStore extends AbstractStore {
 			id: this.id,
 			userUuid: this.userUuid,
 		});
+		await this.commandAnalyzer.setCommandData(command, link);
 	}
 
 	/**
@@ -114,7 +122,9 @@ export class HttpDataStore extends AbstractStore {
 	async attachJsonFile(json: any, command: AbstractCommand): Promise<string> {
 		const buffer = Buffer.from(JSON.stringify(json, null, 4));
 		const metadata = {'content-type': 'application/json;charset=UTF-8'};
-		return await this.attachFile(buffer, '.json', metadata, command);
+		const link = await this.attachFile(buffer, '.json', metadata, command);
+		await this.commandAnalyzer.setCommandData(command, link);
+		return link;
 	}
 
 	/**
@@ -126,13 +136,15 @@ export class HttpDataStore extends AbstractStore {
 	 * @param command
 	 */
 	async attachFile(file: Buffer, fileExtension: string, metadata: any, command: AbstractCommand): Promise<string> {
-		return await this.httpDataClient.attachFile({
+		const link = await this.httpDataClient.attachFile({
 			file: file,
 			fileExtension: fileExtension,
 			id: this.id,
 			userUuid: this.userUuid,
 			metadata: metadata,
 		});
+		await this.commandAnalyzer.setCommandData(command, link);
+		return link;
 	}
 
 	/**

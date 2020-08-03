@@ -10,4 +10,5 @@ export class CommandInformation {
 	failureReason?: string;
 	dataContext: string;
 	pageContext: number;
+	dataValue?: any;
 }

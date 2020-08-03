@@ -28,7 +28,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._pageContextResolver = pageContextResolver;
 	}
 
-	public async endCommand(command: AbstractCommand): Promise<void> {
+	public async setCommandData(command: AbstractCommand, value: any): Promise<void> {
 		if (this.isIgnoredCommand(command)) {
 			return;
 		}
@@ -36,25 +36,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		if (!info) {
 			return;
 		}
-		info.endOnUtc = moment().utc().toDate();
-		info.status = 'success';
-		this._commands.push(info);
-		this._tmpCommands[command.uuid] = null;
-	}
-
-	public async errorCommand(command: AbstractCommand, failureReason: string): Promise<void> {
-		if (this.isIgnoredCommand(command)) {
-			return;
-		}
-		const info = this._tmpCommands[command.uuid];
-		if (!info) {
-			return;
-		}
-		info.endOnUtc = moment().utc().toDate();
-		info.status = 'error';
-		info.failureReason = failureReason;
-		this._commands.push(info);
-		this._tmpCommands[command.uuid] = null;
+		info.dataValue = value;
 	}
 
 	public async startCommand(command: AbstractCommand): Promise<void> {
@@ -86,6 +68,35 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			designTimeConfig: command.designTimeConfig,
 		} as CommandInformation;
 		this._tmpCommands[command.uuid] = commandInformation;
+	}
+
+	public async endCommand(command: AbstractCommand): Promise<void> {
+		if (this.isIgnoredCommand(command)) {
+			return;
+		}
+		const info = this._tmpCommands[command.uuid];
+		if (!info) {
+			return;
+		}
+		info.endOnUtc = moment().utc().toDate();
+		info.status = 'success';
+		this._commands.push(info);
+		this._tmpCommands[command.uuid] = null;
+	}
+
+	public async errorCommand(command: AbstractCommand, failureReason: string): Promise<void> {
+		if (this.isIgnoredCommand(command)) {
+			return;
+		}
+		const info = this._tmpCommands[command.uuid];
+		if (!info) {
+			return;
+		}
+		info.endOnUtc = moment().utc().toDate();
+		info.status = 'error';
+		info.failureReason = failureReason;
+		this._commands.push(info);
+		this._tmpCommands[command.uuid] = null;
 	}
 
 	public getCommands(): Promise<CommandInformation[]> {
