@@ -114,7 +114,8 @@ export class HttpDataClient {
 					userUuid: data.userUuid,
 				},
 			};
-			return await axios.post(url.href, form, config);
+			const result = await axios.post(url.href, form, config);
+			return result.data && result.data.link;
 		} catch (e) {
 			throw new SystemError(`putFile data is failed: ${e?.response?.data?.message || e.message}`);
 		}
