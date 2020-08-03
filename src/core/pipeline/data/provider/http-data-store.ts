@@ -100,7 +100,7 @@ export class HttpDataStore extends AbstractStore {
 	 * @param fileExtension
 	 * @param command
 	 */
-	async putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<void> {
+	async putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<string> {
 		const context = this.contextResolver.resolveContext(command);
 		const link = await this.httpDataClient.putFile({
 			key: key,
@@ -111,6 +111,7 @@ export class HttpDataStore extends AbstractStore {
 			userUuid: this.userUuid,
 		});
 		await this.commandAnalyzer.setCommandData(command, link);
+		return link;
 	}
 
 	/**
