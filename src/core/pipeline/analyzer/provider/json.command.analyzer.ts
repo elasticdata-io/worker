@@ -61,6 +61,9 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 				runTimeConfig[managedKey.toString()] = command[managedKey.toString()]
 			}
 		}
+		if (command.designTimeConfig && command.designTimeConfig.commands) {
+			delete command.designTimeConfig.commands;
+		}
 		const commandInformation = {
 			startOnUtc: moment().utc().toDate(),
 			uuid: command.uuid,
