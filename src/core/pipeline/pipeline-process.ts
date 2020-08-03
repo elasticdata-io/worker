@@ -40,7 +40,6 @@ export class PipelineProcess {
 			console.info('END MAIN THREAD');
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
 			const taskCommandsInfo = {
-				json: JSON.parse(this._commandsJson),
 				analyzed: commandsAnalyzed,
 			};
 			const file = await this.store.attachJsonFile(taskCommandsInfo, command);
@@ -48,12 +47,12 @@ export class PipelineProcess {
 				commandsInformationLink: file
 			};
 		} catch (e) {
+			console.error(e);
 			if (this.isAborted) {
 				return;
 			}
 			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
 			const taskCommandsInfo = {
-				json: JSON.parse(this._commandsJson),
 				analyzed: commandsAnalyzed,
 			};
 			const file = await this.store.attachJsonFile(taskCommandsInfo, command);
