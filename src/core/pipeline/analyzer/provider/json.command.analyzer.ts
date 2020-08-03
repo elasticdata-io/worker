@@ -43,17 +43,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		if (this.isIgnoredCommand(command)) {
 			return;
 		}
-		const runTimeConfig = {};
-		const managedKeys = command.getManagedKeys();
-		for (const managedKey of managedKeys) {
-			if ((typeof managedKey) === 'object') {
-				const key = (managedKey as any).key as string;
-				const fn = (managedKey as any).fn as () => Promise<string>;
-				runTimeConfig[key] = await fn.call(command);
-			} else {
-				runTimeConfig[managedKey.toString()] = command[managedKey.toString()]
-			}
-		}
 		if (command.designTimeConfig && command.designTimeConfig.commands) {
 			delete command.designTimeConfig.commands;
 		}
@@ -64,7 +53,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			uuid: command.uuid,
 			dataContext: this._dataContextResolver.resolveContext(command),
 			pageContext: this._pageContextResolver.resolveContext(command),
-			runTimeConfig: runTimeConfig,
 			designTimeConfig: command.designTimeConfig,
 		} as CommandInformation;
 		this._tmpCommands[command.uuid] = commandInformation;
@@ -80,6 +68,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		}
 		info.endOnUtc = moment().utc().toDate();
 		info.status = 'success';
+		info.runTimeConfig = await this.getRuntimeConfig(command);
 		this._commands.push(info);
 		this._tmpCommands[command.uuid] = null;
 	}
@@ -94,6 +83,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		}
 		info.endOnUtc = moment().utc().toDate();
 		info.status = 'error';
+		info.runTimeConfig = await this.getRuntimeConfig(command);
 		info.failureReason = failureReason;
 		this._commands.push(info);
 		this._tmpCommands[command.uuid] = null;
@@ -123,5 +113,20 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			return command instanceof x;
 		});
 		return Boolean(find);
+	}
+
+	private async getRuntimeConfig(command: AbstractCommand): Promise<any> {
+		const runTimeConfig = {};
+		const managedKeys = command.getManagedKeys();
+		for (const managedKey of managedKeys) {
+			if ((typeof managedKey) === 'object') {
+				const key = (managedKey as any).key as string;
+				const fn = (managedKey as any).fn as () => Promise<string>;
+				runTimeConfig[key] = await fn.call(command);
+			} else {
+				runTimeConfig[managedKey.toString()] = command[managedKey.toString()]
+			}
+		}
+		return runTimeConfig;
 	}
 }
