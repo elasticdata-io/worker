@@ -24,7 +24,7 @@ npm run start
 
 ```
 POST 
-http://localhost:3000
+http://localhost:3000/worker
 BODY:
 {
 	"version": "2.0",
