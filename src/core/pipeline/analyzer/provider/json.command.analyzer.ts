@@ -54,6 +54,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			dataContext: this._dataContextResolver.resolveContext(command),
 			pageContext: this._pageContextResolver.resolveContext(command),
 			designTimeConfig: command.designTimeConfig,
+			materializedUuidPath: command.designTimeConfig.materializedUuidPath,
 		} as CommandInformation;
 		this._tmpCommands[command.uuid] = commandInformation;
 	}
@@ -91,10 +92,10 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
 	public getCommands(): Promise<CommandInformation[]> {
 		const commands = this._commands.sort((a, b) => {
-			if (a.designTimeConfig.materializedUuidPath > b.designTimeConfig.materializedUuidPath) {
+			if (a.materializedUuidPath > b.materializedUuidPath) {
 				return 1;
 			}
-			if (a.designTimeConfig.materializedUuidPath < b.designTimeConfig.materializedUuidPath) {
+			if (a.materializedUuidPath < b.materializedUuidPath) {
 				return -1;
 			}
 			if (a.dataContext > b.dataContext) {
