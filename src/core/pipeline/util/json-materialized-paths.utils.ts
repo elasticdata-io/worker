@@ -16,7 +16,7 @@ export abstract class JsonMaterializedPathsUtils {
 	public static appendMaterializedPaths(
 	  commands: Command[],
 	  childProp = 'commands',
-	  uuidProp= 'uuid'
+	  uuidProp= 'materializedUuidPath'
 	): string {
 		this._appendMaterializedPaths(commands, childProp, uuidProp);
 		return JSON.stringify(commands);
@@ -25,7 +25,7 @@ export abstract class JsonMaterializedPathsUtils {
 	private static _appendMaterializedPaths(
 		commands: Command[],
 		childProp = 'commands',
-		uuidProp= 'uuid',
+		uuidProp= 'materializedUuidPath',
 		parentUuid = null
 	): Command[] {
 		commands.forEach((command, index) => {
