@@ -56,6 +56,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			designTimeConfig: command.designTimeConfig,
 			materializedUuidPath: command.designTimeConfig.materializedUuidPath,
 		} as CommandInformation;
+		delete commandInformation.designTimeConfig.materializedUuidPath;
 		this._tmpCommands[command.uuid] = commandInformation;
 	}
 
