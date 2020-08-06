@@ -44,7 +44,7 @@ export class BrowserProvider extends IBrowserProvider {
 				await this._commandAnalyzer.errorCommand(command, e.toString());
 			}
 			console.error(e);
-			throw new Error(e)
+			throw e
 		}
 	}
 
