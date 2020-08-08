@@ -4,6 +4,7 @@ import { TYPES as ROOT_TYPES } from '../../types';
 import { Cmd } from '../../command/decorator/command.decorator';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 import { CommandType } from '../../documentation/specification';
+import { LineMacrosParser } from '../../data/line-macros-parser';
 
 @Cmd({
 	cmd: 'openurl',
@@ -34,10 +35,30 @@ export class OpenUrlCommand extends AbstractCommand {
 		await super.execute();
 	}
 
+	/**
+	 * @override
+	 */
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
-		const keys = super.getManagedKeys();
-		return keys.concat(['link']);
+		const keys = [
+			...super.getManagedKeys(),
+			'link',
+		];
+		if (typeof this.link === 'string') {
+			if (LineMacrosParser.hasAnyMacros(this.link)) {
+				keys.push({
+					key: 'link_runtime',
+					fn: this._getLink
+				});
+			}
+		} else if (typeof this.link === 'object') {
+			keys.push({
+				key: 'link_runtime',
+				fn: this._getLink
+			});
+		}
+		return keys;
 	}
+
 
 	private async _getLink(): Promise<string> {
 		if (typeof this.link === 'string') {
