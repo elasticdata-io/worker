@@ -16,10 +16,17 @@ spec:
         app.kubernetes.io/name: {{ include "scraper-worker.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: dshm
           ports:
             - name: http
               containerPort: 3000
