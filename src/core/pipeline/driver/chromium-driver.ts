@@ -86,9 +86,18 @@ export class ChromiumDriver implements Driver {
 	}
 
 	public async goToUrl(command: AbstractCommand, url: string, timeoutSec = 1): Promise<void> {
-		const targetUrl = new URL(url);
-		const page = await this._resolvePage(command);
-		await page.goto(targetUrl.href, {timeout: timeoutSec * 1000});
+		try {
+			const targetUrl = new URL(url);
+			const page = await this._resolvePage(command);
+			await page.goto(targetUrl.href, {timeout: timeoutSec * 1000});
+		} catch (e) {
+			const pageContext = this._pageContextResolver.resolveContext(command);
+			const page = this._pages[pageContext];
+			if (page) {
+				await this._pool.release(page);
+			}
+			throw e;
+		}
 	}
 
 	public async hover(command: AbstractCommand): Promise<void> {
