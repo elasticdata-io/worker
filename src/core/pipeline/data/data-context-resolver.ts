@@ -34,7 +34,7 @@ export class DataContextResolver {
 			}
 			return parseInt(contexts[1], 10);
 		}
-		return context.replace(/^.*([0-9]+)$/, "$1");
+		return context.replace(/^.*\.([0-9]+)$/, "$1");
 	}
 
 	public resolveContext(command: AbstractCommand): string {
