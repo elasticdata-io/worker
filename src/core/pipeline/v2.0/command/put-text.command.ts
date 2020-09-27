@@ -21,6 +21,7 @@ export class PutTextCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		await this.driver.waitElement(this);
+		// todo: change to type
 		await this.driver.setElValue(this, this.text);
 		await super.execute();
 	}
