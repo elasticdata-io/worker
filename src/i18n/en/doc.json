@@ -88,5 +88,8 @@
 				]
 			}
 		]
+	},
+	"TYPE": {
+		"SUMMARY": "Inserts text into an element"
 	}
 }

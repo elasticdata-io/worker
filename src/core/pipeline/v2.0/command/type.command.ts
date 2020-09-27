@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'type',
 	version: '2.0',
 	type: CommandType.ACTION,
+	summary: `doc.TYPE.SUMMARY`
 })
 export class TypeCommand extends AbstractCommand {
 
