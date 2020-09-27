@@ -30,6 +30,7 @@ import { Checker, CommandSpecification } from '../../documentation/specification
 import {PageContextResolver} from "../../browser/page-context-resolver";
 import { OpenTabAsyncCommand } from './async/open-tab.async.command';
 import { JsonMaterializedPathsUtils } from '../../util/json-materialized-paths.utils';
+import { TypeCommand } from './type.command';
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -146,6 +147,9 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'puttext':
 				command = new PutTextCommand(ioc);
+				break;
+			case 'type':
+				command = new TypeCommand(ioc);
 				break;
 			case 'replacetext':
 				command = new ReplaceTextCommand(ioc);

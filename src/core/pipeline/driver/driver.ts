@@ -10,6 +10,7 @@ export interface Driver {
 	domClick(command: AbstractCommand): Promise<void>;
 	getScreenshot(command: AbstractCommand): Promise<Buffer>;
 	nativeClick(command: AbstractCommand): Promise<void>;
+	type(command: AbstractCommand, text: string): Promise<void>;
 	hover(command: AbstractCommand): Promise<void>;
 	waitElement(command: AbstractCommand): Promise<void>;
 	getElText(command: AbstractCommand): Promise<string>;

@@ -111,6 +111,11 @@ export class ChromiumDriver implements Driver {
 		await page.click(command.selector);
 	}
 
+	public async type(command: AbstractCommand, text: string): Promise<void> {
+		const page = await this._resolvePage(command);
+		await page.type(command.selector, text);
+	}
+
 	public async getElHash(command: AbstractCommand): Promise<string> {
 		return undefined;
 	}
