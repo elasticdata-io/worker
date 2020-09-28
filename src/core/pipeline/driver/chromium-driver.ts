@@ -149,7 +149,7 @@ export class ChromiumDriver implements Driver {
 			getOuterHTMLFn = getOuterHTMLFn.replace(/\s\}$/, '');
 			throw `Terminated after: ${skipAfterTimeout}ms.
 			\n
-			Page has not present element with function: ${getOuterHTMLFn.toString()}`
+			Page has not a present element with function: ${getOuterHTMLFn.toString()}`
 		}
 	}
 
