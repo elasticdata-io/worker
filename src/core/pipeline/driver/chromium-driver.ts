@@ -145,7 +145,7 @@ export class ChromiumDriver implements Driver {
 				return Boolean(html);
 			});
 		} catch (e) {
-			throw `${command.cmd} terminated after: ${skipAfterTimeout} ms, ${getOuterHTMLFn.toString()}`
+			throw `terminated after: ${skipAfterTimeout} ms, ${getOuterHTMLFn.toString()} \n ${e}`
 		}
 	}
 
