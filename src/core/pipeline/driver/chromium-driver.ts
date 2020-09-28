@@ -137,7 +137,7 @@ export class ChromiumDriver implements Driver {
 		const skipAfterTimeout = command.timeout * 1000;
 		const interval = 250;
 		const queryProvider = command.getQueryProvider();
-		const getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
+		let getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
 		try {
 			await this.wait(skipAfterTimeout, interval, async () => {
 				const page = await this._resolvePage(command);
@@ -145,7 +145,11 @@ export class ChromiumDriver implements Driver {
 				return Boolean(html);
 			});
 		} catch (e) {
-			throw `terminated after: ${skipAfterTimeout} ms, ${getOuterHTMLFn.toString()} \n ${e}`
+			getOuterHTMLFn = getOuterHTMLFn.replace('function anonymous( ) { return ', '');
+			getOuterHTMLFn = getOuterHTMLFn.replace(/\s\}$/, '');
+			throw `Terminated after: ${skipAfterTimeout}ms.
+			\n
+			Page has not present element with function: ${getOuterHTMLFn.toString()}`
 		}
 	}
 
