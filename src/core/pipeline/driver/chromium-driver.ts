@@ -149,7 +149,7 @@ export class ChromiumDriver implements Driver {
 			const fnBody = fnString.slice(fnString.indexOf("{") + 1, fnString.lastIndexOf("}"));
 			throw `Terminated after: ${skipAfterTimeout}ms.
 			Page has not a present element with function:
-			${fnBody}`
+			**${fnBody}**`
 		}
 	}
 
