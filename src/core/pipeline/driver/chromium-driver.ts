@@ -11,6 +11,7 @@ import {TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {Pool} from "generic-pool";
 import {SystemError} from "../command/exception/system-error";
+import { FunctionParser } from '../util/function.parser';
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -145,12 +146,10 @@ export class ChromiumDriver implements Driver {
 				return Boolean(html);
 			});
 		} catch (e) {
-			const fnString = getOuterHTMLFn
-			  .toString();
-			const fnBody = fnString.slice(fnString.indexOf("{") + 1, fnString.lastIndexOf("}"));
+			const fnBody = FunctionParser.getBody(getOuterHTMLFn);
 			throw `Terminated after: ${skipAfterTimeout}ms.
-			Page has not a present element with function:
-			${fnBody.trim()}`
+			Page not has present element:
+			${fnBody}`
 		}
 	}
 
