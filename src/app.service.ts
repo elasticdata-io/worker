@@ -8,6 +8,7 @@ import { TaskResult } from './core/pipeline/data/dto/task.result';
 import { PipelineProcess } from './core/pipeline/pipeline-process';
 import { ConfigService } from '@nestjs/config';
 
+
 @Injectable()
 export class AppService {
 	private _pipelineProcess: PipelineProcess;
@@ -61,7 +62,7 @@ export class AppService {
 	}
 
 	private async runTask(dto: RunTaskDto): Promise<TaskResult> {
-		this.beforeRunTask(dto.taskId);
+		await this.beforeRunTask(dto.taskId);
 		const env = {
 			userUuid: dto.userUuid,
 			taskId: dto.taskId
@@ -79,7 +80,7 @@ export class AppService {
 		  .build();
 		const taskInformation = await this._pipelineProcess.run();
 		if (taskInformation.failureReason) {
-			throw taskInformation.failureReason;
+			// throw taskInformation.failureReason;
 		}
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
@@ -118,11 +119,14 @@ export class AppService {
 		if (this.USE_SIMPLE_WORKER) {
 			return;
 		}
+		const taskStatus = taskResult.taskInformation.failureReason
+		  ? 'error'
+		  : 'completed';
 		const patch = [
 			{
 				op: "replace",
 				path: "/status",
-				value: 'completed'
+				value: taskStatus,
 			},
 			{
 				op: "replace",

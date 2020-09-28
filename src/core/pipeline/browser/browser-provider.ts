@@ -43,7 +43,6 @@ export class BrowserProvider extends IBrowserProvider {
 			if (!silent) {
 				await this._commandAnalyzer.errorCommand(command, e.toString());
 			}
-			console.error(e);
 			throw e
 		}
 	}
