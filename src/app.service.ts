@@ -79,20 +79,19 @@ export class AppService {
 		  .setProxies(dto.proxies)
 		  .build();
 		const taskInformation = await this._pipelineProcess.run();
-		if (taskInformation.failureReason) {
-			// throw taskInformation.failureReason;
-		}
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
 			return {} as TaskResult;
 		}
 		const data = await this._pipelineProcess.commit();
-		console.log(taskInformation);
 		await this.afterRunTask(dto.taskId, {
 			...data,
 			taskInformation: taskInformation,
 		});
 		await this._pipelineProcess.destroy();
+		if (taskInformation.failureReason) {
+			throw taskInformation.failureReason;
+		}
 		return data;
 	}
 
