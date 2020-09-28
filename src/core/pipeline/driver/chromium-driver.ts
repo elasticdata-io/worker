@@ -146,9 +146,10 @@ export class ChromiumDriver implements Driver {
 			});
 		} catch (e) {
 			const fnString = getOuterHTMLFn.toString();
+			const fnBody = fnString.slice(fnString.indexOf("{") + 1, fnString.lastIndexOf("}"));
 			throw `Terminated after: ${skipAfterTimeout}ms.
 			Page has not a present element with function:
-			${fnString}`
+			${fnBody}`
 		}
 	}
 
