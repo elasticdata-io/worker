@@ -40,7 +40,7 @@ export class AppService {
 			const task = await this.getTaskDto(this._currentTaskId);
 			const isTaskStopping = await this.isTaskStopping(task);
 			if (isTaskStopping) {
-				await this.handleTaskStopped(this._currentTaskId);
+				await this.stopTask(this._currentTaskId);
 				return;
 			}
 			const isTaskSuspended = await this.isTaskSuspended(task);
@@ -79,20 +79,20 @@ export class AppService {
 
 	private async stopTask(taskId?: string): Promise<boolean>  {
 		if (!taskId || this._currentTaskId === taskId) {
-			if (this._pipelineProcess) {
-				const taskInformation = await this._pipelineProcess.abort();
-				await this._pipelineProcess.destroy();
-				const resultData = await this._pipelineProcess.commit();
-				await this.handleTaskStopped(taskId, {
-					...resultData,
-					taskInformation,
-				});
-				return true;
+			if (!this._pipelineProcess) {
+				return false;
 			}
-			if(!this._pipelineProcess) {
-				await this.handleTaskStopped(taskId);
-				return true;
-			}
+			const taskInformation = await this._pipelineProcess.abort();
+			await this._pipelineProcess.destroy();
+			const resultData = await this._pipelineProcess.commit();
+			await this.handleTaskStopped(taskId, {
+				...resultData,
+				taskInformation,
+			});
+			return true;
+		} else if (this._currentTaskId !== taskId) {
+			await this.handleTaskStopped(taskId);
+			return true;
 		}
 		return false;
 	}
