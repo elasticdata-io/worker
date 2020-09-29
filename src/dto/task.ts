@@ -23,4 +23,7 @@ export class TaskDto {
 		}
 		return false;
 	}
+	public static isTaskStopping(task: TaskDto): boolean {
+		return task.status === 'stopping';
+	}
 }

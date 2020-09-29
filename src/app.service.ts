@@ -37,7 +37,13 @@ export class AppService {
 	public async runPipelineTask(dto: RunTaskDto): Promise<TaskResult> {
 		try {
 			this._currentTaskId = dto.taskId;
-			const isTaskSuspended = await this.isTaskSuspended(this._currentTaskId);
+			const task = await this.getTaskDto(this._currentTaskId);
+			const isTaskStopping = await this.isTaskStopping(task);
+			if (isTaskStopping) {
+				await this.handleTaskStopped(this._currentTaskId, {} as TaskResult);
+				return;
+			}
+			const isTaskSuspended = await this.isTaskSuspended(task);
 			if (isTaskSuspended) {
 				return;
 			}
@@ -53,27 +59,40 @@ export class AppService {
 		}
 	}
 
-	private async isTaskSuspended(taskId: string): Promise<boolean> {
-		const task: TaskDto  = await this._taskService.get(taskId);
-		if (!task) {
+	private async getTaskDto(taskId: string): Promise<TaskDto> {
+		return await this._taskService.get(taskId);
+	}
+
+	private async isTaskSuspended(taskDto: TaskDto): Promise<boolean> {
+		if (!taskDto) {
 			return true;
 		}
-		return TaskDto.isTaskSuspended(task);
+		return TaskDto.isTaskSuspended(taskDto);
+	}
+
+	private async isTaskStopping(taskDto: TaskDto): Promise<boolean> {
+		if (!taskDto) {
+			return false;
+		}
+		return TaskDto.isTaskStopping(taskDto);
 	}
 
 	private async stopTask(taskId?: string): Promise<boolean>  {
-		if (!this._pipelineProcess) {
-			return false;
-		}
 		if (!taskId || this._currentTaskId === taskId) {
-			const taskInformation = await this._pipelineProcess.abort();
-			await this._pipelineProcess.destroy();
-			const resultData = await this._pipelineProcess.commit();
-			await this.handleTaskStopped(taskId, {
-				...resultData,
-				taskInformation,
-			});
-			return true;
+			if (this._pipelineProcess) {
+				const taskInformation = await this._pipelineProcess.abort();
+				await this._pipelineProcess.destroy();
+				const resultData = await this._pipelineProcess.commit();
+				await this.handleTaskStopped(taskId, {
+					...resultData,
+					taskInformation,
+				});
+				return true;
+			}
+			if(!this._pipelineProcess) {
+				await this.handleTaskStopped(taskId, {} as TaskResult);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -212,22 +231,22 @@ export class AppService {
 			{
 				op: "replace",
 				path: "/docsUrl",
-				value: taskResult.fileLink
+				value: taskResult?.fileLink
 			},
 			{
 				op: "replace",
 				path: "/docsCount",
-				value: taskResult.rootLines || 0
+				value: taskResult?.rootLines || 0
 			},
 			{
 				op: "replace",
 				path: "/docsBytes",
-				value: taskResult.bytes
+				value: taskResult?.bytes
 			},
 			{
 				op: "replace",
 				path: "/commandsInformationLink",
-				value: taskResult.taskInformation.commandsInformationLink,
+				value: taskResult?.taskInformation?.commandsInformationLink,
 			},
 			{
 				op: "replace",
