@@ -41,6 +41,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		}
 		let browser: Browser;
 		const headless = process.env.PUPPETEER_HEADLESS === undefined || process.env.PUPPETEER_HEADLESS === '1';
+		console.log(`process.env.PUPPETEER_HEADLESS = ${process.env.PUPPETEER_HEADLESS}`);
 		if (headless) {
 			browser = await puppeteer.launch({
 				headless: headless,
