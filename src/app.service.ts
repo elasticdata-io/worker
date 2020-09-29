@@ -40,7 +40,7 @@ export class AppService {
 			const task = await this.getTaskDto(this._currentTaskId);
 			const isTaskStopping = await this.isTaskStopping(task);
 			if (isTaskStopping) {
-				await this.handleTaskStopped(this._currentTaskId, {} as TaskResult);
+				await this.handleTaskStopped(this._currentTaskId);
 				return;
 			}
 			const isTaskSuspended = await this.isTaskSuspended(task);
@@ -90,7 +90,7 @@ export class AppService {
 				return true;
 			}
 			if(!this._pipelineProcess) {
-				await this.handleTaskStopped(taskId, {} as TaskResult);
+				await this.handleTaskStopped(taskId);
 				return true;
 			}
 		}
@@ -218,11 +218,11 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 	}
 
-	private async handleTaskStopped(taskId: string, taskResult: TaskResult): Promise<void> {
+	private async handleTaskStopped(taskId: string, taskResult?: TaskResult): Promise<void> {
 		if (this.USE_SIMPLE_WORKER) {
 			return;
 		}
-		const patch = [
+		let patch: any[] = [
 			{
 				op: "replace",
 				path: "/status",
@@ -230,30 +230,35 @@ export class AppService {
 			},
 			{
 				op: "replace",
-				path: "/docsUrl",
-				value: taskResult?.fileLink
-			},
-			{
-				op: "replace",
-				path: "/docsCount",
-				value: taskResult?.rootLines || 0
-			},
-			{
-				op: "replace",
-				path: "/docsBytes",
-				value: taskResult?.bytes
-			},
-			{
-				op: "replace",
-				path: "/commandsInformationLink",
-				value: taskResult?.taskInformation?.commandsInformationLink,
-			},
-			{
-				op: "replace",
 				path: "/endOnUtc",
 				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			}
 		];
+		if (taskResult) {
+			patch = [
+				...patch,
+				{
+					op: "replace",
+					path: "/docsUrl",
+					value: taskResult?.fileLink
+				},
+				{
+					op: "replace",
+					path: "/docsCount",
+					value: taskResult?.rootLines || 0
+				},
+				{
+					op: "replace",
+					path: "/docsBytes",
+					value: taskResult?.bytes
+				},
+				{
+					op: "replace",
+					path: "/commandsInformationLink",
+					value: taskResult?.taskInformation?.commandsInformationLink,
+				},
+			];
+		}
 		await this._taskService.update(taskId, patch);
 		console.log(`handleTaskStopped, taskId: ${taskId}`);
 	}
