@@ -49,7 +49,7 @@ export class PipelineProcess {
 		}
 	}
 
-	private async _saveTaskInformation(error?: any) {
+	private async _saveTaskInformation(error?: any): Promise<TaskInformation> {
 		const command = this._commands[0];
 		const commandsAnalyzed = await this._commandAnalyzer.getCommands();
 		const taskCommandsInfo = {

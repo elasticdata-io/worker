@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
+import {TaskDto} from "../dto/task";
 
 @Injectable()
 export class TaskDataClient {
@@ -17,6 +18,15 @@ export class TaskDataClient {
 		}
 		const url = `${this._serviceUrl}/api/task/${taskId}`;
 		await axios.patch(`${url}`, patch);
+	}
+
+	async get(taskId: string): Promise<TaskDto> {
+		if (parseInt(this._serviceUrl) === 0) {
+			return;
+		}
+		const url = `${this._serviceUrl}/api/task/${taskId}`;
+		const response = await axios.get(`${url}`) || {data: {}};
+		return response.data as TaskDto;
 	}
 
 	async synchronizeWithPipeline(taskId: string): Promise<void> {

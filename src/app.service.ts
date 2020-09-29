@@ -7,6 +7,7 @@ import { RunTaskDto } from './dto/run.task';
 import { TaskResult } from './core/pipeline/data/dto/task.result';
 import { PipelineProcess } from './core/pipeline/pipeline-process';
 import { ConfigService } from '@nestjs/config';
+import {TaskDto} from "./dto/task";
 
 
 @Injectable()
@@ -36,6 +37,10 @@ export class AppService {
 	public async runPipelineTask(dto: RunTaskDto): Promise<TaskResult> {
 		try {
 			this._currentTaskId = dto.taskId;
+			const isTaskSuspended = await this.isTaskSuspended(this._currentTaskId);
+			if (isTaskSuspended) {
+				return;
+			}
 			return await this.runTask(dto);
 		} catch (e) {
 			if (this._pipelineProcess?.isAborted) {
@@ -46,6 +51,14 @@ export class AppService {
 			}
 			throw e
 		}
+	}
+
+	private async isTaskSuspended(taskId: string): Promise<boolean> {
+		const task: TaskDto  = await this._taskService.get(taskId);
+		if (!task) {
+			return true;
+		}
+		return task.isTaskSuspended();
 	}
 
 	private async stopTask(taskId?: string): Promise<boolean>  {
