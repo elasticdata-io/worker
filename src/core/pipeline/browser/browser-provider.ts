@@ -61,6 +61,7 @@ export class BrowserProvider extends IBrowserProvider {
 	}
 
 	private _isPollCompleted(): boolean {
+		console.log(`this._pool.pending = ${this._pool.pending}, this._pool.borrowed = ${this._pool.borrowed}`);
 		return this._pool.pending === 0 && this._pool.borrowed <= 1;
 	}
 }

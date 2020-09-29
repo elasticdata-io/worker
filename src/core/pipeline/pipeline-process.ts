@@ -37,41 +37,39 @@ export class PipelineProcess {
 			await this.store.setDataRules(this._dataRules);
 			await this._browserProvider.execute(command);
 			await this._browserProvider.waitCompleted();
-			console.info('END MAIN THREAD');
-			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
-			const taskCommandsInfo = {
-				analyzed: commandsAnalyzed,
-			};
-			const file = await this.store.attachJsonFile(taskCommandsInfo, command);
-			return {
-				commandsInformationLink: file
-			};
-		} catch (e) {
-			console.error(e);
+			return await this._saveTaskInformation();
+		} catch (error) {
+			console.error(error);
 			if (this.isAborted) {
 				return;
 			}
-			const commandsAnalyzed = await this._commandAnalyzer.getCommands();
-			const taskCommandsInfo = {
-				analyzed: commandsAnalyzed,
-			};
-			const file = await this.store.attachJsonFile(taskCommandsInfo, command);
-			return {
-				commandsInformationLink: file,
-				failureReason: e.toString(),
-			};
+			return await this._saveTaskInformation(error);
 		} finally {
 			await this.destroy();
 		}
+	}
+
+	private async _saveTaskInformation(error?: any) {
+		const command = this._commands[0];
+		const commandsAnalyzed = await this._commandAnalyzer.getCommands();
+		const taskCommandsInfo = {
+			analyzed: commandsAnalyzed,
+		};
+		const file = await this.store.attachJsonFile(taskCommandsInfo, command);
+		return {
+			commandsInformationLink: file,
+			failureReason: error ? error.toString(): null,
+		};
 	}
 
 	async commit(): Promise<TaskResult> {
 		return this.store.commit();
 	}
 
-	async abort(): Promise<void> {
+	async abort(): Promise<TaskInformation> {
 		await this.browser.abort();
 		this.isAborted = true;
+		return await this._saveTaskInformation();
 	}
 
 	async destroy(): Promise<void> {

@@ -53,9 +53,13 @@ export class AppService {
 			return false;
 		}
 		if (!taskId || this._currentTaskId === taskId) {
-			await this._pipelineProcess.abort();
+			const taskInformation = await this._pipelineProcess.abort();
 			await this._pipelineProcess.destroy();
-			await this.handleTaskStopped(taskId);
+			const resultData = await this._pipelineProcess.commit();
+			await this.handleTaskStopped(taskId, {
+				...resultData,
+				taskInformation,
+			});
 			return true;
 		}
 		return false;
@@ -144,13 +148,13 @@ export class AppService {
 			},
 			{
 				op: "replace",
-				path: "/endOnUtc",
-				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
+				path: "/commandsInformationLink",
+				value: taskResult.taskInformation.commandsInformationLink,
 			},
 			{
 				op: "replace",
-				path: "/commandsInformationLink",
-				value: taskResult.taskInformation.commandsInformationLink,
+				path: "/endOnUtc",
+				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			}
 		];
 		await this._taskService.update(taskId, patch);
@@ -182,7 +186,7 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 	}
 
-	private async handleTaskStopped(taskId: string): Promise<void> {
+	private async handleTaskStopped(taskId: string, taskResult: TaskResult): Promise<void> {
 		if (this.USE_SIMPLE_WORKER) {
 			return;
 		}
@@ -191,6 +195,26 @@ export class AppService {
 				op: "replace",
 				path: "/status",
 				value: 'stopped'
+			},
+			{
+				op: "replace",
+				path: "/docsUrl",
+				value: taskResult.fileLink
+			},
+			{
+				op: "replace",
+				path: "/docsCount",
+				value: taskResult.rootLines || 0
+			},
+			{
+				op: "replace",
+				path: "/docsBytes",
+				value: taskResult.bytes
+			},
+			{
+				op: "replace",
+				path: "/commandsInformationLink",
+				value: taskResult.taskInformation.commandsInformationLink,
 			},
 			{
 				op: "replace",
