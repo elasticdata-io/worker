@@ -14,11 +14,11 @@ export class TaskDto {
 	id: string;
 	status: TaskStatus;
 
-	public isTaskSuspended(): boolean {
-		if (this.status === 'stopping'
-			|| this.status === 'stopped'
-			|| this.status === 'error'
-			|| this.status === 'completed') {
+	public static isTaskSuspended(task: TaskDto): boolean {
+		if (task.status === 'stopping'
+			|| task.status === 'stopped'
+			|| task.status === 'error'
+			|| task.status === 'completed') {
 			return true;
 		}
 		return false;

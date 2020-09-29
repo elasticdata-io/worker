@@ -58,7 +58,7 @@ export class AppService {
 		if (!task) {
 			return true;
 		}
-		return task.isTaskSuspended();
+		return TaskDto.isTaskSuspended(task);
 	}
 
 	private async stopTask(taskId?: string): Promise<boolean>  {
