@@ -8,6 +8,7 @@ import { AbstractBrowser } from './browser/abstract-browser';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 import { TaskInformation } from './analyzer/task.information';
 import { DataRule } from './data/dto/data-rule';
+import { PipelineCommandEvent } from "./enum/event/pipeline-command.event";
 
 export class PipelineProcess {
 
@@ -27,7 +28,20 @@ export class PipelineProcess {
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
 	}
 
-	async run(): Promise<TaskInformation> {
+	private async _saveTaskInformation(error?: any): Promise<TaskInformation> {
+		const command = this._commands[0];
+		const commandsAnalyzed = await this._commandAnalyzer.getCommands();
+		const taskCommandsInfo = {
+			analyzed: commandsAnalyzed,
+		};
+		const file = await this.store.attachJsonFile(taskCommandsInfo, command);
+		return {
+			commandsInformationLink: file,
+			failureReason: error ? error.toString(): null,
+		};
+	}
+
+	public async run(): Promise<TaskInformation> {
 		if (this._commands.length === 0) {
 			console.warn(`commands is empty list`);
 			return;
@@ -49,31 +63,25 @@ export class PipelineProcess {
 		}
 	}
 
-	private async _saveTaskInformation(error?: any): Promise<TaskInformation> {
-		const command = this._commands[0];
-		const commandsAnalyzed = await this._commandAnalyzer.getCommands();
-		const taskCommandsInfo = {
-			analyzed: commandsAnalyzed,
-		};
-		const file = await this.store.attachJsonFile(taskCommandsInfo, command);
-		return {
-			commandsInformationLink: file,
-			failureReason: error ? error.toString(): null,
-		};
-	}
-
-	async commit(): Promise<TaskResult> {
+	public async commit(): Promise<TaskResult> {
 		return this.store.commit();
 	}
 
-	async abort(): Promise<TaskInformation> {
+	public async abort(): Promise<TaskInformation> {
 		await this.browser.abort();
 		this.isAborted = true;
 		return await this._saveTaskInformation();
 	}
 
-	async destroy(): Promise<void> {
+	public async destroy(): Promise<void> {
+		this._commandAnalyzer.unsubscribeAll();
 		await this.browser.destroy();
 		this._ioc.unbindAll();
+	}
+
+	public subscribe(event: PipelineCommandEvent, callbackFn: (arg: any) => void): void {
+		if (event === PipelineCommandEvent.START_EXECUTE_COMMAND) {
+			this._commandAnalyzer.subscribe(event, callbackFn);
+		}
 	}
 }

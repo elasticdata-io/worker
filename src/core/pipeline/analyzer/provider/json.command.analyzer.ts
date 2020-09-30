@@ -7,10 +7,15 @@ import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
+import { PipelineCommandEvent } from "../../enum/event/pipeline-command.event";
+
+type SubscriberFn = (arg: any) => void;
+type Subscriber = Map<PipelineCommandEvent, SubscriberFn[]>;
 
 @injectable()
 export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
+	private _subscribers: Subscriber = new Map();
 	private _dataContextResolver: DataContextResolver;
 	private _pageContextResolver: PageContextResolver;
 	private readonly _commands: CommandInformation[];
@@ -27,6 +32,39 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._dataContextResolver = dataContextResolver;
 		this._pageContextResolver = pageContextResolver;
 	}
+	private _notify(command: AbstractCommand) {
+		if (!this._subscribers.has(PipelineCommandEvent.START_EXECUTE_COMMAND)) {
+			return;
+		}
+		const fns: SubscriberFn[] = this._subscribers.get(PipelineCommandEvent.START_EXECUTE_COMMAND);
+		try {
+			fns.forEach(fn => fn.call(null, {
+				cmd: command.cmd,
+				uuid: command.uuid,
+				designTimeConfig: command.designTimeConfig,
+			}));
+		} catch (e) {}
+	}
+	private isIgnoredCommand(command: AbstractCommand): boolean{
+		const find = this.COMMANDS_IGNORED.find(x => {
+			return command instanceof x;
+		});
+		return Boolean(find);
+	}
+	private async getRuntimeConfig(command: AbstractCommand): Promise<any> {
+		const runTimeConfig = {};
+		const managedKeys = command.getManagedKeys();
+		for (const managedKey of managedKeys) {
+			if ((typeof managedKey) === 'object') {
+				const key = (managedKey as any).key as string;
+				const fn = (managedKey as any).fn as () => Promise<string>;
+				runTimeConfig[key] = await fn.call(command);
+			} else {
+				runTimeConfig[managedKey.toString()] = command[managedKey.toString()]
+			}
+		}
+		return runTimeConfig;
+	}
 
 	public async setCommandData(command: AbstractCommand, value: any): Promise<void> {
 		if (this.isIgnoredCommand(command)) {
@@ -38,11 +76,11 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		}
 		info.dataValue = value;
 	}
-
 	public async startCommand(command: AbstractCommand): Promise<void> {
 		if (this.isIgnoredCommand(command)) {
 			return;
 		}
+		this._notify(command);
 		if (command.designTimeConfig && command.designTimeConfig.commands) {
 			delete command.designTimeConfig.commands;
 		}
@@ -59,7 +97,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		delete commandInformation.designTimeConfig.materializedUuidPath;
 		this._tmpCommands[command.uuid] = commandInformation;
 	}
-
 	public async endCommand(command: AbstractCommand): Promise<void> {
 		if (this.isIgnoredCommand(command)) {
 			return;
@@ -74,7 +111,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._commands.push(info);
 		this._tmpCommands[command.uuid] = null;
 	}
-
 	public async errorCommand(command: AbstractCommand, failureReason: string): Promise<void> {
 		if (this.isIgnoredCommand(command)) {
 			return;
@@ -90,7 +126,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._commands.push(info);
 		this._tmpCommands[command.uuid] = null;
 	}
-
 	public getCommands(): Promise<CommandInformation[]> {
 		const commands = this._commands.sort((a, b) => {
 			if (a.materializedUuidPath > b.materializedUuidPath) {
@@ -109,26 +144,12 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		});
 		return Promise.resolve(commands);
 	}
-
-	private isIgnoredCommand(command: AbstractCommand): boolean{
-		const find = this.COMMANDS_IGNORED.find(x => {
-			return command instanceof x;
-		});
-		return Boolean(find);
+	public subscribe(event: PipelineCommandEvent, callbackFn: (arg: any) => void) {
+		const fns = this._subscribers.has(event) ? this._subscribers.get(event) : [];
+		fns.push(callbackFn);
+		this._subscribers.set(event, fns);
 	}
-
-	private async getRuntimeConfig(command: AbstractCommand): Promise<any> {
-		const runTimeConfig = {};
-		const managedKeys = command.getManagedKeys();
-		for (const managedKey of managedKeys) {
-			if ((typeof managedKey) === 'object') {
-				const key = (managedKey as any).key as string;
-				const fn = (managedKey as any).fn as () => Promise<string>;
-				runTimeConfig[key] = await fn.call(command);
-			} else {
-				runTimeConfig[managedKey.toString()] = command[managedKey.toString()]
-			}
-		}
-		return runTimeConfig;
+	public unsubscribeAll(): void {
+		this._subscribers.clear();
 	}
 }

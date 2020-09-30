@@ -1,13 +1,14 @@
 import * as moment from 'moment';
-import { Injectable } from '@nestjs/common';
-import { PipelineBuilderFactory } from './core/pipeline/pipeline-builder-factory';
-import { Environment } from './core/pipeline/environment';
-import { TaskService } from './task/task.service';
-import { RunTaskDto } from './dto/run.task';
-import { TaskResult } from './core/pipeline/data/dto/task.result';
-import { PipelineProcess } from './core/pipeline/pipeline-process';
-import { ConfigService } from '@nestjs/config';
+import {Injectable} from '@nestjs/common';
+import {PipelineBuilderFactory} from './core/pipeline/pipeline-builder-factory';
+import {Environment} from './core/pipeline/environment';
+import {TaskService} from './task/task.service';
+import {RunTaskDto} from './dto/run.task';
+import {TaskResult} from './core/pipeline/data/dto/task.result';
+import {PipelineProcess} from './core/pipeline/pipeline-process';
+import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task";
+import {PipelineCommandEvent} from "./core/pipeline/enum/event/pipeline-command.event";
 
 
 @Injectable()
@@ -114,6 +115,11 @@ export class AppService {
 		  .setPipelineJson(json)
 		  .setProxies(dto.proxies)
 		  .build();
+		this._pipelineProcess
+			.subscribe(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: any) => {
+				// todo: send to api server and notify for browser
+				console.log(`start execute command`, command);
+			});
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
