@@ -72,7 +72,7 @@ export class AppConsumer {
 	}
 
 	private static validateDto(dto: RunTaskDto) {
-		if (dto.json && dto.taskId && dto.userUuid) {
+		if (dto.json && dto.taskId && dto.userUuid && dto.pipelineId) {
 			return
 		}
 		throw `runTaskDto in not valid ${JSON.stringify(dto)}`;
