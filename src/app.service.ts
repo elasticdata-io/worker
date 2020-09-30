@@ -49,7 +49,7 @@ export class AppService {
 			if (isTaskSuspended) {
 				return;
 			}
-			return await this.runTask({...dto, pipelineId: task.pipelineId});
+			return await this.runTask(dto);
 		} catch (e) {
 			if (this._pipelineProcess?.isAborted) {
 				return;
@@ -99,7 +99,7 @@ export class AppService {
 		return false;
 	}
 
-	private async runTask(dto: RunTaskDto & {pipelineId: string}): Promise<TaskResult> {
+	private async runTask(dto: RunTaskDto): Promise<TaskResult> {
 		await this.beforeRunTask(dto.taskId);
 		const env = {
 			userUuid: dto.userUuid,
