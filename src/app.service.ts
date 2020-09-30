@@ -119,14 +119,13 @@ export class AppService {
 		type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
 		this._pipelineProcess
 			.subscribe(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: StartExecuteCommand) => {
-				// todo: send to api server and notify for browser
 				const taskCommandExecuteDto: TaskCommandExecuteDto = {
 					...command,
 					pipelineId: dto.pipelineId,
 					taskId: dto.taskId,
 					userId: dto.userUuid,
 				}
-				console.log(`start execute command`, taskCommandExecuteDto);
+				this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
 			});
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {

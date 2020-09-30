@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TaskDataClient } from './task.data.client';
 import {TaskDto} from "../dto/task.dto";
+import {TaskCommandExecuteDto} from "../dto/task.command.execute.dto";
 
 @Injectable()
 export class TaskService {
@@ -18,5 +19,9 @@ export class TaskService {
 
 	public async synchronizeWithPipeline(taskId: string): Promise<void> {
 		await this._taskDataClient.synchronizeWithPipeline(taskId);
+	}
+
+	public async notifyStartCommandExecute(dto: TaskCommandExecuteDto): Promise<void> {
+		await this._taskDataClient.notifyStartCommandExecute(dto);
 	}
 }
