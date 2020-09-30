@@ -3,12 +3,13 @@ import {Injectable} from '@nestjs/common';
 import {PipelineBuilderFactory} from './core/pipeline/pipeline-builder-factory';
 import {Environment} from './core/pipeline/environment';
 import {TaskService} from './task/task.service';
-import {RunTaskDto} from './dto/run.task';
+import {RunTaskDto} from './dto/run.task.dto';
 import {TaskResult} from './core/pipeline/data/dto/task.result';
 import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
-import {TaskDto} from "./dto/task";
+import {TaskDto} from "./dto/task.dto";
 import {PipelineCommandEvent} from "./core/pipeline/enum/event/pipeline-command.event";
+import {TaskCommandExecuteDto} from "./dto/task.command.execute.dto";
 
 
 @Injectable()
@@ -38,7 +39,7 @@ export class AppService {
 	public async runPipelineTask(dto: RunTaskDto): Promise<TaskResult> {
 		try {
 			this._currentTaskId = dto.taskId;
-			const task = await this.getTaskDto(this._currentTaskId);
+			const task: TaskDto = await this.getTaskDto(this._currentTaskId);
 			const isTaskStopping = await this.isTaskStopping(task);
 			if (isTaskStopping) {
 				await this.stopTask(this._currentTaskId);
@@ -48,7 +49,7 @@ export class AppService {
 			if (isTaskSuspended) {
 				return;
 			}
-			return await this.runTask(dto);
+			return await this.runTask({...dto, pipelineId: task.pipelineId});
 		} catch (e) {
 			if (this._pipelineProcess?.isAborted) {
 				return;
@@ -98,7 +99,7 @@ export class AppService {
 		return false;
 	}
 
-	private async runTask(dto: RunTaskDto): Promise<TaskResult> {
+	private async runTask(dto: RunTaskDto & {pipelineId: string}): Promise<TaskResult> {
 		await this.beforeRunTask(dto.taskId);
 		const env = {
 			userUuid: dto.userUuid,
@@ -115,10 +116,17 @@ export class AppService {
 		  .setPipelineJson(json)
 		  .setProxies(dto.proxies)
 		  .build();
+		type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
 		this._pipelineProcess
-			.subscribe(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: any) => {
+			.subscribe(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: StartExecuteCommand) => {
 				// todo: send to api server and notify for browser
-				console.log(`start execute command`, command);
+				const taskCommandExecuteDto: TaskCommandExecuteDto = {
+					...command,
+					pipelineId: dto.pipelineId,
+					taskId: dto.taskId,
+					userId: dto.userUuid,
+				}
+				console.log(`start execute command`, taskCommandExecuteDto);
 			});
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {

@@ -8,6 +8,7 @@ import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
 import { PipelineCommandEvent } from "../../enum/event/pipeline-command.event";
+import {TaskCommandExecuteDto} from "../../../../dto/task.command.execute.dto";
 
 type SubscriberFn = (arg: any) => void;
 type Subscriber = Map<PipelineCommandEvent, SubscriberFn[]>;
@@ -38,11 +39,12 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		}
 		const fns: SubscriberFn[] = this._subscribers.get(PipelineCommandEvent.START_EXECUTE_COMMAND);
 		try {
-			fns.forEach(fn => fn.call(null, {
+			const dto: Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'> = {
+				designTimeConfig: command.designTimeConfig,
 				cmd: command.cmd,
 				uuid: command.uuid,
-				designTimeConfig: command.designTimeConfig,
-			}));
+			};
+			fns.forEach(fn => fn.call(null, dto));
 		} catch (e) {}
 	}
 	private isIgnoredCommand(command: AbstractCommand): boolean{

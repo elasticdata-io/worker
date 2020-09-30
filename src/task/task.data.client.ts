@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import {TaskDto} from "../dto/task";
+import {TaskDto} from "../dto/task.dto";
 
 @Injectable()
 export class TaskDataClient {

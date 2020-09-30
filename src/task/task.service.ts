@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { TaskDataClient } from './task.data.client';
-import {TaskDto} from "../dto/task";
+import {TaskDto} from "../dto/task.dto";
 
 @Injectable()
 export class TaskService {

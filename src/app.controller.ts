@@ -1,6 +1,6 @@
 import { Body, Controller, Post, HttpException, HttpStatus, Request } from '@nestjs/common';
 import { AppService } from './app.service';
-import { RunTaskDto } from './dto/run.task';
+import { RunTaskDto } from './dto/run.task.dto';
 import { TaskResult } from './core/pipeline/data/dto/task.result';
 
 @Controller()

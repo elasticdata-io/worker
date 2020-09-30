@@ -1,7 +1,7 @@
 import * as chalk from 'chalk';
 import * as Amqp from 'amqp-ts';
 import { Injectable } from '@nestjs/common';
-import { RunTaskDto } from './dto/run.task';
+import { RunTaskDto } from './dto/run.task.dto';
 import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
 

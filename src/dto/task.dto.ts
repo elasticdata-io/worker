@@ -12,6 +12,7 @@ export type TaskStatus =
 
 export class TaskDto {
 	id: string;
+	pipelineId: string;
 	status: TaskStatus;
 
 	public static isTaskSuspended(task: TaskDto): boolean {
