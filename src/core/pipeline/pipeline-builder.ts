@@ -9,13 +9,14 @@ import { Driver } from './driver/driver';
 import { PipelineIoc } from './pipeline-ioc';
 import { PipelineLogger } from './logger/pipeline-logger';
 import { Environment } from './environment';
-import { SettingsConfiguration } from './configuration/settings-configuration';
+import { SettingsConfiguration, UserInteractionSettingsConfiguration } from './configuration/settings-configuration';
 
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
 	private _pipelineProcess: PipelineProcess;
 	private _environment: Environment;
 	private _proxies: string[];
+	private _userInteraction: UserInteractionSettingsConfiguration;
 	private _pipelineJson: string;
 
 	constructor(
@@ -71,5 +72,6 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._browser.windowHeight = settings.window.height || this._browser.windowHeight;
 		this._browser.windowWidth = settings.window.width || this._browser.windowWidth;
 		this._browser.proxies = settings.proxies || this._proxies;
+		this._browser.userInteraction = settings.userInteraction || this._userInteraction;
 	}
 }

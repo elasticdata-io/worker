@@ -1,5 +1,9 @@
 import { SettingsWindowConfiguration } from './settings-window-configuration';
 
+export interface UserInteractionSettingsConfiguration {
+  watchSelectors: string[]
+}
+
 export class SettingsConfiguration {
   /**
    * Max working pipeline in seconds
@@ -15,4 +19,9 @@ export class SettingsConfiguration {
    * Browser proxies
    */
   public proxies: string[];
+
+  /**
+   * User interaction configuration with watch selectors.
+   */
+  public userInteraction: UserInteractionSettingsConfiguration;
 }
