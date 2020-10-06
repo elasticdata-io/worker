@@ -8,6 +8,7 @@ import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 import { DataContextResolver } from '../data/data-context-resolver';
 import { Pool } from "generic-pool";
 import { Browser, Page } from "puppeteer";
+import { UserInteractionInspector } from "../user-interaction/user-interaction-inspector";
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {
@@ -15,12 +16,14 @@ export class BrowserProvider extends IBrowserProvider {
 	private _commandAnalyzer: AbstractCommandAnalyzer;
 	private _pool: Pool<{page: Page, browser: Browser}>;
 	private _waitCompletedInterval: NodeJS.Timeout;
+	private _userInteractionInspector: UserInteractionInspector;
 
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {
 		super();
 		this._browser = this._ioc.get<AbstractBrowser>(TYPES.AbstractBrowser);
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
 		this._pool = this._ioc.get<Pool<{page: Page, browser: Browser}>>(ROOT_TYPES.BrowserPool);
+		this._userInteractionInspector = this._ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
 	}
 
 	public async execute(command: AbstractCommand, config?: {silent: boolean, context: AbstractCommand}): Promise<void> {
@@ -39,6 +42,10 @@ export class BrowserProvider extends IBrowserProvider {
 				await this._commandAnalyzer.startCommand(command);
 			}
 			await command.execute();
+			const needInteraction = await this._userInteractionInspector.checkNeedInteraction();
+			if (needInteraction) {
+				await this._userInteractionInspector.waitUserConfirmation();
+			}
 		} catch (e) {
 			if (!silent) {
 				await this._commandAnalyzer.errorCommand(command, e.toString());

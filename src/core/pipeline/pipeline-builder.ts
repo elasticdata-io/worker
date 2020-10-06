@@ -10,6 +10,8 @@ import { PipelineIoc } from './pipeline-ioc';
 import { PipelineLogger } from './logger/pipeline-logger';
 import { Environment } from './environment';
 import { SettingsConfiguration, UserInteractionSettingsConfiguration } from './configuration/settings-configuration';
+import {UserInteractionInspector} from "./user-interaction/user-interaction-inspector";
+import {SettingsWindowConfiguration} from "./configuration/settings-window-configuration";
 
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
@@ -44,8 +46,9 @@ export class PipelineBuilder implements IPipelineBuilder {
 	async build(): Promise<PipelineProcess> {
 		// todo : settings need before this._browser.create
 		const pipeline = JSON.parse(this._pipelineJson);
-		const settings = pipeline.settings || {window: {}};
-		this.setBrowserSettings(settings);
+		const settings = (pipeline.settings || {window: {}}) as SettingsConfiguration;
+		this._setBrowserSettings(settings);
+		this._setUserInteraction(settings.userInteraction);
 		const driver = await this._browser.create();
 		this._ioc
 		  .bind<Driver>(ROOT_TYPES.Driver)
@@ -67,11 +70,19 @@ export class PipelineBuilder implements IPipelineBuilder {
 		}
 	}
 
-	private setBrowserSettings(settings: SettingsConfiguration) {
-		this._browser.language = settings.window.language || this._browser.language;
-		this._browser.windowHeight = settings.window.height || this._browser.windowHeight;
-		this._browser.windowWidth = settings.window.width || this._browser.windowWidth;
+	private _setBrowserSettings(settings: SettingsConfiguration) {
+		const window = settings.window || {} as SettingsWindowConfiguration;
+		this._browser.language = window.language || this._browser.language;
+		this._browser.windowHeight = window.height || this._browser.windowHeight;
+		this._browser.windowWidth = window.width || this._browser.windowWidth;
 		this._browser.proxies = settings.proxies || this._proxies;
-		this._browser.userInteraction = settings.userInteraction || this._userInteraction;
+	}
+
+	private _setUserInteraction(userInteraction: UserInteractionSettingsConfiguration) {
+		if (!userInteraction) {
+			return;
+		}
+		const userInteractionInspector = this._ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
+		userInteractionInspector.userInteraction = userInteraction;
 	}
 }

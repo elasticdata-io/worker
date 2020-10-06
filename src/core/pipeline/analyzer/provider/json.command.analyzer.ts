@@ -33,6 +33,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._dataContextResolver = dataContextResolver;
 		this._pageContextResolver = pageContextResolver;
 	}
+
 	private _notify(command: AbstractCommand) {
 		if (!this._subscribers.has(PipelineCommandEvent.START_EXECUTE_COMMAND)) {
 			return;
@@ -47,13 +48,13 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			fns.forEach(fn => fn.call(null, dto));
 		} catch (e) {}
 	}
-	private isIgnoredCommand(command: AbstractCommand): boolean{
+	private _isIgnoredCommand(command: AbstractCommand): boolean{
 		const find = this.COMMANDS_IGNORED.find(x => {
 			return command instanceof x;
 		});
 		return Boolean(find);
 	}
-	private async getRuntimeConfig(command: AbstractCommand): Promise<any> {
+	private async _getRuntimeConfig(command: AbstractCommand): Promise<any> {
 		const runTimeConfig = {};
 		const managedKeys = command.getManagedKeys();
 		for (const managedKey of managedKeys) {
@@ -69,7 +70,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	public async setCommandData(command: AbstractCommand, value: any): Promise<void> {
-		if (this.isIgnoredCommand(command)) {
+		if (this._isIgnoredCommand(command)) {
 			return;
 		}
 		const info = this._tmpCommands[command.uuid];
@@ -79,7 +80,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		info.dataValue = value;
 	}
 	public async startCommand(command: AbstractCommand): Promise<void> {
-		if (this.isIgnoredCommand(command)) {
+		if (this._isIgnoredCommand(command)) {
 			return;
 		}
 		this._notify(command);
@@ -100,7 +101,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._tmpCommands[command.uuid] = commandInformation;
 	}
 	public async endCommand(command: AbstractCommand): Promise<void> {
-		if (this.isIgnoredCommand(command)) {
+		if (this._isIgnoredCommand(command)) {
 			return;
 		}
 		const info = this._tmpCommands[command.uuid];
@@ -109,12 +110,12 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		}
 		info.endOnUtc = moment().utc().toDate();
 		info.status = 'success';
-		info.runTimeConfig = await this.getRuntimeConfig(command);
+		info.runTimeConfig = await this._getRuntimeConfig(command);
 		this._commands.push(info);
 		this._tmpCommands[command.uuid] = null;
 	}
 	public async errorCommand(command: AbstractCommand, failureReason: string): Promise<void> {
-		if (this.isIgnoredCommand(command)) {
+		if (this._isIgnoredCommand(command)) {
 			return;
 		}
 		const info = this._tmpCommands[command.uuid];
@@ -123,7 +124,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		}
 		info.endOnUtc = moment().utc().toDate();
 		info.status = 'error';
-		info.runTimeConfig = await this.getRuntimeConfig(command);
+		info.runTimeConfig = await this._getRuntimeConfig(command);
 		info.failureReason = failureReason;
 		this._commands.push(info);
 		this._tmpCommands[command.uuid] = null;

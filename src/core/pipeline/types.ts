@@ -22,6 +22,7 @@ const TYPES = {
 	DataServiceUrl: Symbol.for("DataServiceUrl"),
 	AbstractCommandAnalyzer: Symbol.for("AbstractCommandAnalyzer"),
 	BrowserPool: Symbol.for("BrowserPool"),
+	UserInteractionInspector: Symbol.for("UserInteractionInspector"),
 };
 
 export { TYPES };
