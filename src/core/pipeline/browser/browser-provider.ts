@@ -6,8 +6,8 @@ import { AbstractBrowser } from './abstract-browser';
 import { inject, injectable } from 'inversify';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 import { DataContextResolver } from '../data/data-context-resolver';
-import {Pool} from "generic-pool";
-import {Browser, Page} from "puppeteer";
+import { Pool } from "generic-pool";
+import { Browser, Page } from "puppeteer";
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {

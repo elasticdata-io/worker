@@ -15,7 +15,7 @@ interface PipelineSettings {
 	userInteraction: PipelineUserInteractionSettings
 }
 
-export class RunTaskDto {
+export interface RunTaskDto {
 	json: string;
 	taskId: string;
 	pipelineId: string;
