@@ -33,19 +33,18 @@ export class UserInteractionInspector {
 
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {}
 
-	private async _commandExecutingSuccessful(command: AbstractCommand, context: AbstractCommand): Promise<boolean> {
+	private async _executeWatchCommand(command: AbstractCommand, context: AbstractCommand): Promise<boolean> {
 		try {
 			await this.browserProvider.execute(command, {inPageContext: context, silent: true});
-			return true;
 		} catch (e) {
 			return false;
 		}
+		return true;
 	}
 
-	public async checkNeedInteractionAfterCommand(command: AbstractCommand): Promise<boolean> {
+	public async checkNeedInteractionMode(executedCommand: AbstractCommand): Promise<boolean> {
 		for (const needWatchCommand of this.needWatchCommands) {
-			const successful = await this._commandExecutingSuccessful(needWatchCommand, command);
-			console.log(`command: ${command.cmd}, successful - ${successful}`);
+			const successful = await this._executeWatchCommand(needWatchCommand, executedCommand);
 			if (successful) {
 				return true;
 			}
@@ -53,7 +52,7 @@ export class UserInteractionInspector {
 		return false;
 	}
 
-	public async waitUserConfirmationAfterCommand(command: AbstractCommand): Promise<void> {
+	public async enableUserInteractionMode(command: AbstractCommand): Promise<void> {
 		console.log('WAIT_USER_CONFIRMATION_AFTER_COMMAND...');
 		return new Promise(function(resolve) {
 			setTimeout(resolve, 10 * 1000);

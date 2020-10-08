@@ -67,9 +67,9 @@ export abstract class AbstractCommand implements Selectable {
 	protected async afterExecute(): Promise<void> {
 		if (this._nextCommand) {
 			// todo: check need user interaction
-			const needInteraction = await this._userInteractionInspector.checkNeedInteractionAfterCommand(this);
+			const needInteraction = await this._userInteractionInspector.checkNeedInteractionMode(this);
 			if (needInteraction) {
-				await this._userInteractionInspector.waitUserConfirmationAfterCommand(this);
+				await this._userInteractionInspector.enableUserInteractionMode(this);
 			}
 			return this.browserProvider.execute(this._nextCommand);
 		}
