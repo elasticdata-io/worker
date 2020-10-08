@@ -7,16 +7,13 @@ import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
-import { PipelineCommandEvent } from "../../enum/event/pipeline-command.event";
-import {TaskCommandExecuteDto} from "../../../../dto/task.command.execute.dto";
-
-type SubscriberFn = (arg: any) => void;
-type Subscriber = Map<PipelineCommandEvent, SubscriberFn[]>;
+import { PipelineCommandEvent } from "../../event/pipeline-command.event";
+import { TaskCommandExecuteDto } from "../../../../dto/task.command.execute.dto";
+import { pipelineCommandEmitter } from "../../event/emitter/pipeline-command-emitter";
 
 @injectable()
 export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
-	private _subscribers: Subscriber = new Map();
 	private _dataContextResolver: DataContextResolver;
 	private _pageContextResolver: PageContextResolver;
 	private readonly _commands: CommandInformation[];
@@ -35,17 +32,13 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	}
 
 	private _notify(command: AbstractCommand) {
-		if (!this._subscribers.has(PipelineCommandEvent.START_EXECUTE_COMMAND)) {
-			return;
-		}
-		const fns: SubscriberFn[] = this._subscribers.get(PipelineCommandEvent.START_EXECUTE_COMMAND);
 		try {
 			const dto: Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'> = {
 				designTimeConfig: command.designTimeConfig,
 				cmd: command.cmd,
 				uuid: command.uuid,
 			};
-			fns.forEach(fn => fn.call(null, dto));
+			pipelineCommandEmitter.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
 		} catch (e) {}
 	}
 	private _isIgnoredCommand(command: AbstractCommand): boolean{
@@ -147,12 +140,10 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		});
 		return Promise.resolve(commands);
 	}
-	public subscribe(event: PipelineCommandEvent, callbackFn: (arg: any) => void) {
-		const fns = this._subscribers.has(event) ? this._subscribers.get(event) : [];
-		fns.push(callbackFn);
-		this._subscribers.set(event, fns);
+	public on(event: PipelineCommandEvent, callbackFn: (arg: any) => void) {
+		pipelineCommandEmitter.on(PipelineCommandEvent.START_EXECUTE_COMMAND, callbackFn);
 	}
-	public unsubscribeAll(): void {
-		this._subscribers.clear();
+	public removeAllListeners(): void {
+		pipelineCommandEmitter.removeAllListeners(PipelineCommandEvent.START_EXECUTE_COMMAND);
 	}
 }

@@ -1,7 +1,7 @@
 import { AbstractCommand } from '../command/abstract-command';
 import { injectable } from 'inversify';
 import { CommandInformation } from './command.information';
-import {PipelineCommandEvent} from "../enum/event/pipeline-command.event";
+import {PipelineCommandEvent} from "../event/pipeline-command.event";
 
 @injectable()
 export abstract class AbstractCommandAnalyzer {
@@ -10,6 +10,6 @@ export abstract class AbstractCommandAnalyzer {
 	abstract endCommand(command: AbstractCommand): Promise<void>;
 	abstract errorCommand(command: AbstractCommand, failureReason: string): Promise<void>;
 	abstract getCommands(): Promise<CommandInformation[]>;
-	abstract subscribe(event: PipelineCommandEvent, callbackFn: (arg: any) => void): void;
-	abstract unsubscribeAll(): void;
+	abstract on(event: PipelineCommandEvent, callbackFn: (arg: any) => void): void;
+	abstract removeAllListeners(): void;
 }
