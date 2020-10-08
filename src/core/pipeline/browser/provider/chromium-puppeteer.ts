@@ -10,7 +10,6 @@ import {ChromiumPageFactory} from "./chromium-page-factory";
 import {PageFactoryOptions} from "../model/page-factory-options";
 import {Pool} from "generic-pool";
 import {Browser, Page} from "puppeteer";
-import {Environment} from "../../environment";
 
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {

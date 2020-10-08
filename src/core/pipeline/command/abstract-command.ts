@@ -12,11 +12,13 @@ import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import { StringGenerator } from '../util/string.generator';
+import {UserInteractionInspector} from "../user-interaction/user-interaction-inspector";
 
 export abstract class AbstractCommand implements Selectable {
 
 	private _nextCommand: AbstractCommand;
 	private readonly _commandAnalyzer: AbstractCommandAnalyzer;
+	private readonly _userInteractionInspector: UserInteractionInspector;
 	private _keyCommand: AbstractCommand;
 
 	protected store: AbstractStore;
@@ -36,6 +38,7 @@ export abstract class AbstractCommand implements Selectable {
 		this.pageContextResolver = ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this.ioc = ioc;
 		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
+		this._userInteractionInspector = this.ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
 	}
 
 	public designTimeConfig: any;
@@ -62,6 +65,10 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	protected async afterExecute(): Promise<void> {
+		//const needInteraction = await this._userInteractionInspector.checkNeedInteractionAfterCommand(this);
+		//if (needInteraction) {
+		//	await this._userInteractionInspector.waitUserConfirmationAfterCommand(this);
+		//}
 		if (this._nextCommand) {
 			return this.browserProvider.execute(this._nextCommand);
 		}

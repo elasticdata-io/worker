@@ -42,10 +42,6 @@ export class BrowserProvider extends IBrowserProvider {
 				await this._commandAnalyzer.startCommand(command);
 			}
 			await command.execute();
-			const needInteraction = await this._userInteractionInspector.checkNeedInteraction();
-			if (needInteraction) {
-				await this._userInteractionInspector.waitUserConfirmation();
-			}
 		} catch (e) {
 			if (!silent) {
 				await this._commandAnalyzer.errorCommand(command, e.toString());

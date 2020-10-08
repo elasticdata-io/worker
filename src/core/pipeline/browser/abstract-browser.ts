@@ -1,6 +1,5 @@
 import { Driver } from '../driver/driver';
 import { injectable } from 'inversify';
-import { UserInteractionSettingsConfiguration } from "../configuration/settings-configuration";
 
 @injectable()
 export abstract class AbstractBrowser {

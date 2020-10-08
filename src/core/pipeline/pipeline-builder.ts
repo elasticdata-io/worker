@@ -48,7 +48,6 @@ export class PipelineBuilder implements IPipelineBuilder {
 		const pipeline = JSON.parse(this._pipelineJson);
 		const settings = (pipeline.settings || {window: {}}) as SettingsConfiguration;
 		this._setBrowserSettings(settings);
-		this._setUserInteraction(settings.userInteraction);
 		const driver = await this._browser.create();
 		this._ioc
 		  .bind<Driver>(ROOT_TYPES.Driver)
@@ -56,6 +55,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._ioc
 		  .bind<Environment>(ROOT_TYPES.Environment)
 		  .toConstantValue(this._environment);
+		this._setUserInteraction(settings.userInteraction);
 		try {
 			const pipelineConfiguration = this._pipelineConfigurationBuilder
 			  .buildFromJson(this._pipelineJson);

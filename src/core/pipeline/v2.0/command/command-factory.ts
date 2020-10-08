@@ -51,7 +51,7 @@ export class CommandFactory extends ICommandFactory {
 	}
 
 	public createChainCommands(commandsJson: string): AbstractCommand[] {
-		const commands = this._createCommands(commandsJson);
+		const commands = this.createCommands(commandsJson);
 		this._linksCommands(commands);
 		this._initDataContext(commands);
 		this._initPageContext(commands);
@@ -71,13 +71,18 @@ export class CommandFactory extends ICommandFactory {
 		openTabRuntimeCommand.materializedUuidPath = openTabCommand.materializedUuidPath;
 		openTabRuntimeCommand.cmd = openTabCommand.cmd;
 		openTabRuntimeCommand.designTimeConfig = openTabCommand.designTimeConfig;
-		const commands = this._createCommands(commandsJSON);
+		const commands = this.createCommands(commandsJSON);
 		this._linksCommands(commands);
 		// commands.forEach(command => command.uuid = StringGenerator.generate());
 		openTabRuntimeCommand.commands = commands;
 		openTabRuntimeCommand.setPageContext(config.pageContext);
 		openTabRuntimeCommand.setDataContext(config.dataContext);
 		return openTabRuntimeCommand;
+	}
+
+	public createCommands(commandsJson: string): AbstractCommand[] {
+		const commands = JSON.parse(commandsJson) || [];
+		return commands.map(config => this._creteCommand(config));
 	}
 
 	private _linksCommands(commands: AbstractCommand[]) {
@@ -87,11 +92,6 @@ export class CommandFactory extends ICommandFactory {
 				command.setNextCommand(nextCommand);
 			}
 		});
-	}
-
-	private _createCommands(commandsJson: string): AbstractCommand[] {
-		const commands = JSON.parse(commandsJson) || [];
-		return commands.map(config => this._creteCommand(config));
 	}
 
 	private _creteCommand(config: any): AbstractCommand {

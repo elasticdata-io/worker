@@ -1,7 +1,7 @@
 import { SettingsWindowConfiguration } from './settings-window-configuration';
 
 export interface UserInteractionSettingsConfiguration {
-  watchSelectors: string[]
+  watchCommands: any[]
 }
 
 export class SettingsConfiguration {

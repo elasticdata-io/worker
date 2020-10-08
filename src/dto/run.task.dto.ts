@@ -1,5 +1,5 @@
 interface PipelineUserInteractionSettings {
-	watchSelectors: string[];
+	watchCommands: any[];
 }
 
 interface PipelineWindowSettings {
