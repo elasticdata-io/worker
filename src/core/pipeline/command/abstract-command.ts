@@ -65,11 +65,12 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	protected async afterExecute(): Promise<void> {
-		//const needInteraction = await this._userInteractionInspector.checkNeedInteractionAfterCommand(this);
-		//if (needInteraction) {
-		//	await this._userInteractionInspector.waitUserConfirmationAfterCommand(this);
-		//}
 		if (this._nextCommand) {
+			// todo: check need user interaction
+			const needInteraction = await this._userInteractionInspector.checkNeedInteractionAfterCommand(this);
+			if (needInteraction) {
+				await this._userInteractionInspector.waitUserConfirmationAfterCommand(this);
+			}
 			return this.browserProvider.execute(this._nextCommand);
 		}
 	}
@@ -92,7 +93,7 @@ export abstract class AbstractCommand implements Selectable {
 		}
 		const keyCommand = this._keyCommand;
 		if (keyCommand) {
-			await this.browserProvider.execute(keyCommand, {silent: true, context: this});
+			await this.browserProvider.execute(keyCommand, {silent: true, inDataContext: this});
 			const key = await keyCommand.getKey()
 			const keyValue = await this.store.get(key, keyCommand);
 			if (key.startsWith('tmp_')) {

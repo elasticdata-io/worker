@@ -35,7 +35,7 @@ export class UserInteractionInspector {
 
 	private async _commandExecutingSuccessful(command: AbstractCommand, context: AbstractCommand): Promise<boolean> {
 		try {
-			await this.browserProvider.execute(command, {context: context, silent: true});
+			await this.browserProvider.execute(command, {inPageContext: context, silent: true});
 			return true;
 		} catch (e) {
 			return false;
@@ -54,7 +54,7 @@ export class UserInteractionInspector {
 	}
 
 	public async waitUserConfirmationAfterCommand(command: AbstractCommand): Promise<void> {
-		console.log('waitUserConfirmationAfterCommand');
+		console.log('WAIT_USER_CONFIRMATION_AFTER_COMMAND...');
 		return new Promise(function(resolve) {
 			setTimeout(resolve, 10 * 1000);
 		});

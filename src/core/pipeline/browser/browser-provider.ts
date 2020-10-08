@@ -1,5 +1,5 @@
 import { AbstractCommand } from '../command/abstract-command';
-import { IBrowserProvider } from './i-browser-provider';
+import {ExecuteCommandConfig, IBrowserProvider} from './i-browser-provider';
 import { TYPES as ROOT_TYPES, TYPES } from '../types';
 import { PipelineIoc } from '../pipeline-ioc';
 import { AbstractBrowser } from './abstract-browser';
@@ -9,6 +9,7 @@ import { DataContextResolver } from '../data/data-context-resolver';
 import { Pool } from "generic-pool";
 import { Browser, Page } from "puppeteer";
 import { UserInteractionInspector } from "../user-interaction/user-interaction-inspector";
+import {PageContextResolver} from "./page-context-resolver";
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {
@@ -26,17 +27,22 @@ export class BrowserProvider extends IBrowserProvider {
 		this._userInteractionInspector = this._ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
 	}
 
-	public async execute(command: AbstractCommand, config?: {silent: boolean, context: AbstractCommand}): Promise<void> {
-		const context = config && config.context;
+	public async execute(command: AbstractCommand, config?: ExecuteCommandConfig): Promise<void> {
+		const inDataContext = config && config.inDataContext;
+		const inPageContext = config && config.inPageContext;
 		const silent = config && config.silent;
 		try {
 			if (this._browser.hasBeenDestroyed() && this._browser.hasBeenAborted()) {
 				console.info(`SKIP COMMAND: ${command.constructor.name} because browser has been stopped`);
 				return;
 			}
-			if (context) {
+			if (inDataContext) {
 				const dataContextResolver = this._ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
-				dataContextResolver.copyContext(context, [command])
+				dataContextResolver.copyContext(inDataContext, [command])
+			}
+			if (inPageContext) {
+				const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
+				pageContextResolver.copyContext(inPageContext, [command])
 			}
 			if (!silent) {
 				await this._commandAnalyzer.startCommand(command);

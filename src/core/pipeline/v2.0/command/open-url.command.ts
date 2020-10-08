@@ -67,7 +67,7 @@ export class OpenUrlCommand extends AbstractCommand {
 		const linkCommand = this._linkCommand;
 		if (linkCommand) {
 			const provider = this.ioc.get<IBrowserProvider>(ROOT_TYPES.IBrowserProvider);
-			await provider.execute(linkCommand, {silent: true, context: this});
+			await provider.execute(linkCommand, {silent: true, inDataContext: this});
 			const key = await linkCommand.getKey()
 			const keyValue = await this.store.get(key, linkCommand);
 			if (key.startsWith('tmp_')) {

@@ -48,11 +48,10 @@ export class PageContextResolver {
 	public copyContext(originCommand: AbstractCommand, targetCommands: AbstractCommand[]): void {
 		try {
 			const originContext = this.commands[originCommand.uuid];
-			if (!originContext) {
+			if (originContext === undefined || originContext === null) {
 				throw new Error(`origin command: ${originCommand.constructor.name} page context not found`);
 			}
-			targetCommands
-				.forEach(targetCommand => targetCommand.setPageContext(originContext));
+			targetCommands.forEach(targetCommand => targetCommand.setPageContext(originContext));
 		} catch (e) {
 			throw new SystemError(e);
 		}
