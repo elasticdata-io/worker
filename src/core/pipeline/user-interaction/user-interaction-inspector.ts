@@ -5,6 +5,8 @@ import {TYPES, TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {ICommandFactory} from "../command/i-command-factory";
 import {IBrowserProvider} from "../browser/i-browser-provider";
+import {pipelineCommandEmitter} from "../event/emitter/pipeline-command-emitter";
+import {PipelineCommandEvent} from "../event/pipeline-command.event";
 
 @injectable()
 export class UserInteractionInspector {
@@ -31,7 +33,21 @@ export class UserInteractionInspector {
 		return this._ioc.get<IBrowserProvider>(TYPES.IBrowserProvider);
 	}
 
-	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {}
+	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {
+		this._initListeners();
+	}
+
+	private _initListeners() {
+		pipelineCommandEmitter
+			.on(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this.onBeforeExecuteNextCommand.bind(this));
+	}
+
+	private async onBeforeExecuteNextCommand(command: AbstractCommand): Promise<void> {
+		const needInteraction = await this.checkNeedInteractionMode(command);
+		if (needInteraction) {
+			await this.enableUserInteractionMode(command);
+		}
+	}
 
 	private async _executeWatchCommand(command: AbstractCommand, context: AbstractCommand): Promise<boolean> {
 		try {

@@ -144,6 +144,6 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		pipelineCommandEmitter.on(PipelineCommandEvent.START_EXECUTE_COMMAND, callbackFn);
 	}
 	public removeAllListeners(): void {
-		pipelineCommandEmitter.removeAllListeners(PipelineCommandEvent.START_EXECUTE_COMMAND);
+		pipelineCommandEmitter.clearListeners(PipelineCommandEvent.START_EXECUTE_COMMAND);
 	}
 }

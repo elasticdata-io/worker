@@ -1,4 +1,4 @@
-import { EventEmitter } from "events";
+import * as Emittery from "emittery";
 
-export class PipelineCommandEmitter extends EventEmitter {}
+export class PipelineCommandEmitter extends Emittery {}
 export const pipelineCommandEmitter = new PipelineCommandEmitter();

@@ -13,6 +13,8 @@ import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import { StringGenerator } from '../util/string.generator';
 import {UserInteractionInspector} from "../user-interaction/user-interaction-inspector";
+import {pipelineCommandEmitter} from "../event/emitter/pipeline-command-emitter";
+import {PipelineCommandEvent} from "../event/pipeline-command.event";
 
 export abstract class AbstractCommand implements Selectable {
 
@@ -66,11 +68,7 @@ export abstract class AbstractCommand implements Selectable {
 
 	protected async afterExecute(): Promise<void> {
 		if (this._nextCommand) {
-			// todo: check need user interaction
-			const needInteraction = await this._userInteractionInspector.checkNeedInteractionMode(this);
-			if (needInteraction) {
-				await this._userInteractionInspector.enableUserInteractionMode(this);
-			}
+			await pipelineCommandEmitter.emit(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this);
 			return this.browserProvider.execute(this._nextCommand);
 		}
 	}
