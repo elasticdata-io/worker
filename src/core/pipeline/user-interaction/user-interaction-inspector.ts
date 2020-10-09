@@ -5,8 +5,7 @@ import {TYPES, TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {ICommandFactory} from "../command/i-command-factory";
 import {IBrowserProvider} from "../browser/i-browser-provider";
-import {pipelineCommandEmitter} from "../event/emitter/pipeline-command-emitter";
-import {PipelineCommandEvent} from "../event/pipeline-command.event";
+import {pipelineCommandEmitter, PipelineCommandEvent} from "../event/pipeline-command.event";
 
 @injectable()
 export class UserInteractionInspector {

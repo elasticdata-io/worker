@@ -10,6 +10,6 @@ export abstract class AbstractCommandAnalyzer {
 	abstract endCommand(command: AbstractCommand): Promise<void>;
 	abstract errorCommand(command: AbstractCommand, failureReason: string): Promise<void>;
 	abstract getCommands(): Promise<CommandInformation[]>;
-	abstract on(event: PipelineCommandEvent, callbackFn: (arg: any) => void): void;
+	abstract on(event: PipelineCommandEvent, callbackFn: (ars: any) => void): void;
 	abstract removeAllListeners(): void;
 }

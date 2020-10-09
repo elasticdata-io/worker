@@ -79,7 +79,7 @@ export class PipelineProcess {
 		this._ioc.unbindAll();
 	}
 
-	public on(event: PipelineCommandEvent, callbackFn: (arg: any) => void): void {
+	public on(event: PipelineCommandEvent, callbackFn: (ars: any) => void): void {
 		if (event === PipelineCommandEvent.START_EXECUTE_COMMAND) {
 			this._commandAnalyzer.on(event, callbackFn);
 		}

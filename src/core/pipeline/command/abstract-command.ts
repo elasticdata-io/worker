@@ -13,8 +13,7 @@ import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import { StringGenerator } from '../util/string.generator';
 import {UserInteractionInspector} from "../user-interaction/user-interaction-inspector";
-import {pipelineCommandEmitter} from "../event/emitter/pipeline-command-emitter";
-import {PipelineCommandEvent} from "../event/pipeline-command.event";
+import {pipelineCommandEmitter, PipelineCommandEvent} from "../event/pipeline-command.event";
 
 export abstract class AbstractCommand implements Selectable {
 

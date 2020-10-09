@@ -7,9 +7,8 @@ import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
-import { PipelineCommandEvent } from "../../event/pipeline-command.event";
+import {pipelineCommandEmitter, PipelineCommandEvent} from "../../event/pipeline-command.event";
 import { TaskCommandExecuteDto } from "../../../../dto/task.command.execute.dto";
-import { pipelineCommandEmitter } from "../../event/emitter/pipeline-command-emitter";
 
 @injectable()
 export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
@@ -31,14 +30,14 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._pageContextResolver = pageContextResolver;
 	}
 
-	private _notify(command: AbstractCommand) {
+	private async _notify(command: AbstractCommand): Promise<void> {
 		try {
 			const dto: Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'> = {
 				designTimeConfig: command.designTimeConfig,
 				cmd: command.cmd,
 				uuid: command.uuid,
 			};
-			pipelineCommandEmitter.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
+			await pipelineCommandEmitter.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
 		} catch (e) {}
 	}
 	private _isIgnoredCommand(command: AbstractCommand): boolean{
@@ -76,7 +75,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		if (this._isIgnoredCommand(command)) {
 			return;
 		}
-		this._notify(command);
+		await this._notify(command);
 		if (command.designTimeConfig && command.designTimeConfig.commands) {
 			delete command.designTimeConfig.commands;
 		}
