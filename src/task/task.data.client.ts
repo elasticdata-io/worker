@@ -44,6 +44,5 @@ export class TaskDataClient {
 		}
 		const url = `${this._serviceUrl}/api/task/notify/start-command-execute`;
 		await axios.post(`${url}`, dto);
-		console.log('await axios.post(`${url}`, dto);')
 	}
 }
