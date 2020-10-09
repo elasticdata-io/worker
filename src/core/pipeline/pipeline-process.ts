@@ -75,8 +75,8 @@ export class PipelineProcess {
 	}
 
 	public async destroy(): Promise<void> {
-		eventBus.clearListeners();
 		await this.browser.destroy();
+		eventBus.clearListeners();
 		this._ioc.unbindAll();
 	}
 }

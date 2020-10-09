@@ -119,6 +119,7 @@ export class AppService {
 		type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
 		eventBus
 			.on(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: StartExecuteCommand) => {
+				console.log('PipelineCommandEvent.START_EXECUTE_COMMAND')
 				const taskCommandExecuteDto: TaskCommandExecuteDto = {
 					...command,
 					pipelineId: dto.pipelineId,
