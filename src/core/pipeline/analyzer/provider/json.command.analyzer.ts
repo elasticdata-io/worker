@@ -7,7 +7,7 @@ import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
-import {pipelineCommandEmitter, PipelineCommandEvent} from "../../event/pipeline-command.event";
+import {eventBus, PipelineCommandEvent} from "../../event-bus";
 import { TaskCommandExecuteDto } from "../../../../dto/task.command.execute.dto";
 
 @injectable()
@@ -37,7 +37,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 				cmd: command.cmd,
 				uuid: command.uuid,
 			};
-			await pipelineCommandEmitter.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
+			await eventBus.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
 		} catch (e) {}
 	}
 	private _isIgnoredCommand(command: AbstractCommand): boolean{
@@ -138,11 +138,5 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 			return 0 ;
 		});
 		return Promise.resolve(commands);
-	}
-	public on(event: PipelineCommandEvent, callbackFn: (arg: any) => void) {
-		pipelineCommandEmitter.on(PipelineCommandEvent.START_EXECUTE_COMMAND, callbackFn);
-	}
-	public removeAllListeners(): void {
-		pipelineCommandEmitter.clearListeners(PipelineCommandEvent.START_EXECUTE_COMMAND);
 	}
 }

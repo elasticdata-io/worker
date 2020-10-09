@@ -5,7 +5,7 @@ import {TYPES, TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {ICommandFactory} from "../command/i-command-factory";
 import {IBrowserProvider} from "../browser/i-browser-provider";
-import {pipelineCommandEmitter, PipelineCommandEvent} from "../event/pipeline-command.event";
+import {eventBus, PipelineCommandEvent} from "../event-bus";
 
 @injectable()
 export class UserInteractionInspector {
@@ -37,7 +37,7 @@ export class UserInteractionInspector {
 	}
 
 	private _initListeners() {
-		pipelineCommandEmitter
+		eventBus
 			.on(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this.onBeforeExecuteNextCommand.bind(this));
 	}
 

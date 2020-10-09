@@ -8,7 +8,8 @@ import { AbstractBrowser } from './browser/abstract-browser';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 import { TaskInformation } from './analyzer/task.information';
 import { DataRule } from './data/dto/data-rule';
-import { PipelineCommandEvent } from "./event/pipeline-command.event";
+import { PipelineCommandEvent } from "./event-bus/events/pipeline-command.event";
+import {eventBus} from "./event-bus";
 
 export class PipelineProcess {
 
@@ -74,14 +75,8 @@ export class PipelineProcess {
 	}
 
 	public async destroy(): Promise<void> {
-		this._commandAnalyzer.removeAllListeners();
+		eventBus.clearListeners();
 		await this.browser.destroy();
 		this._ioc.unbindAll();
-	}
-
-	public on(event: PipelineCommandEvent, callbackFn: (ars: any) => void): void {
-		if (event === PipelineCommandEvent.START_EXECUTE_COMMAND) {
-			this._commandAnalyzer.on(event, callbackFn);
-		}
 	}
 }

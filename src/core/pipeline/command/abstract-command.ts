@@ -13,7 +13,7 @@ import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import { StringGenerator } from '../util/string.generator';
 import {UserInteractionInspector} from "../user-interaction/user-interaction-inspector";
-import {pipelineCommandEmitter, PipelineCommandEvent} from "../event/pipeline-command.event";
+import {eventBus, PipelineCommandEvent} from "../event-bus";
 
 export abstract class AbstractCommand implements Selectable {
 
@@ -67,7 +67,7 @@ export abstract class AbstractCommand implements Selectable {
 
 	protected async afterExecute(): Promise<void> {
 		if (this._nextCommand) {
-			await pipelineCommandEmitter.emit(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this);
+			await eventBus.emit(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this);
 			return this.browserProvider.execute(this._nextCommand);
 		}
 	}

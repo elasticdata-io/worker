@@ -8,7 +8,7 @@ import {TaskResult} from './core/pipeline/data/dto/task.result';
 import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task.dto";
-import {PipelineCommandEvent} from "./core/pipeline/event/pipeline-command.event";
+import {eventBus, PipelineCommandEvent} from "./core/pipeline/event-bus";
 import {TaskCommandExecuteDto} from "./dto/task.command.execute.dto";
 
 
@@ -117,7 +117,7 @@ export class AppService {
 		  .setProxies(dto.proxies)
 		  .build();
 		type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
-		this._pipelineProcess
+		eventBus
 			.on(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: StartExecuteCommand) => {
 				const taskCommandExecuteDto: TaskCommandExecuteDto = {
 					...command,
