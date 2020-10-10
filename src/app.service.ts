@@ -147,7 +147,11 @@ export class AppService {
 			await this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
 		});
 		eventBus.on(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
-			await this._taskService.enableUserInteractionMode(state);
+			await this._taskService.enableUserInteractionMode({
+				taskId: dto.taskId,
+				pipelineId: dto.pipelineId,
+				...state,
+			});
 		});
 	}
 
