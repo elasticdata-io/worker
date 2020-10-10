@@ -23,6 +23,7 @@ export interface Driver {
 	scrollBy(command: AbstractCommand, position: 'top' | 'bottom' | 'left' | 'right', px: number): Promise<void>;
 	captureSnapshot(command: AbstractCommand): Promise<string>;
 	destroyPage(pageContext: number): Promise<void>;
+	getPageElements(command: AbstractCommand): Promise<any>;
 
 	abort(): Promise<void>;
 	destroy(): Promise<void>;

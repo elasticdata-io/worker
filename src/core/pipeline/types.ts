@@ -1,4 +1,5 @@
 import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
+import {UserInteractionSettingsConfiguration} from "./configuration/settings-configuration";
 
 const TYPES = {
 	IPipelineBuilder: Symbol.for("IPipelineBuilder"),
@@ -23,6 +24,7 @@ const TYPES = {
 	AbstractCommandAnalyzer: Symbol.for("AbstractCommandAnalyzer"),
 	BrowserPool: Symbol.for("BrowserPool"),
 	UserInteractionInspector: Symbol.for("UserInteractionInspector"),
+	UserInteractionSettingsConfiguration: Symbol.for("UserInteractionSettingsConfiguration"),
 };
 
 export { TYPES };

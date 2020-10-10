@@ -117,16 +117,15 @@ export class AppService {
 		  .setProxies(dto.proxies)
 		  .build();
 		type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
-		eventBus
-			.on(PipelineCommandEvent.START_EXECUTE_COMMAND, (command: StartExecuteCommand) => {
-				const taskCommandExecuteDto: TaskCommandExecuteDto = {
-					...command,
-					pipelineId: dto.pipelineId,
-					taskId: dto.taskId,
-					userId: dto.userUuid,
-				}
-				this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
-			});
+		eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: StartExecuteCommand) => {
+			const taskCommandExecuteDto: TaskCommandExecuteDto = {
+				...command,
+				pipelineId: dto.pipelineId,
+				taskId: dto.taskId,
+				userId: dto.userUuid,
+			}
+			await this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
+		});
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();

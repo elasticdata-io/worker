@@ -8,7 +8,6 @@ import { AbstractBrowser } from './browser/abstract-browser';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 import { TaskInformation } from './analyzer/task.information';
 import { DataRule } from './data/dto/data-rule';
-import { PipelineCommandEvent } from "./event-bus/events/pipeline-command.event";
 import {eventBus} from "./event-bus";
 
 export class PipelineProcess {

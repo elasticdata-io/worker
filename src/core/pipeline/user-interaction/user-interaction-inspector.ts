@@ -5,16 +5,21 @@ import {TYPES, TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {ICommandFactory} from "../command/i-command-factory";
 import {IBrowserProvider} from "../browser/i-browser-provider";
-import {eventBus, PipelineCommandEvent} from "../event-bus";
+import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "../event-bus";
+import {PageContextResolver} from "../browser/page-context-resolver";
+import {Driver} from "../driver/driver";
 
 @injectable()
 export class UserInteractionInspector {
 
+	private _enableInteractionMode = false;
 	private _needWatchCommands: AbstractCommand[] = [];
-	public userInteraction: UserInteractionSettingsConfiguration;
+	private readonly _userInteraction: UserInteractionSettingsConfiguration;
+	private readonly _pageContextResolver: PageContextResolver;
+	private readonly _driver: Driver;
 
 	private get needWatchCommands(): AbstractCommand[] {
-		const userInteraction = this.userInteraction;
+		const userInteraction = this._userInteraction;
 		if (!userInteraction || !userInteraction.watchCommands) {
 			return this._needWatchCommands;
 		}
@@ -33,6 +38,10 @@ export class UserInteractionInspector {
 	}
 
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc) {
+		this._userInteraction = this._ioc
+			.get<UserInteractionSettingsConfiguration>(TYPES.UserInteractionSettingsConfiguration);
+		this._driver = this._ioc.get<Driver>(ROOT_TYPES.Driver);
+		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this._initListeners();
 	}
 
@@ -68,7 +77,18 @@ export class UserInteractionInspector {
 	}
 
 	public async enableUserInteractionMode(command: AbstractCommand): Promise<void> {
-		console.log('WAIT_USER_CONFIRMATION_AFTER_COMMAND...');
+		const pageContext = this._pageContextResolver.resolveContext(command);
+		console.log(`WAIT_USER_CONFIRMATION_AFTER_COMMAND in pageContext: ${pageContext}`);
+		await eventBus.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, {
+			pageContext: pageContext,
+		});
+		const screenshot = await this._driver.getScreenshot(command);
+		const pageElements = await this._driver.getPageElements(command);
+		const data = {
+			screenshot: screenshot.length,
+			pageElements: pageElements.length,
+		}
+		console.log(data);
 		return new Promise(function(resolve) {
 			setTimeout(resolve, 10 * 1000);
 		});

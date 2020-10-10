@@ -4,13 +4,12 @@ import { PipelineProcess } from './pipeline-process';
 import { AbstractBrowser } from './browser/abstract-browser';
 import { inject, injectable } from 'inversify';
 import { IPipelineBuilder } from './i-pipeline-builder';
-import { TYPES as ROOT_TYPES } from './types';
+import {TYPES, TYPES as ROOT_TYPES} from './types';
 import { Driver } from './driver/driver';
 import { PipelineIoc } from './pipeline-ioc';
 import { PipelineLogger } from './logger/pipeline-logger';
 import { Environment } from './environment';
 import { SettingsConfiguration, UserInteractionSettingsConfiguration } from './configuration/settings-configuration';
-import {UserInteractionInspector} from "./user-interaction/user-interaction-inspector";
 import {SettingsWindowConfiguration} from "./configuration/settings-window-configuration";
 
 @injectable()
@@ -18,7 +17,6 @@ export class PipelineBuilder implements IPipelineBuilder {
 	private _pipelineProcess: PipelineProcess;
 	private _environment: Environment;
 	private _proxies: string[];
-	private _userInteraction: UserInteractionSettingsConfiguration;
 	private _pipelineJson: string;
 
 	constructor(
@@ -55,7 +53,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._ioc
 		  .bind<Environment>(ROOT_TYPES.Environment)
 		  .toConstantValue(this._environment);
-		this._setUserInteraction(settings.userInteraction);
+		this._registerUserInteraction(settings.userInteraction);
 		try {
 			const pipelineConfiguration = this._pipelineConfigurationBuilder
 			  .buildFromJson(this._pipelineJson);
@@ -78,11 +76,9 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._browser.proxies = settings.proxies || this._proxies;
 	}
 
-	private _setUserInteraction(userInteraction: UserInteractionSettingsConfiguration) {
-		if (!userInteraction) {
-			return;
-		}
-		const userInteractionInspector = this._ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
-		userInteractionInspector.userInteraction = userInteraction;
+	private _registerUserInteraction(userInteraction: UserInteractionSettingsConfiguration) {
+		this._ioc
+			.bind<UserInteractionSettingsConfiguration>(TYPES.UserInteractionSettingsConfiguration)
+			.toConstantValue(userInteraction);
 	}
 }

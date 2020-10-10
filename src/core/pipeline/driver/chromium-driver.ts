@@ -12,6 +12,9 @@ import {PipelineIoc} from "../pipeline-ioc";
 import {Pool} from "generic-pool";
 import {SystemError} from "../command/exception/system-error";
 import { FunctionParser } from '../util/function.parser';
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+import { documentPack } from "web-page-teleport";
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -50,6 +53,14 @@ export class ChromiumDriver implements Driver {
 		return await page.evaluate((fnString) => {
 			return eval(fnString);
 		}, command.script);
+	}
+
+	public async getPageElements(command: AbstractCommand): Promise<any> {
+		const page = await this._resolvePage(command);
+		return await page.evaluate((fn: string) => {
+			eval(fn);
+			return eval('documentPack();');
+		}, documentPack.toString());
 	}
 
 	public async getCurrentUrl(command: AbstractCommand): Promise<string> {
