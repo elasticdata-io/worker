@@ -42,7 +42,7 @@ BODY:
 		},
 		{
 			"cmd": "getscreenshot",
-			"key": "screenshot"
+			"key": "jpegScreenshotBase64"
 		},
 		{
 			"cmd": "gettext",

@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import { Driver } from './driver';
-import { Browser, Page } from 'puppeteer';
+import {Base64ScreenShotOptions, Browser, Page} from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
@@ -164,11 +164,14 @@ export class ChromiumDriver implements Driver {
 		}
 	}
 
-	public async getScreenshot(command: AbstractCommand): Promise<Buffer> {
+	public async getScreenshot(command: AbstractCommand, options?: {quality: number}): Promise<Buffer> {
 		const page = await this._resolvePage(command);
-		const base64 = await page.screenshot({
+		const config: Base64ScreenShotOptions = {
 			encoding: 'base64',
-		});
+			quality: options?.quality,
+			type: options?.quality ? 'jpeg': 'png',
+		};
+		const base64 = await page.screenshot(config);
 		return Buffer.from(base64, 'base64');
 	}
 

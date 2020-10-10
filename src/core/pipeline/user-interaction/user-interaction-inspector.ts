@@ -9,6 +9,13 @@ import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "../event-bus
 import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
 
+export interface UserInteractionState {
+	jpegScreenshotBase64: string;
+	pageElements: any[];
+	currentUrl: string;
+	pageContext: number;
+}
+
 @injectable()
 export class UserInteractionInspector {
 
@@ -78,17 +85,18 @@ export class UserInteractionInspector {
 
 	public async enableUserInteractionMode(command: AbstractCommand): Promise<void> {
 		const pageContext = this._pageContextResolver.resolveContext(command);
-		console.log(`WAIT_USER_CONFIRMATION_AFTER_COMMAND in pageContext: ${pageContext}`);
-		await eventBus.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, {
-			pageContext: pageContext,
-		});
-		const screenshot = await this._driver.getScreenshot(command);
+		const screenshot = await this._driver.getScreenshot(command, {quality: 70});
 		const pageElements = await this._driver.getPageElements(command);
-		const data = {
-			screenshot: screenshot.length,
-			pageElements: pageElements.length,
-		}
-		console.log(data);
+		const currentUrl = await this._driver.getCurrentUrl(command);
+		const data: UserInteractionState = {
+			jpegScreenshotBase64: screenshot.toString('base64'),
+			pageElements: pageElements,
+			currentUrl: currentUrl,
+			pageContext: pageContext,
+		};
+		await eventBus
+			.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
+		console.log(`ENABLE_USER_INTERACTION_MODE in pageContext: ${pageContext}, currentUrl: ${currentUrl}`);
 		return new Promise(function(resolve) {
 			setTimeout(resolve, 10 * 1000);
 		});

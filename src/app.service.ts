@@ -8,9 +8,11 @@ import {TaskResult} from './core/pipeline/data/dto/task.result';
 import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task.dto";
-import {eventBus, PipelineCommandEvent} from "./core/pipeline/event-bus";
+import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "./core/pipeline/event-bus";
 import {TaskCommandExecuteDto} from "./dto/task.command.execute.dto";
+import {UserInteractionState} from "./core/pipeline/user-interaction/user-interaction-inspector";
 
+type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
 
 @Injectable()
 export class AppService {
@@ -116,16 +118,7 @@ export class AppService {
 		  .setPipelineJson(json)
 		  .setProxies(dto.proxies)
 		  .build();
-		type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
-		eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: StartExecuteCommand) => {
-			const taskCommandExecuteDto: TaskCommandExecuteDto = {
-				...command,
-				pipelineId: dto.pipelineId,
-				taskId: dto.taskId,
-				userId: dto.userUuid,
-			}
-			await this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
-		});
+		this._subscribe(dto);
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
@@ -141,6 +134,21 @@ export class AppService {
 			throw taskInformation.failureReason;
 		}
 		return data;
+	}
+
+	private _subscribe(dto: RunTaskDto) {
+		eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: StartExecuteCommand) => {
+			const taskCommandExecuteDto: TaskCommandExecuteDto = {
+				...command,
+				pipelineId: dto.pipelineId,
+				taskId: dto.taskId,
+				userId: dto.userUuid,
+			}
+			await this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
+		});
+		eventBus.on(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
+			await this._taskService.enableUserInteractionMode(state);
+		});
 	}
 
 	private async beforeRunTask(taskId: string): Promise<void> {

@@ -8,7 +8,7 @@ export interface Driver {
 	executeScript(command: AbstractCommand, ...args: any[]): Promise<string>;
 	goToUrl(command: AbstractCommand, url: string, timeoutSec?: number): Promise<void>;
 	domClick(command: AbstractCommand): Promise<void>;
-	getScreenshot(command: AbstractCommand): Promise<Buffer>;
+	getScreenshot(command: AbstractCommand, options?: {quality: number}): Promise<Buffer>;
 	nativeClick(command: AbstractCommand): Promise<void>;
 	type(command: AbstractCommand, text: string): Promise<void>;
 	hover(command: AbstractCommand): Promise<void>;

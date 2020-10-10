@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import {TaskDto} from "../dto/task.dto";
 import {TaskCommandExecuteDto} from "../dto/task.command.execute.dto";
+import {EnableUserInteractionStateDto} from "../dto/enable-user-interaction-state.dto";
 
 @Injectable()
 export class TaskDataClient {
@@ -43,6 +44,14 @@ export class TaskDataClient {
 			return;
 		}
 		const url = `${this._serviceUrl}/api/task/notify/start-command-execute`;
+		await axios.post(`${url}`, dto);
+	}
+
+	async enableUserInteractionMode(dto: EnableUserInteractionStateDto): Promise<void> {
+		if (parseInt(this._serviceUrl) === 0) {
+			return;
+		}
+		const url = `${this._serviceUrl}/api/task-user-interaction/enable`;
 		await axios.post(`${url}`, dto);
 	}
 }
