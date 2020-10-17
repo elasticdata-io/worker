@@ -20,7 +20,8 @@ export class GetScreenshotCommand extends AbstractCommand {
 	async execute(): Promise<void> {
 		const buffer = await this.driver.getScreenshot(this);
 		const key = await this.getKey();
-		await this.store.putFile(key, buffer, 'png', this);
+		const pngFileLink = await this.store.attachPngFile(buffer, this);
+		await this.store.put(key, pngFileLink, this);
 		await super.execute();
 	}
 

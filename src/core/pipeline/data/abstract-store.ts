@@ -23,6 +23,8 @@ export abstract class AbstractStore {
 	abstract remove(key: string, command: AbstractCommand): Promise<void>;
 	abstract putFile(key: string, file: Buffer, fileExtension: string, command: AbstractCommand): Promise<string>;
 	abstract attachFile(file: Buffer, fileExtension: string, metaData: any, command: AbstractCommand): Promise<string>;
+	abstract attachJpegFile(file: Buffer, command: AbstractCommand): Promise<string>;
+	abstract attachPngFile(file: Buffer, command: AbstractCommand): Promise<string>;
 	abstract attachJsonFile(json: any, command: AbstractCommand): Promise<string>;
 	abstract commit(): Promise<TaskResult>;
 	abstract setDataRules(dataRules: Array<DataRule>): Promise<void>;

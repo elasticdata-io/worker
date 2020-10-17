@@ -8,9 +8,10 @@ import {IBrowserProvider} from "../browser/i-browser-provider";
 import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "../event-bus";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
+import {AbstractStore} from "../data/abstract-store";
 
 export interface UserInteractionState {
-	jpegScreenshotBase64: string;
+	jpegScreenshotLink: string;
 	pageElements: any[];
 	currentUrl: string;
 	pageContext: number;
@@ -24,6 +25,7 @@ export class UserInteractionInspector {
 	private readonly _userInteraction: UserInteractionSettingsConfiguration;
 	private readonly _pageContextResolver: PageContextResolver;
 	private readonly _driver: Driver;
+	private readonly _dataStore: AbstractStore;
 
 	private get needWatchCommands(): AbstractCommand[] {
 		const userInteraction = this._userInteraction;
@@ -49,6 +51,7 @@ export class UserInteractionInspector {
 			.get<UserInteractionSettingsConfiguration>(TYPES.UserInteractionSettingsConfiguration);
 		this._driver = this._ioc.get<Driver>(ROOT_TYPES.Driver);
 		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
+		this._dataStore = this._ioc.get<AbstractStore>(ROOT_TYPES.AbstractStore);
 		this._initListeners();
 	}
 
@@ -85,11 +88,12 @@ export class UserInteractionInspector {
 
 	public async enableUserInteractionMode(command: AbstractCommand): Promise<void> {
 		const pageContext = this._pageContextResolver.resolveContext(command);
-		const screenshot = await this._driver.getScreenshot(command, {quality: 70});
+		const screenshotBuffer = await this._driver.getScreenshot(command, {quality: 70});
+		const jpegScreenshotLink = await this._dataStore.attachJpegFile(screenshotBuffer, command)
 		const pageElements = await this._driver.getPageElements(command);
 		const currentUrl = await this._driver.getCurrentUrl(command);
 		const data: UserInteractionState = {
-			jpegScreenshotBase64: screenshot.toString('base64'),
+			jpegScreenshotLink: jpegScreenshotLink,
 			pageElements: pageElements,
 			currentUrl: currentUrl,
 			pageContext: pageContext,

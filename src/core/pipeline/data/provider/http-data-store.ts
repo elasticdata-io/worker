@@ -129,6 +129,56 @@ export class HttpDataStore extends AbstractStore {
 	}
 
 	/**
+	 * Attach jpeg file to data store
+	 * @param jpegScreenshotBuffer
+	 * @param command
+	 */
+	async attachJpegFile(jpegScreenshotBuffer: Buffer, command: AbstractCommand): Promise<string> {
+		const contentLength = jpegScreenshotBuffer.toString().length;
+		const metadata = {
+			'accept-ranges': 'bytes',
+			'content-length': contentLength,
+			'content-type': 'image/jpeg;charset=UTF-8',
+		};
+		const link = await this.httpDataClient.attachFile({
+			file: jpegScreenshotBuffer,
+			fileExtension: 'jpeg',
+			id: this.id,
+			userUuid: this.userUuid,
+			metadata: metadata,
+		});
+		if (command) {
+			await this.commandAnalyzer.setCommandData(command, link);
+		}
+		return link;
+	}
+
+	/**
+	 * Attach png file to data store
+	 * @param pngScreenshotBuffer
+	 * @param command
+	 */
+	async attachPngFile(pngScreenshotBuffer: Buffer, command: AbstractCommand): Promise<string> {
+		const contentLength = pngScreenshotBuffer.toString().length;
+		const metadata = {
+			'accept-ranges': 'bytes',
+			'content-length': contentLength,
+			'content-type': 'image/png;charset=UTF-8',
+		};
+		const link = await this.httpDataClient.attachFile({
+			file: pngScreenshotBuffer,
+			fileExtension: 'png',
+			id: this.id,
+			userUuid: this.userUuid,
+			metadata: metadata,
+		});
+		if (command) {
+			await this.commandAnalyzer.setCommandData(command, link);
+		}
+		return link;
+	}
+
+	/**
 	 * Attach file without context but in user folder.
 	 * Return file public link.
 	 * @param file

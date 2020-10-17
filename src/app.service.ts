@@ -150,6 +150,7 @@ export class AppService {
 			await this._taskService.enableUserInteractionMode({
 				taskId: dto.taskId,
 				pipelineId: dto.pipelineId,
+				userId: dto.userUuid,
 				...state,
 			});
 		});
