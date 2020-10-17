@@ -11,6 +11,8 @@ import {Driver} from "../driver/driver";
 import {AbstractStore} from "../data/abstract-store";
 
 export interface UserInteractionState {
+	pageWidthPx: number;
+	pageHeightPx: number;
 	jpegScreenshotLink: string;
 	pageElements: any[];
 	currentUrl: string;
@@ -19,6 +21,8 @@ export interface UserInteractionState {
 
 @injectable()
 export class UserInteractionInspector {
+
+	public static DEFAULT_WAIT_MINUTES = 5;
 
 	private _enableInteractionMode = false;
 	private _needWatchCommands: AbstractCommand[] = [];
@@ -92,8 +96,11 @@ export class UserInteractionInspector {
 		const jpegScreenshotLink = await this._dataStore.attachJpegFile(screenshotBuffer, command)
 		const pageElements = await this._driver.getPageElements(command);
 		const currentUrl = await this._driver.getCurrentUrl(command);
+		// todo: calculate pageHeightPx & pageWidthPx
 		const data: UserInteractionState = {
 			jpegScreenshotLink: jpegScreenshotLink,
+			pageWidthPx: 1920,
+			pageHeightPx: 1080,
 			pageElements: pageElements,
 			currentUrl: currentUrl,
 			pageContext: pageContext,
@@ -102,7 +109,7 @@ export class UserInteractionInspector {
 			.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
 		console.log(`ENABLE_USER_INTERACTION_MODE in pageContext: ${pageContext}, currentUrl: ${currentUrl}`);
 		return new Promise(function(resolve) {
-			setTimeout(resolve, 10 * 1000);
+			setTimeout(resolve, UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60 * 1000);
 		});
 	}
 }
