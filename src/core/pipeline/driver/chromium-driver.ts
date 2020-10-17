@@ -242,20 +242,7 @@ export class ChromiumDriver implements Driver {
 		return this._hasBeenAborted;
 	}
 
-	//endregion
-
-	//region Method: Protected
-
-	protected async delay(time: number) {
-		return new Promise((resolve) => {
-			const id = setTimeout(resolve, time);
-			this._timer.addSetTimeoutId(id, () => {
-				resolve();
-			});
-		});
-	}
-
-	protected async wait(timeoutMs: number, intervalMs: number, conditionFn: Function) {
+	public async wait(timeoutMs: number, intervalMs: number, conditionFn: Function): Promise<void> {
 		const start = new Date().getTime();
 		return new Promise(async (resolve, reject) => {
 			const intervalId = setInterval(async () => {
@@ -275,6 +262,19 @@ export class ChromiumDriver implements Driver {
 				} catch (e) {}
 				this._timer.addSetIntervalId(intervalId, () => resolve());
 			}, intervalMs);
+		});
+	}
+
+	//endregion
+
+	//region Method: Protected
+
+	protected async delay(time: number) {
+		return new Promise((resolve) => {
+			const id = setTimeout(resolve, time);
+			this._timer.addSetTimeoutId(id, () => {
+				resolve();
+			});
 		});
 	}
 

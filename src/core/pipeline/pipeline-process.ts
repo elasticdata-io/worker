@@ -9,6 +9,7 @@ import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 import { TaskInformation } from './analyzer/task.information';
 import { DataRule } from './data/dto/data-rule';
 import {eventBus} from "./event-bus";
+import {PipelineEvent} from "./event-bus/events/pipeline";
 
 export class PipelineProcess {
 
@@ -74,6 +75,7 @@ export class PipelineProcess {
 	}
 
 	public async destroy(): Promise<void> {
+		await eventBus.emit(PipelineEvent.BEFORE_DESTROY_PIPELINE);
 		await this.browser.destroy();
 		eventBus.clearListeners();
 		this._ioc.unbindAll();

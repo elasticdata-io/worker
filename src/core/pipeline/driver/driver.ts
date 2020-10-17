@@ -25,6 +25,7 @@ export interface Driver {
 	destroyPage(pageContext: number): Promise<void>;
 	getPageElements(command: AbstractCommand): Promise<any>;
 
+	wait(timeoutMs: number, intervalMs: number, conditionFn: Function): Promise<void>;
 	abort(): Promise<void>;
 	destroy(): Promise<void>;
 	hasBeenDestroyed(): boolean;

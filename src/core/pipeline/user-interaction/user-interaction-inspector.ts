@@ -1,4 +1,4 @@
-import {inject, injectable} from "inversify";
+import {inject, injectable } from "inversify";
 import { UserInteractionSettingsConfiguration } from "../configuration/settings-configuration";
 import {AbstractCommand} from "../command/abstract-command";
 import {TYPES, TYPES as ROOT_TYPES} from "../types";
@@ -9,6 +9,7 @@ import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "../event-bus
 import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
 import {AbstractStore} from "../data/abstract-store";
+import {PipelineEvent} from "../event-bus/events/pipeline";
 
 export interface UserInteractionState {
 	pageWidthPx: number;
@@ -22,9 +23,10 @@ export interface UserInteractionState {
 @injectable()
 export class UserInteractionInspector {
 
-	public static DEFAULT_WAIT_MINUTES = 5;
+	public static DEFAULT_WAIT_MINUTES = 2;
 
-	private _enableInteractionMode = false;
+	private _timer: NodeJS.Timeout;
+	private _enableInteractionMode: {[key: string]: boolean} = {};
 	private _needWatchCommands: AbstractCommand[] = [];
 	private readonly _userInteraction: UserInteractionSettingsConfiguration;
 	private readonly _pageContextResolver: PageContextResolver;
@@ -62,6 +64,7 @@ export class UserInteractionInspector {
 	private _initListeners() {
 		eventBus
 			.on(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this.onBeforeExecuteNextCommand.bind(this));
+		eventBus.on(PipelineEvent.BEFORE_DESTROY_PIPELINE, () => this._destroy())
 	}
 
 	private async onBeforeExecuteNextCommand(command: AbstractCommand): Promise<void> {
@@ -80,6 +83,12 @@ export class UserInteractionInspector {
 		return true;
 	}
 
+	private _destroy() {
+		if (this._timer) {
+			clearTimeout(this._timer);
+		}
+	}
+
 	public async checkNeedInteractionMode(executedCommand: AbstractCommand): Promise<boolean> {
 		for (const needWatchCommand of this.needWatchCommands) {
 			const successful = await this._executeWatchCommand(needWatchCommand, executedCommand);
@@ -92,6 +101,7 @@ export class UserInteractionInspector {
 
 	public async enableUserInteractionMode(command: AbstractCommand): Promise<void> {
 		const pageContext = this._pageContextResolver.resolveContext(command);
+		this._enableInteractionMode[pageContext] = true;
 		const screenshotBuffer = await this._driver.getScreenshot(command, {quality: 70});
 		const jpegScreenshotLink = await this._dataStore.attachJpegFile(screenshotBuffer, command)
 		const pageElements = await this._driver.getPageElements(command);
@@ -108,8 +118,11 @@ export class UserInteractionInspector {
 		await eventBus
 			.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
 		console.log(`ENABLE_USER_INTERACTION_MODE in pageContext: ${pageContext}, currentUrl: ${currentUrl}`);
-		return new Promise(function(resolve) {
-			setTimeout(resolve, UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60 * 1000);
-		});
+		const timeout = UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60 * 1000;
+		await this._driver.wait(
+			timeout,
+			1000,
+			() => false === Boolean(this._enableInteractionMode[pageContext])
+		);
 	}
 }
