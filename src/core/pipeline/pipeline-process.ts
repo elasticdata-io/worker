@@ -8,16 +8,21 @@ import { AbstractBrowser } from './browser/abstract-browser';
 import { AbstractCommandAnalyzer } from './analyzer/abstract.command.analyzer';
 import { TaskInformation } from './analyzer/task.information';
 import { DataRule } from './data/dto/data-rule';
-import {eventBus} from "./event-bus";
+import {EventBus, PipelineCommandEvent, UserInteractionEvent} from "./event-bus";
 import {PipelineEvent} from "./event-bus/events/pipeline";
+import {TaskCommandExecuteDto} from "../../dto/task.command.execute.dto";
+import {UserInteractionState} from "./user-interaction/user-interaction-inspector";
+import {Subject} from "rxjs";
 
 export class PipelineProcess {
-
+	private _commandAnalyzer: AbstractCommandAnalyzer;
+	private _eventBus: EventBus;
 	protected browser: AbstractBrowser;
 	protected store: AbstractStore;
 
 	public isAborted = false;
-	private _commandAnalyzer: AbstractCommandAnalyzer;
+	public startExecuteCommand$: Subject<TaskCommandExecuteDto> = new Subject();
+	public interactionStateChanged$: Subject<UserInteractionState> = new Subject();
 
 	constructor(private _commandsJson: string,
 				private _commands: AbstractCommand[],
@@ -27,6 +32,7 @@ export class PipelineProcess {
 		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
 		this.browser = this._ioc.get<AbstractBrowser>(TYPES.AbstractBrowser);
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
+		this._eventBus = this._ioc.get<EventBus>(TYPES.EventBus);
 	}
 
 	private async _saveTaskInformation(error?: any): Promise<TaskInformation> {
@@ -42,7 +48,21 @@ export class PipelineProcess {
 		};
 	}
 
+	private _subscribeEvents() {
+		this._eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: TaskCommandExecuteDto) => {
+			this.startExecuteCommand$.next(command);
+		});
+		this._eventBus.on(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
+			this.interactionStateChanged$.next(state);
+		});
+	}
+
+	private _unsubscribeEvents() {
+		this._eventBus.clearListeners();
+	}
+
 	public async run(): Promise<TaskInformation> {
+		this._subscribeEvents();
 		if (this._commands.length === 0) {
 			console.warn(`commands is empty list`);
 			return;
@@ -76,12 +96,13 @@ export class PipelineProcess {
 
 	public async destroy(): Promise<void> {
 		try {
-			await eventBus.emit(PipelineEvent.BEFORE_DESTROY_PIPELINE);
+			await this._eventBus.emit(PipelineEvent.BEFORE_DESTROY_PIPELINE);
 			await this.browser.destroy();
-			eventBus.clearListeners();
 			this._ioc.unbindAll();
 		} catch (e) {
 			console.error(e);
+		} finally {
+			this._unsubscribeEvents();
 		}
 	}
 }

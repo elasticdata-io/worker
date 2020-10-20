@@ -8,9 +8,6 @@ import {TaskResult} from './core/pipeline/data/dto/task.result';
 import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task.dto";
-import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "./core/pipeline/event-bus";
-import {TaskCommandExecuteDto} from "./dto/task.command.execute.dto";
-import {UserInteractionState} from "./core/pipeline/user-interaction/user-interaction-inspector";
 
 @Injectable()
 export class AppService {
@@ -24,7 +21,6 @@ export class AppService {
 		private _configService: ConfigService,
 	) {
 		this.USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
-		this._subscribe();
 	}
 
 	public async stopPipelineTask(taskId?: string): Promise<boolean> {
@@ -118,6 +114,7 @@ export class AppService {
 		  .setPipelineJson(json)
 		  .setProxies(dto.proxies)
 		  .build();
+		this._onPipelineEvents(this._pipelineProcess);
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
@@ -135,12 +132,12 @@ export class AppService {
 		return data;
 	}
 
-	private _subscribe() {
-		eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: TaskCommandExecuteDto) => {
-			await this._taskService.notifyStartCommandExecute(command);
-		});
-		eventBus.on(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
+	private _onPipelineEvents(pipelineProcess: PipelineProcess): void {
+		pipelineProcess.interactionStateChanged$.subscribe(async (state) => {
 			await this._taskService.enableUserInteractionMode(state);
+		});
+		pipelineProcess.startExecuteCommand$.subscribe(async (command) => {
+			await this._taskService.notifyStartCommandExecute(command);
 		});
 	}
 

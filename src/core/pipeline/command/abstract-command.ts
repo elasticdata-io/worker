@@ -13,7 +13,7 @@ import {LineMacrosParser} from "../data/line-macros-parser";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import { StringGenerator } from '../util/string.generator';
 import {UserInteractionInspector} from "../user-interaction/user-interaction-inspector";
-import {eventBus, PipelineCommandEvent} from "../event-bus";
+import {EventBus, PipelineCommandEvent} from "../event-bus";
 
 export abstract class AbstractCommand implements Selectable {
 
@@ -28,6 +28,7 @@ export abstract class AbstractCommand implements Selectable {
 	protected browserProvider: IBrowserProvider;
 	protected dataContextResolver: DataContextResolver;
 	protected pageContextResolver: PageContextResolver;
+	protected eventBus: EventBus;
 	protected ioc: PipelineIoc;
 
 	constructor(ioc: PipelineIoc) {
@@ -37,6 +38,7 @@ export abstract class AbstractCommand implements Selectable {
 		this.queryProviderFactory = ioc.get<QueryProviderFactory>(ROOT_TYPES.QueryProviderFactory);
 		this.dataContextResolver = ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
 		this.pageContextResolver = ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
+		this.eventBus = ioc.get<EventBus>(ROOT_TYPES.EventBus);
 		this.ioc = ioc;
 		this._commandAnalyzer = this.ioc.get<AbstractCommandAnalyzer>(ROOT_TYPES.AbstractCommandAnalyzer);
 		this._userInteractionInspector = this.ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
@@ -67,7 +69,7 @@ export abstract class AbstractCommand implements Selectable {
 
 	protected async afterExecute(): Promise<void> {
 		if (this._nextCommand) {
-			await eventBus.emit(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this);
+			await this.eventBus.emit(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this);
 			return this.browserProvider.execute(this._nextCommand);
 		}
 	}

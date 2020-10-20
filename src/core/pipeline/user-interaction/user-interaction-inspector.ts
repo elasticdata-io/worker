@@ -5,11 +5,10 @@ import {TYPES, TYPES as ROOT_TYPES} from "../types";
 import {PipelineIoc} from "../pipeline-ioc";
 import {ICommandFactory} from "../command/i-command-factory";
 import {IBrowserProvider} from "../browser/i-browser-provider";
-import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "../event-bus";
+import {EventBus, PipelineCommandEvent, UserInteractionEvent} from "../event-bus";
 import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
 import {AbstractStore} from "../data/abstract-store";
-import {PipelineEvent} from "../event-bus/events/pipeline";
 import {Environment} from "../environment";
 
 export interface UserInteractionState {
@@ -29,7 +28,6 @@ export class UserInteractionInspector {
 
 	public static DEFAULT_WAIT_MINUTES = 2;
 
-	private _timer: NodeJS.Timeout;
 	private _enableInteractionMode: {[key: string]: boolean} = {};
 	private _needWatchCommands: AbstractCommand[] = [];
 	private readonly _userInteraction: UserInteractionSettingsConfiguration;
@@ -37,6 +35,7 @@ export class UserInteractionInspector {
 	private readonly _environment: Environment;
 	private readonly _driver: Driver;
 	private readonly _dataStore: AbstractStore;
+	private readonly _eventBus: EventBus;
 
 	private get needWatchCommands(): AbstractCommand[] {
 		const userInteraction = this._userInteraction;
@@ -49,7 +48,6 @@ export class UserInteractionInspector {
 		}
 		return this._needWatchCommands;
 	}
-
 	private get commandFactory(): ICommandFactory {
 		return this._ioc.get<ICommandFactory>(TYPES.ICommandFactory);
 	}
@@ -64,16 +62,18 @@ export class UserInteractionInspector {
 		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this._dataStore = this._ioc.get<AbstractStore>(ROOT_TYPES.AbstractStore);
 		this._environment = this._ioc.get<Environment>(ROOT_TYPES.Environment);
+		this._eventBus = this._ioc.get<EventBus>(ROOT_TYPES.EventBus);
 		this._initListeners();
 	}
 
 	private _initListeners() {
-		eventBus
-			.on(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND, this.onBeforeExecuteNextCommand.bind(this));
-		eventBus.on(PipelineEvent.BEFORE_DESTROY_PIPELINE, () => this._destroy())
+		this._eventBus
+			.on(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND,
+				(command: AbstractCommand) => this.onBeforeExecuteNextCommand(command));
 	}
 
 	private async onBeforeExecuteNextCommand(command: AbstractCommand): Promise<void> {
+		console.log('onBeforeExecuteNextCommand', new Date())
 		const needInteraction = await this.checkNeedInteractionMode(command);
 		if (needInteraction) {
 			await this.enableUserInteractionMode(command);
@@ -87,12 +87,6 @@ export class UserInteractionInspector {
 			return false;
 		}
 		return true;
-	}
-
-	private _destroy() {
-		if (this._timer) {
-			clearTimeout(this._timer);
-		}
 	}
 
 	public async checkNeedInteractionMode(executedCommand: AbstractCommand): Promise<boolean> {
@@ -124,8 +118,7 @@ export class UserInteractionInspector {
 			pipelineId: this._environment.pipelineId,
 			taskId: this._environment.taskId,
 		};
-		await eventBus
-			.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
+		await this._eventBus.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
 		console.log(`ENABLE_USER_INTERACTION_MODE in pageContext: ${pageContext}, currentUrl: ${currentUrl}`);
 		const timeout = UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60 * 1000;
 		await this._driver.wait(

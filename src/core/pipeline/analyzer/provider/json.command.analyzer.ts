@@ -7,7 +7,7 @@ import { TYPES } from '../../types';
 import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
-import {eventBus, PipelineCommandEvent} from "../../event-bus";
+import {EventBus, PipelineCommandEvent} from "../../event-bus";
 import { TaskCommandExecuteDto } from "../../../../dto/task.command.execute.dto";
 import {Environment} from "../../environment";
 
@@ -17,6 +17,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	private _dataContextResolver: DataContextResolver;
 	private _pageContextResolver: PageContextResolver;
 	private _environment: Environment;
+	private _eventBus: EventBus;
 	private readonly _commands: CommandInformation[];
 	private readonly _tmpCommands: { [key: string]: CommandInformation };
 	private readonly COMMANDS_IGNORED = [OpenTabCommand];
@@ -25,6 +26,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 	  @inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
 	  @inject(TYPES.PageContextResolver) pageContextResolver: PageContextResolver,
 	  @inject(TYPES.Environment) environment: Environment,
+	  @inject(TYPES.EventBus) eventBus: EventBus,
 	) {
 		super();
 		this._commands = [];
@@ -32,6 +34,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 		this._dataContextResolver = dataContextResolver;
 		this._pageContextResolver = pageContextResolver;
 		this._environment = environment;
+		this._eventBus = eventBus;
 	}
 
 	private async _notify(command: AbstractCommand): Promise<void> {
@@ -44,7 +47,7 @@ export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 				taskId: this._environment.taskId,
 				pipelineId: this._environment.pipelineId,
 			};
-			await eventBus.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
+			await this._eventBus.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
 		} catch (e) {}
 	}
 	private _isIgnoredCommand(command: AbstractCommand): boolean{

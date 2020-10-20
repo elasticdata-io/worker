@@ -1,5 +1,3 @@
 import * as Emittery from "emittery";
 
-class EventBus extends Emittery {}
-
-export const eventBus = new EventBus();
+export class EventBus extends Emittery {}

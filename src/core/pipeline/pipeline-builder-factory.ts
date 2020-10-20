@@ -27,6 +27,7 @@ import { CssLoopSelection } from './query/css/css-loop-selection';
 import { XpathLoopSelection } from './query/xpath/xpath-loop-selection';
 import {PageContextResolver} from "./browser/page-context-resolver";
 import {UserInteractionInspector} from "./user-interaction/user-interaction-inspector";
+import {EventBus} from "./event-bus";
 
 @Injectable()
 export class PipelineBuilderFactory {
@@ -110,6 +111,9 @@ export class PipelineBuilderFactory {
 		ioc
 		  .bind<PipelineIoc>(TYPES.PipelineIoc)
 		  .toConstantValue(ioc);
+		ioc
+		  .bind<EventBus>(TYPES.EventBus)
+		  .toConstantValue(new EventBus());
 		return ioc.get<IPipelineBuilder>(TYPES.IPipelineBuilder);
 	}
 }

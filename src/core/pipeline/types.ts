@@ -1,5 +1,6 @@
 import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
 import {UserInteractionSettingsConfiguration} from "./configuration/settings-configuration";
+import {EventBus} from "./event-bus";
 
 const TYPES = {
 	IPipelineBuilder: Symbol.for("IPipelineBuilder"),
@@ -25,6 +26,7 @@ const TYPES = {
 	BrowserPool: Symbol.for("BrowserPool"),
 	UserInteractionInspector: Symbol.for("UserInteractionInspector"),
 	UserInteractionSettingsConfiguration: Symbol.for("UserInteractionSettingsConfiguration"),
+	EventBus: Symbol.for("EventBus"),
 };
 
 export { TYPES };
