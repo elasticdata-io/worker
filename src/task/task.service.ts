@@ -7,8 +7,7 @@ import {EnableUserInteractionStateDto} from "../dto/enable-user-interaction-stat
 @Injectable()
 export class TaskService {
 
-	constructor(private _taskDataClient: TaskDataClient) {
-	}
+	constructor(private _taskDataClient: TaskDataClient) {}
 
 	public async update(taskId: string, patch: any): Promise<void> {
 		await this._taskDataClient.update(taskId, patch);

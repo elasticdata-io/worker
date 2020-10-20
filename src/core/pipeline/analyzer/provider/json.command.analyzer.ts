@@ -9,33 +9,40 @@ import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
 import {eventBus, PipelineCommandEvent} from "../../event-bus";
 import { TaskCommandExecuteDto } from "../../../../dto/task.command.execute.dto";
+import {Environment} from "../../environment";
 
 @injectable()
 export class JsonCommandAnalyzer extends AbstractCommandAnalyzer {
 
 	private _dataContextResolver: DataContextResolver;
 	private _pageContextResolver: PageContextResolver;
+	private _environment: Environment;
 	private readonly _commands: CommandInformation[];
 	private readonly _tmpCommands: { [key: string]: CommandInformation };
 	private readonly COMMANDS_IGNORED = [OpenTabCommand];
 
 	constructor(
 	  @inject(TYPES.DataContextResolver) dataContextResolver: DataContextResolver,
-	  @inject(TYPES.PageContextResolver) pageContextResolver: PageContextResolver
+	  @inject(TYPES.PageContextResolver) pageContextResolver: PageContextResolver,
+	  @inject(TYPES.Environment) environment: Environment,
 	) {
 		super();
 		this._commands = [];
 		this._tmpCommands = {};
 		this._dataContextResolver = dataContextResolver;
 		this._pageContextResolver = pageContextResolver;
+		this._environment = environment;
 	}
 
 	private async _notify(command: AbstractCommand): Promise<void> {
 		try {
-			const dto: Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'> = {
+			const dto: TaskCommandExecuteDto = {
 				designTimeConfig: command.designTimeConfig,
 				cmd: command.cmd,
 				uuid: command.uuid,
+				userId: this._environment.userUuid,
+				taskId: this._environment.taskId,
+				pipelineId: this._environment.pipelineId,
 			};
 			await eventBus.emit(PipelineCommandEvent.START_EXECUTE_COMMAND, dto)
 		} catch (e) {}

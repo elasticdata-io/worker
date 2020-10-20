@@ -12,8 +12,6 @@ import {eventBus, PipelineCommandEvent, UserInteractionEvent} from "./core/pipel
 import {TaskCommandExecuteDto} from "./dto/task.command.execute.dto";
 import {UserInteractionState} from "./core/pipeline/user-interaction/user-interaction-inspector";
 
-type StartExecuteCommand = Omit<TaskCommandExecuteDto, 'pipelineId' | 'taskId' | 'userId'>;
-
 @Injectable()
 export class AppService {
 	private _pipelineProcess: PipelineProcess;
@@ -26,6 +24,7 @@ export class AppService {
 		private _configService: ConfigService,
 	) {
 		this.USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
+		this._subscribe();
 	}
 
 	public async stopPipelineTask(taskId?: string): Promise<boolean> {
@@ -105,7 +104,8 @@ export class AppService {
 		await this.beforeRunTask(dto.taskId);
 		const env = {
 			userUuid: dto.userUuid,
-			taskId: dto.taskId
+			taskId: dto.taskId,
+			pipelineId: dto.pipelineId,
 		} as Environment;
 		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
 		let json: string = dto.json;
@@ -118,7 +118,6 @@ export class AppService {
 		  .setPipelineJson(json)
 		  .setProxies(dto.proxies)
 		  .build();
-		this._subscribe(dto);
 		const taskInformation = await this._pipelineProcess.run();
 		if (this._pipelineProcess.isAborted) {
 			await this._pipelineProcess.destroy();
@@ -136,23 +135,12 @@ export class AppService {
 		return data;
 	}
 
-	private _subscribe(dto: RunTaskDto) {
-		eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: StartExecuteCommand) => {
-			const taskCommandExecuteDto: TaskCommandExecuteDto = {
-				...command,
-				pipelineId: dto.pipelineId,
-				taskId: dto.taskId,
-				userId: dto.userUuid,
-			}
-			await this._taskService.notifyStartCommandExecute(taskCommandExecuteDto);
+	private _subscribe() {
+		eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: TaskCommandExecuteDto) => {
+			await this._taskService.notifyStartCommandExecute(command);
 		});
 		eventBus.on(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
-			await this._taskService.enableUserInteractionMode({
-				taskId: dto.taskId,
-				pipelineId: dto.pipelineId,
-				userId: dto.userUuid,
-				...state,
-			});
+			await this._taskService.enableUserInteractionMode(state);
 		});
 	}
 

@@ -4,4 +4,5 @@ import { injectable } from 'inversify';
 export class Environment {
 	public userUuid: string;
 	public taskId: string;
+	public pipelineId: string;
 }

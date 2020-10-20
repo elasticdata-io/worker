@@ -10,6 +10,7 @@ import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
 import {AbstractStore} from "../data/abstract-store";
 import {PipelineEvent} from "../event-bus/events/pipeline";
+import {Environment} from "../environment";
 
 export interface UserInteractionState {
 	pageWidthPx: number;
@@ -18,6 +19,9 @@ export interface UserInteractionState {
 	pageElements: any[];
 	currentUrl: string;
 	pageContext: number;
+	userId: string;
+	pipelineId: string;
+	taskId: string;
 }
 
 @injectable()
@@ -30,6 +34,7 @@ export class UserInteractionInspector {
 	private _needWatchCommands: AbstractCommand[] = [];
 	private readonly _userInteraction: UserInteractionSettingsConfiguration;
 	private readonly _pageContextResolver: PageContextResolver;
+	private readonly _environment: Environment;
 	private readonly _driver: Driver;
 	private readonly _dataStore: AbstractStore;
 
@@ -58,6 +63,7 @@ export class UserInteractionInspector {
 		this._driver = this._ioc.get<Driver>(ROOT_TYPES.Driver);
 		this._pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		this._dataStore = this._ioc.get<AbstractStore>(ROOT_TYPES.AbstractStore);
+		this._environment = this._ioc.get<Environment>(ROOT_TYPES.Environment);
 		this._initListeners();
 	}
 
@@ -114,6 +120,9 @@ export class UserInteractionInspector {
 			pageElements: pageElements,
 			currentUrl: currentUrl,
 			pageContext: pageContext,
+			userId: this._environment.userUuid,
+			pipelineId: this._environment.pipelineId,
+			taskId: this._environment.taskId,
 		};
 		await eventBus
 			.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
