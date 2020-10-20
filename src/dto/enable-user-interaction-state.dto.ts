@@ -6,4 +6,5 @@ export interface EnableUserInteractionStateDto {
 	pageElements: any[];
 	currentUrl: string;
 	pageContext: number;
+	timeoutSeconds: number;
 }

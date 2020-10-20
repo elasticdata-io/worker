@@ -21,6 +21,7 @@ export interface UserInteractionState {
 	userId: string;
 	pipelineId: string;
 	taskId: string;
+	timeoutSeconds: number;
 }
 
 @injectable()
@@ -117,6 +118,7 @@ export class UserInteractionInspector {
 			userId: this._environment.userUuid,
 			pipelineId: this._environment.pipelineId,
 			taskId: this._environment.taskId,
+			timeoutSeconds: UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60,
 		};
 		await this._eventBus.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
 		console.log(`ENABLE_USER_INTERACTION_MODE in pageContext: ${pageContext}, currentUrl: ${currentUrl}`);
