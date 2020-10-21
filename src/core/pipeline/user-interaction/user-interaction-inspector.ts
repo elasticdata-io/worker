@@ -27,7 +27,7 @@ export interface UserInteractionState {
 @injectable()
 export class UserInteractionInspector {
 
-	public static DEFAULT_WAIT_MINUTES = 5;
+	public static DEFAULT_WAIT_MINUTES = 15;
 
 	private _enableInteractionMode: {[key: string]: boolean} = {};
 	private _needWatchCommands: AbstractCommand[] = [];
