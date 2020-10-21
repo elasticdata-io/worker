@@ -104,8 +104,14 @@ export class UserInteractionInspector {
 		const pageContext = this._pageContextResolver.resolveContext(command);
 		this._enableInteractionMode[pageContext] = true;
 		const screenshotBuffer = await this._driver.getScreenshot(command, {quality: 70});
-		const jpegScreenshotLink = await this._dataStore.attachJpegFile(screenshotBuffer, command)
-		const pageElements = await this._driver.getPageElements(command);
+		const jpegScreenshotLink = await this._dataStore.attachJpegFile(screenshotBuffer, command);
+		let pageElements = [];
+		try {
+			pageElements = await this._driver.getPageElements(command);
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
 		const currentUrl = await this._driver.getCurrentUrl(command);
 		// todo: calculate pageHeightPx & pageWidthPx
 		const data: UserInteractionState = {
