@@ -40,6 +40,8 @@ spec:
               value: {{ .Values.env.RUN_TASK_QUEUE_NAME }}
             - name: STOP_TASK_QUEUE_NAME
               value: {{ .Values.env.STOP_TASK_QUEUE_NAME }}
+            - name: EXECUTE_CMD_QUEUE_NAME
+              value: {{ .Values.env.EXECUTE_CMD_QUEUE_NAME }}
             - name: AMQP_CONNECTION_STRING
               value: {{ .Values.env.AMQP_CONNECTION_STRING }}
             - name: AMQP_LOG_LEVEL
