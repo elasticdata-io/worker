@@ -10,19 +10,8 @@ import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
 import {AbstractStore} from "../data/abstract-store";
 import {Environment} from "../environment";
-
-export interface UserInteractionState {
-	pageWidthPx: number;
-	pageHeightPx: number;
-	jpegScreenshotLink: string;
-	pageElements: any[];
-	currentUrl: string;
-	pageContext: number;
-	userId: string;
-	pipelineId: string;
-	taskId: string;
-	timeoutSeconds: number;
-}
+import {ExecuteCmdDto} from "../../../dto/execute-cmd.dto";
+import {UserInteractionState} from "./interface";
 
 @injectable()
 export class UserInteractionInspector {
@@ -37,6 +26,7 @@ export class UserInteractionInspector {
 	private readonly _driver: Driver;
 	private readonly _dataStore: AbstractStore;
 	private readonly _eventBus: EventBus;
+	private readonly _commandFactory: ICommandFactory;
 
 	private get needWatchCommands(): AbstractCommand[] {
 		const userInteraction = this._userInteraction;
@@ -64,6 +54,7 @@ export class UserInteractionInspector {
 		this._dataStore = this._ioc.get<AbstractStore>(ROOT_TYPES.AbstractStore);
 		this._environment = this._ioc.get<Environment>(ROOT_TYPES.Environment);
 		this._eventBus = this._ioc.get<EventBus>(ROOT_TYPES.EventBus);
+		this._commandFactory = this._ioc.get<ICommandFactory>(ROOT_TYPES.ICommandFactory);
 		this._initListeners();
 	}
 
@@ -71,14 +62,53 @@ export class UserInteractionInspector {
 		this._eventBus
 			.on(PipelineCommandEvent.BEFORE_EXECUTE_NEXT_COMMAND,
 				(command: AbstractCommand) => this.onBeforeExecuteNextCommand(command));
+		this._eventBus
+			.on(UserInteractionEvent.EXECUTE_CMD,
+				(dto: ExecuteCmdDto) => this.onExecuteCmd(dto));
 	}
 
 	private async onBeforeExecuteNextCommand(command: AbstractCommand): Promise<void> {
-		console.log('onBeforeExecuteNextCommand', new Date())
 		const needInteraction = await this.checkNeedInteractionMode(command);
 		if (needInteraction) {
 			await this.enableUserInteractionMode(command);
 		}
+	}
+
+	private async onExecuteCmd(dto: ExecuteCmdDto): Promise<void> {
+		const commands = this._commandFactory.createCommands(JSON.stringify(dto.commands));
+		try {
+			for (const command of commands) {
+				const pageContext = parseInt(dto.pageContext, 10);
+				await this.browserProvider.execute(command, {silent: true, inPageContext: pageContext})
+			}
+		} catch (e) {
+			console.error(e);
+		}
+		const lastCommand = commands.pop();
+		const jpegScreenshotLink = await this._getJpegScreenshotLink(lastCommand);
+		let pageElements = [];
+		try {
+			pageElements = await this._driver.getPageElements(lastCommand);
+		} catch (e) {
+			console.error(e);
+			throw e;
+		}
+		const currentUrl = await this._driver.getCurrentUrl(lastCommand);
+		const data = {
+			interactionId: dto.userInteractionId,
+			jpegScreenshotLink: jpegScreenshotLink,
+			pageWidthPx: 1920,
+			pageHeightPx: 1080,
+			pageElements: pageElements,
+			currentUrl: currentUrl,
+		} as UserInteractionState;
+		console.log(data)
+		await this._eventBus.emit(UserInteractionEvent.UPDATE_USER_INTERACTION_MODE, data);
+	}
+
+	private async _getJpegScreenshotLink(command: AbstractCommand): Promise<string> {
+		const screenshotBuffer = await this._driver.getScreenshot(command, {quality: 70});
+		return await this._dataStore.attachJpegFile(screenshotBuffer, command);
 	}
 
 	private async _executeWatchCommand(command: AbstractCommand, context: AbstractCommand): Promise<boolean> {
@@ -115,6 +145,7 @@ export class UserInteractionInspector {
 		const currentUrl = await this._driver.getCurrentUrl(command);
 		// todo: calculate pageHeightPx & pageWidthPx
 		const data: UserInteractionState = {
+			interactionId: null,
 			jpegScreenshotLink: jpegScreenshotLink,
 			pageWidthPx: 1920,
 			pageHeightPx: 1080,
@@ -126,7 +157,7 @@ export class UserInteractionInspector {
 			taskId: this._environment.taskId,
 			timeoutSeconds: UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60,
 		};
-		await this._eventBus.emit(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, data);
+		await this._eventBus.emit(UserInteractionEvent.UPDATE_USER_INTERACTION_MODE, data);
 		console.log(`ENABLE_USER_INTERACTION_MODE in pageContext: ${pageContext}, currentUrl: ${currentUrl}`);
 		const timeout = UserInteractionInspector.DEFAULT_WAIT_MINUTES * 60 * 1000;
 		await this._driver.wait(

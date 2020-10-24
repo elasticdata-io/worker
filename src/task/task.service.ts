@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TaskDataClient } from './task.data.client';
 import {TaskDto} from "../dto/task.dto";
 import {TaskCommandExecuteDto} from "../dto/task.command.execute.dto";
-import {UserInteractionState} from "../core/pipeline/user-interaction/user-interaction-inspector";
+import {UserInteractionState} from "../core/pipeline/user-interaction/interface";
 
 @Injectable()
 export class TaskService {
@@ -25,7 +25,7 @@ export class TaskService {
 		await this._taskDataClient.notifyStartCommandExecute(dto);
 	}
 
-	public async enableUserInteractionMode(dto: UserInteractionState): Promise<void> {
-		await this._taskDataClient.enableUserInteractionMode(dto);
+	public async changeUserInteractionMode(dto: UserInteractionState): Promise<void> {
+		await this._taskDataClient.changeUserInteractionMode(dto);
 	}
 }

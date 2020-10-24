@@ -8,6 +8,7 @@ import {TaskResult} from './core/pipeline/data/dto/task.result';
 import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task.dto";
+import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 
 @Injectable()
 export class AppService {
@@ -56,6 +57,13 @@ export class AppService {
 			}
 			throw e
 		}
+	}
+
+	public async executeCommand(dto: ExecuteCmdDto): Promise<void> {
+		if (this._currentTaskId !== dto.taskId) {
+			return;
+		}
+		await this._pipelineProcess.executeCommandsFromInteraction(dto);
 	}
 
 	private async getTaskDto(taskId: string): Promise<TaskDto> {
@@ -134,7 +142,7 @@ export class AppService {
 
 	private _onPipelineEvents(pipelineProcess: PipelineProcess): void {
 		pipelineProcess.interactionStateChanged$.subscribe(async (state) => {
-			await this._taskService.enableUserInteractionMode(state);
+			await this._taskService.changeUserInteractionMode(state);
 		});
 		pipelineProcess.startExecuteCommand$.subscribe(async (command) => {
 			await this._taskService.notifyStartCommandExecute(command);
@@ -272,4 +280,5 @@ export class AppService {
 		await this._taskService.update(taskId, patch);
 		console.log(`handleTaskStopped, taskId: ${taskId}`);
 	}
+
 }

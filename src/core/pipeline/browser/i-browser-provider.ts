@@ -4,7 +4,7 @@ import { injectable } from 'inversify';
 export interface ExecuteCommandConfig {
 	silent: boolean,
 	inDataContext?: AbstractCommand,
-	inPageContext?: AbstractCommand,
+	inPageContext?: AbstractCommand | number,
 }
 
 @injectable()

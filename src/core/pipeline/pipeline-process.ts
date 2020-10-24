@@ -11,8 +11,9 @@ import { DataRule } from './data/dto/data-rule';
 import {EventBus, PipelineCommandEvent, UserInteractionEvent} from "./event-bus";
 import {PipelineEvent} from "./event-bus/events/pipeline";
 import {TaskCommandExecuteDto} from "../../dto/task.command.execute.dto";
-import {UserInteractionState} from "./user-interaction/user-interaction-inspector";
 import {Subject} from "rxjs";
+import {ExecuteCmdDto} from "../../dto/execute-cmd.dto";
+import {UserInteractionState} from "./user-interaction";
 
 export class PipelineProcess {
 	private _commandAnalyzer: AbstractCommandAnalyzer;
@@ -52,7 +53,7 @@ export class PipelineProcess {
 		this._eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: TaskCommandExecuteDto) => {
 			this.startExecuteCommand$.next(command);
 		});
-		this._eventBus.on(UserInteractionEvent.ENABLE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
+		this._eventBus.on(UserInteractionEvent.UPDATE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
 			this.interactionStateChanged$.next(state);
 		});
 	}
@@ -86,6 +87,10 @@ export class PipelineProcess {
 
 	public async commit(): Promise<TaskResult> {
 		return this.store.commit();
+	}
+
+	public async executeCommandsFromInteraction(dto: ExecuteCmdDto): Promise<void> {
+		await this._eventBus.emit(UserInteractionEvent.EXECUTE_CMD, dto);
 	}
 
 	public async abort(): Promise<TaskInformation> {

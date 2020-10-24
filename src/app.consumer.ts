@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { RunTaskDto } from './dto/run.task.dto';
 import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
+import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 
 @Injectable()
 export class AppConsumer {
@@ -20,6 +21,7 @@ export class AppConsumer {
 		}
 		const runTaskQueueName = this._configService.get<string>('RUN_TASK_QUEUE_NAME');
 		const stopTaskQueueName = this._configService.get<string>('STOP_TASK_QUEUE_NAME');
+		const executeCmdQueueName = this._configService.get<string>('EXECUTE_CMD_QUEUE_NAME');
 		const connectionString = this._configService.get<string>('AMQP_CONNECTION_STRING');
 		Amqp.log.transports.console.level = this._configService.get<string>('AMQP_LOG_LEVEL');
 		const connection = new Amqp.Connection(connectionString);
@@ -32,10 +34,17 @@ export class AppConsumer {
 		  	.activateConsumer(message => this.runTaskConsume(message), { noAck: false })
 	  		.then(() => console.log('runTaskConsume activated'))
 			.catch((err) => console.error(err));
+
 		const stopTaskQueue = connection.declareQueue(stopTaskQueueName, { noCreate: true, prefetch: 1 });
 		stopTaskQueue
 		  .activateConsumer(message => this.stopTaskConsume(message), { noAck: false })
 		  .then(() => console.log('stopTaskConsume activated'))
+		  .catch((err) => console.error(err));
+
+		const executeCmdQueue = connection.declareQueue(executeCmdQueueName, { noCreate: true, prefetch: 1 });
+		executeCmdQueue
+		  .activateConsumer(message => this.executeCmdConsume(message), { noAck: false })
+		  .then(() => console.log('executeCmdConsume activated'))
 		  .catch((err) => console.error(err));
 	}
 
@@ -56,6 +65,17 @@ export class AppConsumer {
 		try {
 			const taskId = message.getContent() as string;
 			await this.stopPipelineTask(taskId);
+			message.ack();
+		} catch (e) {
+			console.error(chalk.red(e));
+			message.reject();
+		}
+	}
+
+	protected async executeCmdConsume(message: Amqp.Message): Promise<void> {
+		try {
+			const dto = JSON.parse(message.getContent()) as ExecuteCmdDto;
+			await this._appService.executeCommand(dto);
 			message.ack();
 		} catch (e) {
 			console.error(chalk.red(e));
