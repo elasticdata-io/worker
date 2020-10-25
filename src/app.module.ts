@@ -24,7 +24,6 @@ import * as path from 'path';
 		DocumentationModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
-			ignoreEnvFile: process.env.IS_PRODUCTION === '1',
 		}),
 	],
 	controllers: [AppController],
