@@ -61,6 +61,8 @@ export class AppConsumer {
 		const runTaskExchange = await connection
 			.declareExchange(this.RUN_TASK_EXCHANGE_NAME, 'topic', {
 				noCreate: false,
+				durable: true,
+				autoDelete: false,
 			});
 		const runTaskQueue = connection
 			.declareQueue(`${this.RUN_TASK_QUEUE_NAME}_${this.WORKER_TYPE}`, {
@@ -83,6 +85,8 @@ export class AppConsumer {
 		const inboxFanoutExchange = await connection
 			.declareExchange(this.INBOX_FANOUT_EXCHANGE_NAME, 'fanout', {
 				noCreate: false,
+				durable: true,
+				autoDelete: false,
 			});
 		const inboxQueue = connection
 			.declareQueue(`${this.INBOX_QUEUE_NAME}`, {

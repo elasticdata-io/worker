@@ -3,9 +3,7 @@ import { PipelineBuilderFactory } from './pipeline-builder-factory';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-	imports: [
-		ConfigModule.forRoot(),
-	],
+	imports: [],
 	providers: [
 		{
 			provide: PipelineBuilderFactory,

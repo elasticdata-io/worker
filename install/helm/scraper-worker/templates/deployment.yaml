@@ -32,6 +32,9 @@ spec:
               containerPort: 3000
               protocol: TCP
           env:
+            - name: IS_PRODUCTION
+              value: "1"
+
             - name: DATA_SERVICE_URL
               value: {{ .Values.env.DATA_SERVICE_URL }}
             - name: SCRAPER_SERVICE_URL
