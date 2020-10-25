@@ -5,7 +5,6 @@ import { PipelineModule } from './core/pipeline/pipeline.module';
 import { TaskModule } from './task/task.module';
 import { AppConsumer } from './app.consumer';
 import { ConfigModule } from '@nestjs/config';
-import configuration from './config/configuration';
 import { DocumentationModule } from './documentation/documentation.module';
 import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
@@ -23,9 +22,7 @@ import * as path from 'path';
 	  	PipelineModule,
 		TaskModule,
 		DocumentationModule,
-		ConfigModule.forRoot({
-			load: [configuration],
-		}),
+		ConfigModule.forRoot(),
 	],
 	controllers: [AppController],
 	providers: [

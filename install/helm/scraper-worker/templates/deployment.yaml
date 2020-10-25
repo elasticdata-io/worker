@@ -36,12 +36,23 @@ spec:
               value: {{ .Values.env.DATA_SERVICE_URL }}
             - name: SCRAPER_SERVICE_URL
               value: {{ .Values.env.SCRAPER_SERVICE_URL }}
+
             - name: RUN_TASK_QUEUE_NAME
               value: {{ .Values.env.RUN_TASK_QUEUE_NAME }}
-            - name: STOP_TASK_QUEUE_NAME
-              value: {{ .Values.env.STOP_TASK_QUEUE_NAME }}
-            - name: EXECUTE_CMD_QUEUE_NAME
-              value: {{ .Values.env.EXECUTE_CMD_QUEUE_NAME }}
+            - name: INBOX_QUEUE_NAME
+              value: {{ .Values.env.INBOX_QUEUE_NAME }}
+
+            - name: INBOX_FANOUT_EXCHANGE_NAME
+              value: {{ .Values.env.INBOX_FANOUT_EXCHANGE_NAME }}
+            - name: RUN_TASK_EXCHANGE_NAME
+              value: {{ .Values.env.RUN_TASK_EXCHANGE_NAME }}
+
+            - name: RUN_TASK_ROUTING_KEY
+              value: {{ .Values.env.RUN_TASK_ROUTING_KEY }}
+
+            - name: WORKER_TYPE
+              value: {{ .Values.env.WORKER_TYPE }}
+
             - name: AMQP_CONNECTION_STRING
               value: {{ .Values.env.AMQP_CONNECTION_STRING }}
             - name: AMQP_LOG_LEVEL

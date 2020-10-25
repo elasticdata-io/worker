@@ -18,6 +18,9 @@ export class TaskDataClient {
 		if (parseInt(this._serviceUrl) === 0) {
 			return;
 		}
+		if (typeof taskId !== 'string') {
+			throw new Error('taskId must be string')
+		}
 		const url = `${this._serviceUrl}/api/task/${taskId}`;
 		await axios.patch(`${url}`, patch);
 	}

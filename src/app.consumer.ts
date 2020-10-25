@@ -6,89 +6,143 @@ import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 
+interface InboxMessage {
+	_type: 'stop_task' | 'execute_cmd';
+	data: string;
+}
+
 @Injectable()
 export class AppConsumer {
 
-	constructor(private _appService: AppService,
-				private _configService: ConfigService) {
+	private readonly USE_SIMPLE_WORKER: boolean;
+
+	private readonly INBOX_FANOUT_EXCHANGE_NAME: string;
+	private readonly RUN_TASK_EXCHANGE_NAME: string;
+
+	private readonly RUN_TASK_ROUTING_KEY: string;
+
+	private readonly RUN_TASK_QUEUE_NAME: string;
+	private readonly INBOX_QUEUE_NAME: string;
+
+	private readonly AMQP_CONNECTION_STRING: string;
+
+	private readonly WORKER_TYPE: string;
+
+	constructor(
+		private readonly appService: AppService,
+		private readonly config: ConfigService
+	) {
+		this.USE_SIMPLE_WORKER = this.config.get<string>('USE_SIMPLE_WORKER') === '1';
+		this.RUN_TASK_QUEUE_NAME = this.config.get<string>('RUN_TASK_QUEUE_NAME');
+		this.INBOX_QUEUE_NAME = this.config.get<string>('INBOX_QUEUE_NAME');
+		this.AMQP_CONNECTION_STRING = this.config.get<string>('AMQP_CONNECTION_STRING');
+		this.RUN_TASK_ROUTING_KEY = this.config.get<string>('RUN_TASK_ROUTING_KEY');
+		this.RUN_TASK_EXCHANGE_NAME = this.config.get<string>('RUN_TASK_EXCHANGE_NAME');
+		this.INBOX_FANOUT_EXCHANGE_NAME = this.config.get<string>('INBOX_FANOUT_EXCHANGE_NAME');
+		this.WORKER_TYPE = this.config.get<string>('WORKER_TYPE');
+		Amqp.log.transports.console.level = this.config.get<string>('AMQP_LOG_LEVEL');
+		if (this.USE_SIMPLE_WORKER) {
+			return;
+		}
 		this.init();
 	}
 
-	private init() {
-		const USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
-		if (USE_SIMPLE_WORKER) {
-			return;
-		}
-		const runTaskQueueName = this._configService.get<string>('RUN_TASK_QUEUE_NAME');
-		const stopTaskQueueName = this._configService.get<string>('STOP_TASK_QUEUE_NAME');
-		const executeCmdQueueName = this._configService.get<string>('EXECUTE_CMD_QUEUE_NAME');
-		const connectionString = this._configService.get<string>('AMQP_CONNECTION_STRING');
-		Amqp.log.transports.console.level = this._configService.get<string>('AMQP_LOG_LEVEL');
-		const connection = new Amqp.Connection(connectionString);
+	private async init() {
+		const connection = new Amqp.Connection(this.AMQP_CONNECTION_STRING);
 		connection.on('close', () => {
-			console.error('Lost connection to RMQ.  Reconnecting in 60 seconds...');
+			console.error('Lost connection to RMQ. Reconnecting in 20 seconds...');
 			return setTimeout(this.init, 20 * 1000);
 		});
-		const runTaskQueue = connection.declareQueue(runTaskQueueName, { noCreate: true, prefetch: 1 });
-		runTaskQueue
-		  	.activateConsumer(message => this.runTaskConsume(message), { noAck: false })
-	  		.then(() => console.log('runTaskConsume activated'))
-			.catch((err) => console.error(err));
-
-		const stopTaskQueue = connection.declareQueue(stopTaskQueueName, { noCreate: true, prefetch: 1 });
-		stopTaskQueue
-		  .activateConsumer(message => this.stopTaskConsume(message), { noAck: false })
-		  .then(() => console.log('stopTaskConsume activated'))
-		  .catch((err) => console.error(err));
-
-		const executeCmdQueue = connection.declareQueue(executeCmdQueueName, { noCreate: true, prefetch: 1 });
-		executeCmdQueue
-		  .activateConsumer(message => this.executeCmdConsume(message), { noAck: false })
-		  .then(() => console.log('executeCmdConsume activated'))
-		  .catch((err) => console.error(err));
+		await this.createTaskRunInbox(connection);
+		await this.createFanoutInbox(connection);
 	}
 
-	protected async runTaskConsume(message: Amqp.Message): Promise<void> {
+	private async createTaskRunInbox(connection: Amqp.Connection) {
+		const runTaskExchange = await connection
+			.declareExchange(this.RUN_TASK_EXCHANGE_NAME, 'topic', {
+				noCreate: false,
+			});
+		const runTaskQueue = connection
+			.declareQueue(`${this.RUN_TASK_QUEUE_NAME}_${this.WORKER_TYPE}`, {
+				noCreate: false,
+				prefetch: 1,
+				autoDelete: true,
+				exclusive: false,
+			});
+		await runTaskQueue.bind(runTaskExchange, `${this.RUN_TASK_ROUTING_KEY}.${this.WORKER_TYPE}`);
+		runTaskQueue
+			.activateConsumer(
+				message => this.runTaskConsume(message),
+				{ noAck: false }
+			)
+			.then(() => console.log('runTaskConsume activated'))
+			.catch((err) => console.error(err));
+	}
+
+	private async createFanoutInbox(connection: Amqp.Connection) {
+		const inboxFanoutExchange = await connection
+			.declareExchange(this.INBOX_FANOUT_EXCHANGE_NAME, 'fanout', {
+				noCreate: false,
+			});
+		const inboxQueue = connection
+			.declareQueue(`${this.INBOX_QUEUE_NAME}`, {
+				noCreate: false,
+				prefetch: 1,
+				autoDelete: false,
+				exclusive: false,
+			});
+		await inboxQueue.bind(inboxFanoutExchange);
+		inboxQueue
+			.activateConsumer(
+				message => this.inboxConsume(message),
+				{ noAck: false }
+			)
+			.then(() => console.log('inboxConsumer activated'))
+			.catch((err) => console.error(err));
+	}
+
+	private async runTaskConsume(message: Amqp.Message): Promise<void> {
 		try {
 			const dto = JSON.parse(message.getContent()) as RunTaskDto;
 			AppConsumer.validateDto(dto);
 			await this.runPipelineTask(dto);
 			message.ack();
 		} catch (e) {
-			console.error(chalk.red(e));
+			console.error(chalk.blue(e));
 			console.log(e);
 			message.reject();
 		}
 	}
 
-	protected async stopTaskConsume(message: Amqp.Message): Promise<void> {
+	private async inboxConsume(message: Amqp.Message): Promise<void> {
 		try {
-			const taskId = message.getContent() as string;
-			await this.stopPipelineTask(taskId);
+			const inboxMessage = JSON.parse(message.getContent()) as InboxMessage;
+			switch (inboxMessage._type) {
+				case "execute_cmd":
+					await this.executeCommand(inboxMessage);
+					break;
+				case "stop_task":
+					await this.stopPipelineTask(inboxMessage);
+					break;
+			}
 			message.ack();
 		} catch (e) {
-			console.error(chalk.red(e));
-			message.reject();
-		}
-	}
-
-	protected async executeCmdConsume(message: Amqp.Message): Promise<void> {
-		try {
-			const dto = JSON.parse(message.getContent()) as ExecuteCmdDto;
-			await this._appService.executeCommand(dto);
-			message.ack();
-		} catch (e) {
-			console.error(chalk.red(e));
+			console.error(chalk.blue(e));
 			message.reject();
 		}
 	}
 
 	private async runPipelineTask(dto: RunTaskDto): Promise<void> {
-		await this._appService.runPipelineTask(dto);
+		await this.appService.runPipelineTask(dto);
 	}
 
-	private async stopPipelineTask(taskId: string): Promise<void> {
-		await this._appService.stopPipelineTask(taskId);
+	private async executeCommand(inboxMessage: InboxMessage) {
+		const dto = JSON.parse(inboxMessage.data) as ExecuteCmdDto;
+		await this.appService.executeCommand(dto);
+	}
+
+	private async stopPipelineTask(inboxMessage: InboxMessage): Promise<void> {
+		await this.appService.stopPipelineTask(inboxMessage.data);
 	}
 
 	private static validateDto(dto: RunTaskDto) {

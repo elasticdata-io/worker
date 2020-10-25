@@ -237,6 +237,9 @@ export class AppService {
 	}
 
 	private async handleTaskStopped(taskId: string, taskResult?: TaskResult): Promise<void> {
+		if (typeof taskId !== 'string') {
+			throw new Error('taskId must by string')
+		}
 		if (this.USE_SIMPLE_WORKER) {
 			return;
 		}
