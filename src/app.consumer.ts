@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import * as chalk from 'chalk';
 import * as Amqp from 'amqp-ts';
 import { Injectable } from '@nestjs/common';
@@ -89,11 +90,11 @@ export class AppConsumer {
 				autoDelete: false,
 			});
 		const inboxQueue = connection
-			.declareQueue(`${this.INBOX_QUEUE_NAME}`, {
+			.declareQueue(`${this.INBOX_QUEUE_NAME}_${uuidv4()}`, {
 				noCreate: false,
 				prefetch: 1,
-				autoDelete: false,
-				exclusive: false,
+				autoDelete: true,
+				exclusive: true,
 			});
 		await inboxQueue.bind(inboxFanoutExchange);
 		inboxQueue
