@@ -125,6 +125,11 @@ export class ChromiumDriver implements Driver {
 
 	public async type(command: AbstractCommand, text: string): Promise<void> {
 		const page = await this._resolvePage(command);
+		await page.focus(command.selector);
+		await page.keyboard.down('Control');
+		await page.keyboard.press('A');
+		await page.keyboard.up('Control');
+		await page.keyboard.press('Backspace');
 		await page.type(command.selector, text);
 	}
 
