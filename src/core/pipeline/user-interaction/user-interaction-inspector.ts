@@ -12,6 +12,7 @@ import {AbstractStore} from "../data/abstract-store";
 import {Environment} from "../environment";
 import {ExecuteCmdDto} from "../../../dto/execute-cmd.dto";
 import {UserInteractionState} from "./interface";
+import {DisableUserInteractionStateDto} from "../../../dto/disable-user-interaction-state.dto";
 
 @injectable()
 export class UserInteractionInspector {
@@ -65,6 +66,9 @@ export class UserInteractionInspector {
 		this._eventBus
 			.on(UserInteractionEvent.EXECUTE_CMD,
 				(dto: ExecuteCmdDto) => this.onExecuteCmd(dto));
+		this._eventBus
+			.on(UserInteractionEvent.DISABLE_USER_INTERACTION_MODE,
+				(dto: DisableUserInteractionStateDto) => this.onDisableInteractionMode(dto));
 	}
 
 	private async onBeforeExecuteNextCommand(command: AbstractCommand): Promise<void> {
@@ -72,6 +76,12 @@ export class UserInteractionInspector {
 		if (needInteraction) {
 			await this.enableUserInteractionMode(command);
 		}
+	}
+
+	private async onDisableInteractionMode(dto: DisableUserInteractionStateDto) {
+		delete this._enableInteractionMode[dto.pageContext];
+		// todo: change in database
+		console.log('disable interaction mode with id:' + dto.pageContext);
 	}
 
 	private async onExecuteCmd(dto: ExecuteCmdDto): Promise<void> {

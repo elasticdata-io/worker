@@ -6,9 +6,11 @@ import { RunTaskDto } from './dto/run.task.dto';
 import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
+import {InboxMessageType} from "./inbox-message.type";
+import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
 
 interface InboxMessage {
-	_type: 'stop_task' | 'execute_cmd';
+	_type: InboxMessageType;
 	data: string;
 }
 
@@ -124,11 +126,14 @@ export class AppConsumer {
 		try {
 			const inboxMessage = JSON.parse(message.getContent()) as InboxMessage;
 			switch (inboxMessage._type) {
-				case "execute_cmd":
+				case InboxMessageType.EXECUTE_CMD:
 					await this.executeCommand(inboxMessage);
 					break;
-				case "stop_task":
+				case InboxMessageType.STOP_TASK:
 					await this.stopPipelineTask(inboxMessage);
+					break;
+				case InboxMessageType.DISABLE_INTERACTION_MODE:
+					await this.disableInteractionMode(inboxMessage);
 					break;
 			}
 			message.ack();
@@ -149,6 +154,11 @@ export class AppConsumer {
 
 	private async stopPipelineTask(inboxMessage: InboxMessage): Promise<void> {
 		await this.appService.stopPipelineTask(inboxMessage.data);
+	}
+
+	private async disableInteractionMode(inboxMessage: InboxMessage): Promise<void> {
+		const dto = JSON.parse(inboxMessage.data) as DisableUserInteractionStateDto;
+		await this.appService.disableInteractionMode(dto);
 	}
 
 	private static validateDto(dto: RunTaskDto) {

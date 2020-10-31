@@ -17,7 +17,7 @@ import {UserInteractionState} from "./user-interaction";
 
 export class PipelineProcess {
 	private _commandAnalyzer: AbstractCommandAnalyzer;
-	private _eventBus: EventBus;
+	public eventBus: EventBus;
 	protected browser: AbstractBrowser;
 	protected store: AbstractStore;
 
@@ -33,7 +33,7 @@ export class PipelineProcess {
 		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
 		this.browser = this._ioc.get<AbstractBrowser>(TYPES.AbstractBrowser);
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
-		this._eventBus = this._ioc.get<EventBus>(TYPES.EventBus);
+		this.eventBus = this._ioc.get<EventBus>(TYPES.EventBus);
 	}
 
 	private async _saveTaskInformation(error?: any): Promise<TaskInformation> {
@@ -50,16 +50,16 @@ export class PipelineProcess {
 	}
 
 	private _subscribeEvents() {
-		this._eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: TaskCommandExecuteDto) => {
+		this.eventBus.on(PipelineCommandEvent.START_EXECUTE_COMMAND, async (command: TaskCommandExecuteDto) => {
 			this.startExecuteCommand$.next(command);
 		});
-		this._eventBus.on(UserInteractionEvent.UPDATE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
+		this.eventBus.on(UserInteractionEvent.UPDATE_USER_INTERACTION_MODE, async (state: UserInteractionState) => {
 			this.interactionStateChanged$.next(state);
 		});
 	}
 
 	private _unsubscribeEvents() {
-		this._eventBus.clearListeners();
+		this.eventBus.clearListeners();
 	}
 
 	public async run(): Promise<TaskInformation> {
@@ -89,10 +89,6 @@ export class PipelineProcess {
 		return this.store.commit();
 	}
 
-	public async executeCommandsFromInteraction(dto: ExecuteCmdDto): Promise<void> {
-		await this._eventBus.emit(UserInteractionEvent.EXECUTE_CMD, dto);
-	}
-
 	public async abort(): Promise<TaskInformation> {
 		await this.browser.abort();
 		this.isAborted = true;
@@ -101,7 +97,7 @@ export class PipelineProcess {
 
 	public async destroy(): Promise<void> {
 		try {
-			await this._eventBus.emit(PipelineEvent.BEFORE_DESTROY_PIPELINE);
+			await this.eventBus.emit(PipelineEvent.BEFORE_DESTROY_PIPELINE);
 			await this.browser.destroy();
 			this._ioc.unbindAll();
 		} catch (e) {

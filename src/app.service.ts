@@ -9,6 +9,8 @@ import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task.dto";
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
+import {UserInteractionEvent} from "./core/pipeline/event-bus/events";
+import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
 
 @Injectable()
 export class AppService {
@@ -32,6 +34,14 @@ export class AppService {
 			throw e
 		}
 		return false;
+	}
+
+	public async disableInteractionMode(dto: DisableUserInteractionStateDto): Promise<void> {
+		if (this._currentTaskId !== dto.taskId) {
+			return;
+		}
+		await this._pipelineProcess.eventBus
+			.emit(UserInteractionEvent.DISABLE_USER_INTERACTION_MODE, dto);
 	}
 
 	public async runPipelineTask(dto: RunTaskDto): Promise<TaskResult> {
@@ -63,7 +73,8 @@ export class AppService {
 		if (this._currentTaskId !== dto.taskId) {
 			return;
 		}
-		await this._pipelineProcess.executeCommandsFromInteraction(dto);
+		await this._pipelineProcess
+			.eventBus.emit(UserInteractionEvent.EXECUTE_CMD, dto);
 	}
 
 	private async getTaskDto(taskId: string): Promise<TaskDto> {
