@@ -48,11 +48,11 @@ export class BrowserProvider extends IBrowserProvider {
 				console.info(`SKIP COMMAND: ${command.constructor.name} because browser has been stopped`);
 				return;
 			}
-			if (inDataContext) {
+			if (typeof inDataContext === 'string') {
 				const dataContextResolver = this._ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
 				dataContextResolver.copyContext(inDataContext, [command])
 			}
-			if (inPageContext) {
+			if (typeof inPageContext === 'number') {
 				const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 				pageContextResolver.copyContext(inPageContext, [command])
 			}
