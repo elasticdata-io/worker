@@ -69,8 +69,9 @@ export class AppConsumer {
 			.declareQueue(`${this.RUN_TASK_QUEUE_NAME}_${this.WORKER_TYPE}`, {
 				noCreate: false,
 				prefetch: 1,
-				autoDelete: true,
+				autoDelete: false,
 				exclusive: false,
+				durable: true,
 			});
 		await runTaskQueue.bind(runTaskExchange, `${this.RUN_TASK_ROUTING_KEY}.${this.WORKER_TYPE}`);
 		runTaskQueue
