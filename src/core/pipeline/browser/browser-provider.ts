@@ -52,7 +52,7 @@ export class BrowserProvider extends IBrowserProvider {
 				const dataContextResolver = this._ioc.get<DataContextResolver>(ROOT_TYPES.DataContextResolver);
 				dataContextResolver.copyContext(inDataContext, [command])
 			}
-			if (typeof inPageContext === 'number') {
+			if (typeof inPageContext === 'number' || inPageContext instanceof AbstractCommand) {
 				const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 				pageContextResolver.copyContext(inPageContext, [command])
 			}
