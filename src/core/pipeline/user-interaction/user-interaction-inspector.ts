@@ -17,9 +17,18 @@ import {DisableUserInteractionStateDto} from "../../../dto/disable-user-interact
 @injectable()
 export class UserInteractionInspector {
 
-	public static DEFAULT_WAIT_MINUTES = 15;
+	public static DEFAULT_WAIT_MINUTES = 5;
 
-	private _enableInteractionMode: {[key: string]: boolean} = {};
+	/**
+	 * key - page context, number value - watch command index
+	 * @private
+	 */
+	private _enabledInteractionMode: {[key: string]: number} = {};
+	/**
+	 * key - page context
+	 * @private
+	 */
+	private _disabledInteractionMode: {[key: string]: true} = {};
 	private _needWatchCommands: AbstractCommand[] = [];
 	private readonly _userInteraction: UserInteractionSettingsConfiguration;
 	private readonly _pageContextResolver: PageContextResolver;
@@ -30,14 +39,15 @@ export class UserInteractionInspector {
 	private readonly _commandFactory: ICommandFactory;
 
 	private get needWatchCommands(): AbstractCommand[] {
+		if (this._needWatchCommands.length) {
+			return this._needWatchCommands;
+		}
 		const userInteraction = this._userInteraction;
 		if (!userInteraction || !userInteraction.watchCommands) {
 			return this._needWatchCommands;
 		}
-		if (!this._needWatchCommands || this._needWatchCommands.length === 0) {
-			const watchCommandsJson = JSON.stringify(userInteraction.watchCommands);
-			this._needWatchCommands = this.commandFactory.createCommands(watchCommandsJson);
-		}
+		const watchCommandsJson = JSON.stringify(userInteraction.watchCommands);
+		this._needWatchCommands = this.commandFactory.createCommands(watchCommandsJson);
 		return this._needWatchCommands;
 	}
 	private get commandFactory(): ICommandFactory {
@@ -72,16 +82,16 @@ export class UserInteractionInspector {
 	}
 
 	private async onBeforeExecuteNextCommand(command: AbstractCommand): Promise<void> {
-		const needInteraction = await this.checkNeedInteractionMode(command);
-		if (needInteraction) {
-			await this.enableUserInteractionMode(command);
+		const watchCommandIndex = await this.checkNeedInteractionMode(command);
+		if (watchCommandIndex !== -1) {
+			await this.enableUserInteractionMode(command, watchCommandIndex);
 		}
 	}
 
 	private async onDisableInteractionMode(dto: DisableUserInteractionStateDto) {
-		delete this._enableInteractionMode[dto.pageContext];
+		console.log('DISABLE INTERACTION MODE');
+		this._disabledInteractionMode[dto.pageContext] = true;
 		// todo: change in database
-		console.log('disable interaction mode with id:' + dto.pageContext);
 	}
 
 	private async onExecuteCmd(dto: ExecuteCmdDto): Promise<void> {
@@ -130,19 +140,25 @@ export class UserInteractionInspector {
 		return true;
 	}
 
-	public async checkNeedInteractionMode(executedCommand: AbstractCommand): Promise<boolean> {
-		for (const needWatchCommand of this.needWatchCommands) {
-			const successful = await this._executeWatchCommand(needWatchCommand, executedCommand);
+	public async checkNeedInteractionMode(executedCommand: AbstractCommand): Promise<number> {
+		for (const [index, watchCommand] of Object.entries(this.needWatchCommands)) {
+			const pageContext = this._pageContextResolver.resolveContext(executedCommand);
+			const watchCommandIndex = parseInt(index);
+			if (this._enabledInteractionMode[pageContext] === watchCommandIndex) {
+				continue;
+			}
+			const successful = await this._executeWatchCommand(watchCommand, executedCommand);
 			if (successful) {
-				return true;
+				return watchCommandIndex;
 			}
 		}
-		return false;
+		return -1;
 	}
 
-	public async enableUserInteractionMode(command: AbstractCommand): Promise<void> {
+	private async enableUserInteractionMode(command: AbstractCommand, watchCommandIndex: number): Promise<void> {
 		const pageContext = this._pageContextResolver.resolveContext(command);
-		this._enableInteractionMode[pageContext] = true;
+		this._enabledInteractionMode[pageContext] = watchCommandIndex;
+		delete this._disabledInteractionMode[pageContext];
 		const screenshotBuffer = await this._driver.getScreenshot(command, {quality: 70});
 		const jpegScreenshotLink = await this._dataStore.attachJpegFile(screenshotBuffer, command);
 		let pageElements = [];
@@ -173,7 +189,7 @@ export class UserInteractionInspector {
 		await this._driver.wait(
 			timeout,
 			1000,
-			() => false === Boolean(this._enableInteractionMode[pageContext])
+			() => Boolean(this._disabledInteractionMode[pageContext])
 		);
 	}
 }
