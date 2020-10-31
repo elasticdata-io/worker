@@ -11,6 +11,7 @@ import { PipelineLogger } from './logger/pipeline-logger';
 import { Environment } from './environment';
 import { SettingsConfiguration, UserInteractionSettingsConfiguration } from './configuration/settings-configuration';
 import {SettingsWindowConfiguration} from "./configuration/settings-window-configuration";
+import {IBrowserProvider} from "./browser/i-browser-provider";
 
 @injectable()
 export class PipelineBuilder implements IPipelineBuilder {
@@ -57,7 +58,9 @@ export class PipelineBuilder implements IPipelineBuilder {
 		try {
 			const pipelineConfiguration = this._pipelineConfigurationBuilder
 			  .buildFromJson(this._pipelineJson);
-			const browserProvider = new BrowserProvider(this._ioc);
+			// const browserProvider = new BrowserProvider(this._ioc);
+			const browserProvider = this._ioc
+				.get<IBrowserProvider>(ROOT_TYPES.IBrowserProvider);
 			const commands = pipelineConfiguration.commands;
 			const commandsJson = pipelineConfiguration.commandsJson;
 			const dataRules = pipelineConfiguration.dataRules;

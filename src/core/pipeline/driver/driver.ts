@@ -24,6 +24,7 @@ export interface Driver {
 	captureSnapshot(command: AbstractCommand): Promise<string>;
 	destroyPage(pageContext: number): Promise<void>;
 	getPageElements(command: AbstractCommand): Promise<any>;
+	initMainThread(): Promise<void>;
 
 	wait(timeoutMs: number, intervalMs: number, conditionFn: Function): Promise<void>;
 	abort(): Promise<void>;

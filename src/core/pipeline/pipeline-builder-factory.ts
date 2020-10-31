@@ -26,7 +26,7 @@ import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
 import { CssLoopSelection } from './query/css/css-loop-selection';
 import { XpathLoopSelection } from './query/xpath/xpath-loop-selection';
 import {PageContextResolver} from "./browser/page-context-resolver";
-import {UserInteractionInspector} from "./user-interaction/user-interaction-inspector";
+import {UserInteractionInspector} from "./user-interaction";
 import {EventBus} from "./event-bus";
 
 @Injectable()

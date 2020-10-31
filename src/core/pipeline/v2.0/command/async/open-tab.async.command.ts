@@ -33,14 +33,10 @@ export class OpenTabAsyncCommand extends AbstractCommand {
 	 */
 	public async execute(): Promise<void> {
 		await this._goToUrl();
-		try {
-			await this._executeCommands();
-		} catch (e) {
-
-		} finally {
-			await this._destroyPage();
-		}
-		await super.execute();
+		this._executeCommands()
+			.then(() => super.execute())
+			.catch(e => console.error(e))
+			.finally(() => this._destroyPage())
 	}
 
 	private async _destroyPage() {

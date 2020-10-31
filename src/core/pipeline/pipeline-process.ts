@@ -1,4 +1,3 @@
-import { BrowserProvider } from './browser/browser-provider';
 import { AbstractCommand } from './command/abstract-command';
 import { PipelineIoc } from './pipeline-ioc';
 import { AbstractStore } from './data/abstract-store';
@@ -12,8 +11,8 @@ import {EventBus, PipelineCommandEvent, UserInteractionEvent} from "./event-bus"
 import {PipelineEvent} from "./event-bus/events/pipeline";
 import {TaskCommandExecuteDto} from "../../dto/task.command.execute.dto";
 import {Subject} from "rxjs";
-import {ExecuteCmdDto} from "../../dto/execute-cmd.dto";
 import {UserInteractionState} from "./user-interaction";
+import {IBrowserProvider} from "./browser/i-browser-provider";
 
 export class PipelineProcess {
 	private _commandAnalyzer: AbstractCommandAnalyzer;
@@ -28,7 +27,7 @@ export class PipelineProcess {
 	constructor(private _commandsJson: string,
 				private _commands: AbstractCommand[],
 				private _dataRules: Array<DataRule>,
-				private _browserProvider: BrowserProvider,
+				private _browserProvider: IBrowserProvider,
 				private _ioc: PipelineIoc) {
 		this.store = this._ioc.get<AbstractStore>(TYPES.AbstractStore);
 		this.browser = this._ioc.get<AbstractBrowser>(TYPES.AbstractBrowser);
@@ -71,7 +70,7 @@ export class PipelineProcess {
 		const command = this._commands[0];
 		try {
 			await this.store.setDataRules(this._dataRules);
-			await this._browserProvider.execute(command);
+			await this._browserProvider.start(command);
 			await this._browserProvider.waitCompleted();
 			return await this._saveTaskInformation();
 		} catch (error) {

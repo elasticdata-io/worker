@@ -265,6 +265,10 @@ export class ChromiumDriver implements Driver {
 		});
 	}
 
+	public async initMainThread(): Promise<void> {
+		this._pages[0] = await this._createNewResource();
+	}
+
 	//endregion
 
 	//region Method: Protected

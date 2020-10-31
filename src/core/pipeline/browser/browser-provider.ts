@@ -8,8 +8,9 @@ import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
 import { DataContextResolver } from '../data/data-context-resolver';
 import { Pool } from "generic-pool";
 import { Browser, Page } from "puppeteer";
-import { UserInteractionInspector } from "../user-interaction/user-interaction-inspector";
+import { UserInteractionInspector } from "../user-interaction";
 import {PageContextResolver} from "./page-context-resolver";
+import {Driver} from "../driver/driver";
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {
@@ -25,6 +26,17 @@ export class BrowserProvider extends IBrowserProvider {
 		this._commandAnalyzer = this._ioc.get<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer);
 		this._pool = this._ioc.get<Pool<{page: Page, browser: Browser}>>(ROOT_TYPES.BrowserPool);
 		this._userInteractionInspector = this._ioc.get<UserInteractionInspector>(ROOT_TYPES.UserInteractionInspector);
+	}
+
+	/**
+	 * Invoke for first command in pipeline.
+	 * Initialize main thread.
+	 * @param command First command in pipeline.
+	 */
+	public async start(command: AbstractCommand): Promise<void> {
+		const driver = this._ioc.get<Driver>(TYPES.Driver);
+		await driver.initMainThread();
+		await this.execute(command);
 	}
 
 	public async execute(command: AbstractCommand, config?: ExecuteCommandConfig): Promise<void> {
