@@ -99,6 +99,7 @@ export class UserInteractionInspector {
 		try {
 			for (const command of commands) {
 				const pageContext = parseInt(dto.pageContext, 10);
+				console.log(`EXECUTE COMMANDS IN PAGE CONTEXT: ${pageContext}`)
 				await this.browserProvider.execute(command, {silent: true, inPageContext: pageContext})
 			}
 		} catch (e) {
