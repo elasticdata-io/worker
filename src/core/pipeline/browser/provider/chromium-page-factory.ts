@@ -28,6 +28,8 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			'--no-first-run',
 			'--disable-infobars',
 			'--disable-breakpad',
+			'--disable-web-security',
+			'--disable-features=IsolateOrigins,site-per-process',
 			//'--ignore-gpu-blacklist'
 		]
 		if (config.windowWidth && config.windowHeight) {
@@ -49,8 +51,29 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 				args: args,
 			});
 		} else {
+			const args = await puppeteer.defaultArgs()
+				.filter(flag => flag !== '--enable-automation')
+				.filter(flag => flag !== '--headless');
+			if (config.windowWidth && config.windowHeight) {
+				args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
+			}
+			if (config.language) {
+				args.push(`--lang=${config.language}`);
+			}
+			if (config.proxies.length) {
+				args.push(`--proxy-server=${config.proxies[0]}`);
+			}
+			args.push(`--disable-web-security`);
+			args.push(`--disable-features=IsolateOrigins,site-per-process`);
 			browser = await puppeteer.launch({
-				headless: headless,
+				args: args,
+				headless: false,
+				devtools: false,
+				defaultViewport: null,
+				ignoreDefaultArgs: [
+					'--enable-automation',
+					'--disable-extensions',
+				],
 			});
 		}
 		const page = await this._createNewPage(browser);
