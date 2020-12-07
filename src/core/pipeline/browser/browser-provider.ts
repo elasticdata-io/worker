@@ -11,6 +11,7 @@ import { Browser, Page } from "puppeteer";
 import { UserInteractionInspector } from "../user-interaction";
 import {PageContextResolver} from "./page-context-resolver";
 import {Driver} from "../driver/driver";
+import {CaptchaService} from "../service/captcha.service";
 
 @injectable()
 export class BrowserProvider extends IBrowserProvider {
@@ -58,6 +59,10 @@ export class BrowserProvider extends IBrowserProvider {
 			}
 			if (!silent) {
 				await this._commandAnalyzer.startCommand(command);
+			}
+			const captchaService = this._ioc.get<CaptchaService>(ROOT_TYPES.CaptchaService)
+			if (await captchaService.checkHasCaptcha(command)) {
+				await captchaService.resolveCaptcha(command);
 			}
 			await command.execute();
 		} catch (e) {

@@ -27,6 +27,7 @@ const TYPES = {
 	UserInteractionInspector: Symbol.for("UserInteractionInspector"),
 	UserInteractionSettingsConfiguration: Symbol.for("UserInteractionSettingsConfiguration"),
 	EventBus: Symbol.for("EventBus"),
+	CaptchaService: Symbol.for("CaptchaService"),
 };
 
 export { TYPES };

@@ -1,6 +1,7 @@
 import {BrowserPageFactory} from "../browser-page-factory";
 import {Browser, Page} from "puppeteer";
-import * as puppeteer from "puppeteer";
+import puppeteer from "puppeteer-extra";
+import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
 import {PageFactoryOptions} from "../model/page-factory-options";
 
 export class ChromiumPageFactory implements BrowserPageFactory {
@@ -8,6 +9,15 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 	constructor(private _config: PageFactoryOptions) {}
 
 	async create(): Promise<{page: Page, browser: Browser}> {
+		puppeteer.use(
+			RecaptchaPlugin({
+				provider: {
+					id: '2captcha',
+					token: '868e274d75df7a72cb05d1eeb8bc05cb', // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
+				},
+				visualFeedback: true, // colorize reCAPTCHAs (violet = detected, green = solved)
+			})
+		);
 		const config = this._config;
 		let args = await puppeteer.defaultArgs()
 			.filter(x => x !== '--enable-automation');
@@ -47,7 +57,12 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		if (headless) {
 			browser = await puppeteer.launch({
 				headless: headless,
-				ignoreDefaultArgs: ['--enable-automation' /*'--no-sandbox'*/],
+				ignoreDefaultArgs: [
+					'--enable-automation',
+					/*'--no-sandbox'*/
+					'--enable-automation',
+					'--disable-extensions',
+				],
 				args: args,
 			});
 		} else {
@@ -63,8 +78,6 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			if (config.proxies.length) {
 				args.push(`--proxy-server=${config.proxies[0]}`);
 			}
-			args.push(`--disable-web-security`);
-			args.push(`--disable-features=IsolateOrigins,site-per-process`);
 			browser = await puppeteer.launch({
 				args: args,
 				headless: false,

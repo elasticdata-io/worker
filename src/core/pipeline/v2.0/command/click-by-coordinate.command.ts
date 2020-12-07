@@ -4,26 +4,28 @@ import { Cmd } from '../../command/decorator/command.decorator';
 import { CommandType } from '../../documentation/specification';
 
 @Cmd({
-	cmd: 'click',
+	cmd: 'click-xy',
 	version: '2.0',
 	type: CommandType.ACTION,
 })
-export class ClickCommand extends AbstractCommand {
+export class ClickByCoordinateCommand extends AbstractCommand {
 
 	@Assignable({required: false, type: Number, default: 3})
 	public timeout = 3;
 
-	@Assignable({type: String, default: undefined})
-	public selector: string;
+	@Assignable({type: Number, required: true, default: undefined})
+	public x: number;
+
+	@Assignable({type: Number, required: true, default: undefined})
+	public y: number;
 
 	async execute(): Promise<void> {
-		await this.driver.waitElement(this);
-		await this.driver.domClick(this);
+		await this.driver.clickByCoordinate(this, {x: this.x, y: this.y});
 		await super.execute();
 	}
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
-		return keys.concat(['selector']);
+		return keys.concat(['x', 'y']);
 	}
 }

@@ -28,6 +28,7 @@ import { XpathLoopSelection } from './query/xpath/xpath-loop-selection';
 import {PageContextResolver} from "./browser/page-context-resolver";
 import {UserInteractionInspector} from "./user-interaction";
 import {EventBus} from "./event-bus";
+import {CaptchaService} from "./service/captcha.service";
 
 @Injectable()
 export class PipelineBuilderFactory {
@@ -104,6 +105,10 @@ export class PipelineBuilderFactory {
 		ioc
 		  .bind<UserInteractionInspector>(TYPES.UserInteractionInspector)
 		  .to(UserInteractionInspector)
+		  .inSingletonScope();
+		ioc
+		  .bind<CaptchaService>(TYPES.CaptchaService)
+		  .to(CaptchaService)
 		  .inSingletonScope();
 		ioc
 		  .bind<string>(TYPES.DataServiceUrl)

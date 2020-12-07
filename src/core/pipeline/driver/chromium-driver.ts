@@ -41,6 +41,27 @@ export class ChromiumDriver implements Driver {
 		this._options = options;
 	}
 
+	public async checkHasRecaptcha2(command: AbstractCommand): Promise<boolean> {
+		const page = await this._resolvePage(command);
+		const script = `document.querySelector('div[style^="visibility: visible"] iframe[title^="recaptcha"]').contentWindow.document.querySelector('#rc-imageselect img') !== null;`;
+		try {
+			const result = await page.evaluate((fnString) => eval(fnString), script);
+			return Boolean(result);
+		} catch (e) {}
+		return false;
+	}
+
+	public async solveRecaptcha2(command: AbstractCommand): Promise<void> {
+		const page = await this._resolvePage(command);
+		await page.solveRecaptchas();
+	}
+
+	public async clickByCoordinate(command: AbstractCommand, coordinate: {x: number, y: number}): Promise<void> {
+		const page = await this._resolvePage(command);
+		await page.mouse.move(coordinate.x, coordinate.y);
+		await page.mouse.click(coordinate.x, coordinate.y);
+	}
+
 	public async domClick(command: AbstractCommand): Promise<void> {
 		const queryProvider = command.getQueryProvider();
 		const getElFn = queryProvider.getElementFn(command, `.click()`);
