@@ -128,6 +128,7 @@ export class AppService {
 			json = JSON.stringify(dto.json, null, 4);
 		}
 		console.log(JSON.parse(json));
+		console.log(dto.proxies);
 		this._pipelineProcess = await pipelineBuilder
 		  .setEnvironment(env)
 		  .setPipelineJson(json)
