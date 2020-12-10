@@ -15,6 +15,7 @@ import { FunctionParser } from '../util/function.parser';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import { documentPack } from "web-page-teleport";
+import {StringGenerator} from "../util/string.generator";
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -134,24 +135,26 @@ export class ChromiumDriver implements Driver {
 	}
 
 	public async hover(command: AbstractCommand): Promise<void> {
-		// todo: supporting only CSS selector ?
 		const page = await this._resolvePage(command);
-		await page.hover(command.selector);
+		const cssSelector = await this._getCssSelector(command);
+		await page.hover(cssSelector);
 	}
 
 	public async nativeClick(command: AbstractCommand): Promise<void> {
 		const page = await this._resolvePage(command);
-		await page.click(command.selector);
+		const cssSelector = await this._getCssSelector(command);
+		await page.click(cssSelector);
 	}
 
 	public async type(command: AbstractCommand, text: string): Promise<void> {
 		const page = await this._resolvePage(command);
-		await page.focus(command.selector);
+		const cssSelector = await this._getCssSelector(command);
+		await page.focus(cssSelector);
 		await page.keyboard.down('Control');
 		await page.keyboard.press('A');
 		await page.keyboard.up('Control');
 		await page.keyboard.press('Backspace');
-		await page.type(command.selector, text);
+		await page.type(cssSelector, text);
 	}
 
 	public async getElHash(command: AbstractCommand): Promise<string> {
@@ -319,6 +322,16 @@ export class ChromiumDriver implements Driver {
 	//endregion
 
 	//region Method: Private
+
+	private async _getCssSelector(command: AbstractCommand): Promise<string> {
+		await this.waitElement(command);
+		const queryProvider = command.getQueryProvider();
+		const fakeId = StringGenerator.generate();
+		const setAttributeFn = queryProvider.getElementFn(command, `.setAttribute("fake-id", "${fakeId}")`);
+		const page = await this._resolvePage(command);
+		await this.pageEvaluate(setAttributeFn, page);
+		return `[fake-id="${fakeId}"]`;
+	}
 
 	private async _createNewResource(): Promise<{page: Page, browser: Browser}> {
 		return await this._pool.acquire();
