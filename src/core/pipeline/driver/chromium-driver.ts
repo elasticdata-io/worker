@@ -324,7 +324,6 @@ export class ChromiumDriver implements Driver {
 	//region Method: Private
 
 	private async _getCssSelector(command: AbstractCommand): Promise<string> {
-		await this.waitElement(command);
 		const queryProvider = command.getQueryProvider();
 		const fakeId = StringGenerator.generate();
 		const setAttributeFn = queryProvider.getElementFn(command, `.setAttribute("fake-id", "${fakeId}")`);

@@ -25,6 +25,7 @@ export class TypeCommand extends AbstractCommand {
 	public selector: string;
 
 	async execute(): Promise<void> {
+		await this.driver.waitElement(this);
 		await this.driver.type(this, this.text);
 		await super.execute();
 	}

@@ -24,6 +24,7 @@ export class NativeClickCommand extends AbstractCommand {
 	public selector: string;
 
 	async execute(): Promise<void> {
+		await this.driver.waitElement(this);
 		await this.driver.nativeClick(this);
 		await super.execute();
 	}
