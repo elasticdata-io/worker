@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'scrollto',
 	version: '2.0',
 	type: CommandType.ACTION,
+	summary: `doc.SCROLLTO.SUMMARY`,
 })
 export class ScrollToCommand extends AbstractCommand {
 

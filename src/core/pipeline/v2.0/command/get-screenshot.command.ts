@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'getscreenshot',
 	version: '2.0',
 	type: CommandType.SELECTABLE,
+	summary: `doc.GETSCREENSHOT.SUMMARY`,
 })
 export class GetScreenshotCommand extends AbstractCommand {
 

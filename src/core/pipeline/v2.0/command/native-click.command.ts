@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'nativeclick',
 	version: '2.0',
 	type: CommandType.ACTION,
+	summary: `doc.NATIVECLICK.SUMMARY`,
 })
 export class NativeClickCommand extends AbstractCommand {
 

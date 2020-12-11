@@ -13,7 +13,6 @@ import { JsCommand } from './js.command';
 import { LoopCommand } from './loop.command';
 import { NativeClickCommand } from './native-click.command';
 import { PauseCommand } from './pause.command';
-import { ReplaceTextCommand } from './replace-text.command';
 import { ScrollToCommand } from './scroll-to.command';
 import { OpenUrlCommand } from './open-url.command';
 import { WaitElementCommand } from './wait-element.command';
@@ -24,7 +23,6 @@ import { DataContextResolver } from '../../data/data-context-resolver';
 import { CaptureSnapshotCommand } from './capture-snapshot.command';
 import { SystemError } from '../../command/exception/system-error';
 import { OpenTabCommand } from './open-tab.command';
-import { OpenWindowCommand } from './open-window.command';
 import { Checker, CommandSpecification } from '../../documentation/specification';
 import {PageContextResolver} from "../../browser/page-context-resolver";
 import { OpenTabAsyncCommand } from './async/open-tab.async.command';
@@ -147,17 +145,11 @@ export class CommandFactory extends ICommandFactory {
 			case 'type':
 				command = new TypeCommand(ioc);
 				break;
-			case 'replacetext':
-				command = new ReplaceTextCommand(ioc);
-				break;
 			case 'scrollto':
 				command = new ScrollToCommand(ioc);
 				break;
 			case 'openurl':
 				command = new OpenUrlCommand(ioc);
-				break;
-			case 'openwindow':
-				command = new OpenWindowCommand(ioc);
 				break;
 			case 'waitelement':
 				command = new WaitElementCommand(ioc);

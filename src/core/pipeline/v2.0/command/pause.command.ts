@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'pause',
 	version: '2.0',
 	type: CommandType.OTHER,
+	summary: `doc.PAUSE.SUMMARY`,
 })
 export class PauseCommand extends AbstractCommand {
 

@@ -91,5 +91,50 @@
 	},
 	"TYPE": {
 		"SUMMARY": "Inserts text into an element"
+	},
+	"OPENURL": {
+		"SUMMARY": "Завантажити сторінку за url адресою"
+	},
+	"GETTEXT": {
+		"SUMMARY": "Копіювання тексту з елементу, або атрибуту"
+	},
+	"GETHTML": {
+		"SUMMARY": "Копіювання html з елементу"
+	},
+	"GETURL": {
+		"SUMMARY": "Копіювання поточної адреси сайту"
+	},
+	"CLICK": {
+		"SUMMARY": "javascript клік на елемент"
+	},
+	"NATIVECLICK": {
+		"SUMMARY": "Клік на елемент з наведенням курсору"
+	},
+	"HOVER": {
+		"SUMMARY": "Навести курсор на елемент"
+	},
+	"JS": {
+		"SUMMARY": "Виконати будь-який javascript на сторінці"
+	},
+	"WAITELEMENT": {
+		"SUMMARY": "Чекати появи елемента на сторінці"
+	},
+	"PAUSE": {
+		"SUMMARY": "Зачекати n-секунд"
+	},
+	"IMPORT": {
+		"SUMMARY": "Вгрузити дані"
+	},
+	"OPENTAB": {
+		"SUMMARY": "Вікрити нову вкладку"
+	},
+	"GETSCREENSHOT": {
+		"SUMMARY": "Зробити скріншот сторінки"
+	},
+	"SCROLLTO": {
+		"SUMMARY": "Прокрутка сторінки"
+	},
+	"SNAPSHOT": {
+		"SUMMARY": "Зробити копію сторінки"
 	}
 }

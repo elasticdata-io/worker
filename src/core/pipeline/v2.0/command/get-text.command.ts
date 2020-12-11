@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'gettext',
 	version: '2.0',
 	type: CommandType.SELECTABLE,
+	summary: `doc.GETTEXT.SUMMARY`,
 })
 export class GetTextCommand extends AbstractCommand {
 

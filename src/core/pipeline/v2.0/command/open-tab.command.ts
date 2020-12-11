@@ -11,8 +11,8 @@ import { TYPES as ROOT_TYPES } from '../../types';
 @Cmd({
 	cmd: 'opentab',
 	version: '2.0',
-	summary: 'Open new browser tab',
 	type: CommandType.ACTION,
+	summary: `doc.OPENTAB.SUMMARY`,
 })
 export class OpenTabCommand extends AbstractCommand {
 

@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'geturl',
 	version: '2.0',
 	type: CommandType.SELECTABLE,
+	summary: `doc.GETURL.SUMMARY`,
 })
 export class GetUrlCommand extends AbstractCommand {
 

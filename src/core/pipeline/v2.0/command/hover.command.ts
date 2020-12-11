@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'hover',
 	version: '2.0',
 	type: CommandType.ACTION,
+	summary: `doc.HOVER.SUMMARY`,
 })
 export class HoverCommand extends AbstractCommand {
 

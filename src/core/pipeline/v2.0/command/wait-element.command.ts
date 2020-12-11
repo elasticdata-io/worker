@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'waitelement',
 	version: '2.0',
 	type: CommandType.OTHER,
+	summary: `doc.WAITELEMENT.SUMMARY`,
 })
 export class WaitElementCommand extends AbstractCommand {
 

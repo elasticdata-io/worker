@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'click',
 	version: '2.0',
 	type: CommandType.ACTION,
+	summary: `doc.CLICK.SUMMARY`,
 })
 export class ClickCommand extends AbstractCommand {
 

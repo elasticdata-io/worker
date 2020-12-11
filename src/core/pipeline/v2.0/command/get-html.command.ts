@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'gethtml',
 	version: '2.0',
 	type: CommandType.SELECTABLE,
+	summary: `doc.GETHTML.SUMMARY`,
 })
 export class GetHtmlCommand extends AbstractCommand {
 

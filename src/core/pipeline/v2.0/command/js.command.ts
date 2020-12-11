@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'js',
 	version: '2.0',
 	type: CommandType.OTHER,
+	summary: `doc.JS.SUMMARY`,
 })
 export class JsCommand extends AbstractCommand {
 

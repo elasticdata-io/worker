@@ -7,6 +7,7 @@ import { CommandType } from '../../documentation/specification';
 	cmd: 'import',
 	version: '2.0',
 	type: CommandType.OTHER,
+	summary: `doc.IMPORT.SUMMARY`,
 })
 export class ImportCommand extends AbstractCommand {
 

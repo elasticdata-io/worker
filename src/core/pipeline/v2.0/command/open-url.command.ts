@@ -9,8 +9,8 @@ import { LineMacrosParser } from '../../data/line-macros-parser';
 @Cmd({
 	cmd: 'openurl',
 	version: '2.0',
-	summary: 'Go to url page',
 	type: CommandType.ACTION,
+	summary: `doc.OPENURL.SUMMARY`,
 })
 export class OpenUrlCommand extends AbstractCommand {
 

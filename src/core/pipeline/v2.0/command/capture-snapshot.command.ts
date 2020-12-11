@@ -6,7 +6,8 @@ import { CommandType } from '../../documentation/specification';
 @Cmd({
 	cmd: 'snapshot',
 	version: '2.0',
-	type: CommandType.SELECTABLE
+	type: CommandType.SELECTABLE,
+	summary: `doc.SNAPSHOT.SUMMARY`,
 })
 export class CaptureSnapshotCommand extends AbstractCommand {
 
