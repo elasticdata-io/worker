@@ -40,22 +40,41 @@ export class GetTextCommand extends AbstractCommand {
 	})
 	public prefix = '';
 
+	@Assignable({
+		required: false,
+		type: Boolean,
+		default: true
+	})
+	public must = true;
+
 	async execute(): Promise<void> {
-		let text;
-		await this.driver.waitElement(this);
-		if (this.attribute) {
-			text = await this.driver.getElAttribute(this, this.attribute);
-		} else {
-			text = await this.driver.getElText(this);
+		let text = '';
+		try {
+			await this.driver.waitElement(this);
+			text = await this._getText();
+		} catch (e) {
+			if (this.must) {
+				throw e;
+			}
 		}
 		const key = await this.getKey();
-		const value = `${this.prefix}${text}${this.suffix}`
-		await this.store.put(key, value, this);
+		const value = `${this.prefix}${text}${this.suffix}`;
+		if (text !== '') {
+			await this.store.put(key, value, this);
+		}
 		await super.execute();
 	}
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
 		return keys.concat(['key', 'selector', 'attribute']);
+	}
+
+	private async _getText(): Promise<string> {
+		if (this.attribute) {
+			return await this.driver.getElAttribute(this, this.attribute);
+		} else {
+			return await this.driver.getElText(this);
+		}
 	}
 }
