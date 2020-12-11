@@ -31,7 +31,6 @@ import {PageContextResolver} from "../../browser/page-context-resolver";
 import { OpenTabAsyncCommand } from './async/open-tab.async.command';
 import { JsonMaterializedPathsUtils } from '../../util/json-materialized-paths.utils';
 import { TypeCommand } from './type.command';
-import {ClickByCoordinateCommand} from "./click-by-coordinate.command";
 
 export class CommandFactory extends ICommandFactory {
 	constructor(@inject(ROOT_TYPES.PipelineIoc) private _ioc: PipelineIoc,
@@ -105,9 +104,6 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'click':
 				command = new ClickCommand(ioc);
-				break;
-			case 'click-xy':
-				command = new ClickByCoordinateCommand(ioc);
 				break;
 			case 'checkdata':
 				command = new CheckDataCommand(ioc);
