@@ -13,7 +13,6 @@ import { JsCommand } from './js.command';
 import { LoopCommand } from './loop.command';
 import { NativeClickCommand } from './native-click.command';
 import { PauseCommand } from './pause.command';
-import { PutTextCommand } from './put-text.command';
 import { ReplaceTextCommand } from './replace-text.command';
 import { ScrollToCommand } from './scroll-to.command';
 import { OpenUrlCommand } from './open-url.command';
@@ -144,9 +143,6 @@ export class CommandFactory extends ICommandFactory {
 				break;
 			case 'pause':
 				command = new PauseCommand(ioc);
-				break;
-			case 'puttext':
-				command = new PutTextCommand(ioc);
 				break;
 			case 'type':
 				command = new TypeCommand(ioc);
