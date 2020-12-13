@@ -11,6 +11,8 @@ import {TaskDto} from "./dto/task.dto";
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 import {UserInteractionEvent} from "./core/pipeline/event-bus/events";
 import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
+import {TaskCompeteDto} from "./dto/task-compete.dto";
+import {TaskErrorDto} from "./dto/task-error.dto";
 
 @Injectable()
 export class AppService {
@@ -184,43 +186,26 @@ export class AppService {
 		if (this.USE_SIMPLE_WORKER) {
 			return;
 		}
-		const taskStatus = taskResult.taskInformation.failureReason
-		  ? 'error'
-		  : 'completed';
-		const patch = [
-			{
-				op: "replace",
-				path: "/status",
-				value: taskStatus,
-			},
-			{
-				op: "replace",
-				path: "/docsUrl",
-				value: taskResult.fileLink
-			},
-			{
-				op: "replace",
-				path: "/docsCount",
-				value: taskResult.rootLines || 0
-			},
-			{
-				op: "replace",
-				path: "/docsBytes",
-				value: taskResult.bytes
-			},
-			{
-				op: "replace",
-				path: "/commandsInformationLink",
-				value: taskResult.taskInformation.commandsInformationLink,
-			},
-			{
-				op: "replace",
-				path: "/endOnUtc",
-				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
-			}
-		];
-		await this._taskService.update(taskId, patch);
-		await this._taskService.synchronizeWithPipeline(taskId);
+		const taskCompleteDto: TaskCompeteDto = {
+			id: taskId,
+			docsUrl: taskResult.fileLink,
+			docsCount: taskResult.rootLines,
+			docsBytes: taskResult.bytes,
+			commandsInformationLink: taskResult.taskInformation.commandsInformationLink,
+		};
+		const taskErrorDto: TaskErrorDto = {
+			id: taskId,
+			docsUrl: taskResult.fileLink,
+			docsCount: taskResult.rootLines,
+			docsBytes: taskResult.bytes,
+			commandsInformationLink: taskResult.taskInformation.commandsInformationLink,
+			failureReason: taskResult.taskInformation.failureReason,
+		};
+		if (taskResult.taskInformation.failureReason) {
+			await this._taskService.error(taskErrorDto);
+		} else {
+			await this._taskService.complete(taskCompleteDto);
+		}
 	}
 
 	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {

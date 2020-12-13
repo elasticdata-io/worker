@@ -3,7 +3,9 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import {TaskDto} from "../dto/task.dto";
 import {TaskCommandExecuteDto} from "../dto/task.command.execute.dto";
-import {UserInteractionState} from "../core/pipeline/user-interaction/interface";
+import {UserInteractionState} from "../core/pipeline/user-interaction";
+import { TaskCompeteDto } from 'src/dto/task-compete.dto';
+import {TaskErrorDto} from "../dto/task-error.dto";
 
 @Injectable()
 export class TaskDataClient {
@@ -12,6 +14,22 @@ export class TaskDataClient {
 
 	constructor(private configService: ConfigService) {
 		this._serviceUrl = this.configService.get<string>('SCRAPER_SERVICE_URL');
+	}
+
+	async error(dto: TaskErrorDto): Promise<void> {
+		if (parseInt(this._serviceUrl) === 0) {
+			return;
+		}
+		const url = `${this._serviceUrl}/api/task/error`;
+		await axios.post(`${url}`, dto);
+	}
+
+	async complete(dto: TaskCompeteDto): Promise<void> {
+		if (parseInt(this._serviceUrl) === 0) {
+			return;
+		}
+		const url = `${this._serviceUrl}/api/task/complete`;
+		await axios.post(`${url}`, dto);
 	}
 
 	async update(taskId: string, patch: any): Promise<void> {
