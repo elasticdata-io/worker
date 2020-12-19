@@ -3,12 +3,16 @@ import {Browser, Page} from "puppeteer";
 import puppeteer from "puppeteer-extra";
 import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
 import {PageFactoryOptions} from "../model/page-factory-options";
+import {Environment} from "../../environment";
 
 export class ChromiumPageFactory implements BrowserPageFactory {
 
-	constructor(private _config: PageFactoryOptions) {}
+	private static USER_AGENT = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36`;
+
+	constructor(private _config: PageFactoryOptions, private _env: Environment) {}
 
 	async create(): Promise<{page: Page, browser: Browser}> {
+		// todo: encapsulation this use declaration
 		puppeteer.use(
 			RecaptchaPlugin({
 				provider: {
@@ -51,6 +55,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		if (config.proxies.length) {
 			args.push(`--proxy-server=${config.proxies[0]}`);
 		}
+		args.push(`--user-agent=${this._getUserAgent()}`);
 		let browser: Browser;
 		const headless = process.env.PUPPETEER_HEADLESS === undefined || process.env.PUPPETEER_HEADLESS === '1';
 		console.log(`process.env.PUPPETEER_HEADLESS = ${process.env.PUPPETEER_HEADLESS}`);
@@ -78,6 +83,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			if (config.proxies.length) {
 				args.push(`--proxy-server=${config.proxies[0]}`);
 			}
+			args.push(`--user-agent=${this._getUserAgent()}`);
 			browser = await puppeteer.launch({
 				args: args,
 				headless: false,
@@ -113,10 +119,14 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		}
 		if (config && config.language) {
 			await page.setExtraHTTPHeaders({
-				'Accept-Language': config.language
+				'Accept-Language': config.language,
 			});
 		}
 		return page;
+	}
+
+	private _getUserAgent(): string {
+		return `${ChromiumPageFactory.USER_AGENT}==${this._env.taskId}`;
 	}
 
 }

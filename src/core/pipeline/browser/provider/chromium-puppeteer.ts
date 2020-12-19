@@ -10,6 +10,7 @@ import {ChromiumPageFactory} from "./chromium-page-factory";
 import {PageFactoryOptions} from "../model/page-factory-options";
 import {Pool} from "generic-pool";
 import {Browser, Page} from "puppeteer";
+import {Environment} from "../../environment";
 
 @Injectable()
 export class ChromiumPuppeteer extends AbstractBrowser {
@@ -31,7 +32,8 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 				language: this.language,
 			} as PageFactoryOptions;
 			console.info(options);
-			const pageFactory = new ChromiumPageFactory(options);
+			const env = this._ioc.get<Environment>(ROOT_TYPES.Environment);
+			const pageFactory = new ChromiumPageFactory(options, env);
 			const opts = {
 				max: 3,
 				min: 1

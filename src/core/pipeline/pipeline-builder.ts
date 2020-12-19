@@ -44,6 +44,9 @@ export class PipelineBuilder implements IPipelineBuilder {
 
 	async build(): Promise<PipelineProcess> {
 		// todo : settings need before this._browser.create
+		this._ioc
+			.bind<Environment>(ROOT_TYPES.Environment)
+			.toConstantValue(this._environment);
 		const pipeline = JSON.parse(this._pipelineJson);
 		const settings = (pipeline.settings || {window: {}}) as SettingsConfiguration;
 		this._setBrowserSettings(settings);
@@ -51,9 +54,6 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._ioc
 		  .bind<Driver>(ROOT_TYPES.Driver)
 		  .toConstantValue(driver);
-		this._ioc
-		  .bind<Environment>(ROOT_TYPES.Environment)
-		  .toConstantValue(this._environment);
 		this._registerUserInteraction(settings.userInteraction);
 		try {
 			const pipelineConfiguration = this._pipelineConfigurationBuilder
