@@ -77,6 +77,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._browser.windowWidth = window.width || this._browser.windowWidth;
 		this._browser.proxies = settings?.proxies || this._proxies;
 		this._browser.needProxyRotation = settings?.needProxyRotation || false;
+		this._browser.network = settings?.network;
 	}
 
 	private _registerUserInteraction(userInteraction: UserInteractionSettingsConfiguration) {

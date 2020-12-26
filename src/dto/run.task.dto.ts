@@ -13,6 +13,17 @@ interface PipelineSettings {
 	window: PipelineWindowSettings;
 	proxies: string[];
 	userInteraction: PipelineUserInteractionSettings
+	network: PipelineNetwork
+}
+
+interface PipelineNetwork {
+	skipResources: NetworkSkipResourcesDslDto;
+}
+
+interface NetworkSkipResourcesDslDto {
+	stylesheet: boolean;
+	image: boolean;
+	font: boolean;
 }
 
 export interface RunTaskDto {

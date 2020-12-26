@@ -30,6 +30,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 				windowWidth: this.windowWidth,
 				windowHeight: this.windowHeight,
 				language: this.language,
+				network: this.network,
 			} as PageFactoryOptions;
 			console.info(options);
 			const env = this._ioc.get<Environment>(ROOT_TYPES.Environment);

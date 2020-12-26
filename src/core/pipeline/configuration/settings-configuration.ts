@@ -29,4 +29,15 @@ export class SettingsConfiguration {
    * User interaction configuration with watch selectors.
    */
   public userInteraction: UserInteractionSettingsConfiguration;
+
+  /**
+   * Network configuration
+   */
+  public network: {
+    skipResources: {
+      stylesheet: boolean,
+      image: boolean,
+      font: boolean,
+    }
+  }
 }

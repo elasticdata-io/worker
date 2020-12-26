@@ -123,15 +123,32 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 				'Accept-Language': config.language,
 			});
 		}
-		await page.setRequestInterception(true);
+		await this.addNetworkInterception(page);
+		return page;
+	}
+
+	private async addNetworkInterception(page: Page) {
+		const skipResources = this._config?.network?.skipResources || {font: false, stylesheet: false, image: false};
+		const skipResourceTypes = [];
+		if (skipResources.font) {
+			skipResourceTypes.push('font');
+		}
+		if (skipResources.stylesheet) {
+			skipResourceTypes.push('stylesheet');
+		}
+		if (skipResources.image) {
+			skipResourceTypes.push('image');
+		}
+		if (skipResourceTypes.length) {
+			await page.setRequestInterception(true);
+		}
 		page.on('request', (req) => {
-			if(req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image'){
+			if (skipResourceTypes.includes(req.resourceType())) {
 				req.abort();
 			} else {
 				req.continue();
 			}
 		});
-		return page;
 	}
 
 	private _getUserAgent(): string {
