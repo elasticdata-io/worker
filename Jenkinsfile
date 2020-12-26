@@ -76,7 +76,7 @@ spec:
 						}
 					}
 					stage('helm init') {
-						sh 'helm init --wait --client-only'
+						sh 'helm init --stable-repo-url=https://charts.helm.sh/stable --wait --client-only'
 					}
 					stage('helm upgrade') {
 						sh "helm upgrade \
