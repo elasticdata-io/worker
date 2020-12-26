@@ -3,7 +3,8 @@ import { injectable } from 'inversify';
 
 @injectable()
 export abstract class AbstractBrowser {
-	public proxies: string[];
+	public needProxyRotation: boolean;
+	public proxies: string[] = [];
 	public windowWidth = 1920;
 	public windowHeight = 1080;
 	public language = 'en';

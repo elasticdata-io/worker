@@ -21,6 +21,11 @@ export class SettingsConfiguration {
   public proxies: string[];
 
   /**
+   * Need enabled proxy.
+   */
+  public needProxyRotation: boolean;
+
+  /**
    * User interaction configuration with watch selectors.
    */
   public userInteraction: UserInteractionSettingsConfiguration;

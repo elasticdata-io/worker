@@ -83,6 +83,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			if (config.proxies.length) {
 				args.push(`--proxy-server=${config.proxies[0]}`);
 			}
+			args.push(`-–disable-images`);
 			args.push(`--user-agent=${this._getUserAgent()}`);
 			browser = await puppeteer.launch({
 				args: args,
@@ -122,6 +123,14 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 				'Accept-Language': config.language,
 			});
 		}
+		await page.setRequestInterception(true);
+		page.on('request', (req) => {
+			if(req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image'){
+				req.abort();
+			} else {
+				req.continue();
+			}
+		});
 		return page;
 	}
 

@@ -24,7 +24,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 
 	public async create(): Promise<Driver> {
 		try {
-			const proxies = this.proxies || [];
+			const proxies = this.needProxyRotation ? this.proxies : [];
 			const options = {
 				proxies,
 				windowWidth: this.windowWidth,

@@ -1,5 +1,4 @@
 import { IPipelineConfigurationBuilder } from './configuration/i-pipeline-configuration-builder';
-import { BrowserProvider } from './browser/browser-provider';
 import { PipelineProcess } from './pipeline-process';
 import { AbstractBrowser } from './browser/abstract-browser';
 import { inject, injectable } from 'inversify';
@@ -32,12 +31,12 @@ export class PipelineBuilder implements IPipelineBuilder {
 		return this;
 	}
 
-	setPipelineJson(pipelineJson: string): PipelineBuilder {
+	public setPipelineJson(pipelineJson: string): PipelineBuilder {
 		this._pipelineJson = pipelineJson;
 		return this;
 	}
 
-	setProxies(proxies: string[]): PipelineBuilder {
+	public setProxies(proxies: string[]): PipelineBuilder {
 		this._proxies = proxies;
 		return this;
 	}
@@ -76,7 +75,8 @@ export class PipelineBuilder implements IPipelineBuilder {
 		this._browser.language = window.language || this._browser.language;
 		this._browser.windowHeight = window.height || this._browser.windowHeight;
 		this._browser.windowWidth = window.width || this._browser.windowWidth;
-		this._browser.proxies = settings.proxies || this._proxies;
+		this._browser.proxies = settings?.proxies || this._proxies;
+		this._browser.needProxyRotation = settings?.needProxyRotation || false;
 	}
 
 	private _registerUserInteraction(userInteraction: UserInteractionSettingsConfiguration) {
