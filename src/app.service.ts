@@ -64,9 +64,7 @@ export class AppService {
 			if (this._pipelineProcess?.isAborted) {
 				return;
 			}
-			if (this._pipelineProcess) {
-				await this.handleErrorOfTask(dto.taskId, e);
-			}
+			await this.handleErrorOfTask(dto.taskId, e);
 			throw e
 		}
 	}
@@ -213,24 +211,15 @@ export class AppService {
 			console.error(error);
 			return;
 		}
-		const patch = [
-			{
-				op: "replace",
-				path: "/status",
-				value: 'error'
-			},
-			{
-				op: "replace",
-				path: "/endOnUtc",
-				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
-			},
-			{
-				op: "replace",
-				path: "/failureReason",
-				value: error.toString()
-			}
-		];
-		await this._taskService.update(taskId, patch);
+		const dto: TaskErrorDto = {
+			id: taskId,
+			docsUrl: null,
+			commandsInformationLink: null,
+			docsCount: 0,
+			docsBytes: 0,
+			failureReason: error.toString()
+		};
+		await this._taskService.error(dto);
 	}
 
 	private async handleTaskStopped(taskId: string, taskResult?: TaskResult): Promise<void> {

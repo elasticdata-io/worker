@@ -66,6 +66,7 @@ export class PipelineBuilder implements IPipelineBuilder {
 			this._pipelineProcess = new PipelineProcess(commandsJson, commands, dataRules, browserProvider, this._ioc);
 			return this._pipelineProcess;
 		} catch (e) {
+			await driver.destroy();
 			throw e;
 		}
 	}

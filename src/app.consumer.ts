@@ -116,7 +116,7 @@ export class AppConsumer {
 			await this.runPipelineTask(dto);
 			message.ack();
 		} catch (e) {
-			console.error(chalk.blue(e));
+			console.error(chalk.red(e));
 			console.log(e);
 			message.reject();
 		}
