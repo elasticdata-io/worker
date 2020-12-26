@@ -139,9 +139,10 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		if (skipResources.image) {
 			skipResourceTypes.push('image');
 		}
-		if (skipResourceTypes.length) {
-			await page.setRequestInterception(true);
+		if (skipResourceTypes.length === 0) {
+			return;
 		}
+		await page.setRequestInterception(true);
 		page.on('request', (req) => {
 			if (skipResourceTypes.includes(req.resourceType())) {
 				req.abort();
