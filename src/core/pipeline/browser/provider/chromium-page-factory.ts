@@ -61,6 +61,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		console.log(`process.env.PUPPETEER_HEADLESS = ${process.env.PUPPETEER_HEADLESS}`);
 		if (headless) {
 			browser = await puppeteer.launch({
+				userDataDir: './profile',
 				headless: headless,
 				ignoreDefaultArgs: [
 					'--enable-automation',
