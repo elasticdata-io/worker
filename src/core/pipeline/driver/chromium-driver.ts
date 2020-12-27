@@ -123,7 +123,8 @@ export class ChromiumDriver implements Driver {
 		try {
 			const targetUrl = new URL(url);
 			const page = await this._resolvePage(command);
-			await page.goto(targetUrl.href, {timeout: timeoutSec * 1000});
+			const response = await page.goto(targetUrl.href, {timeout: timeoutSec * 1000});
+			console.log(targetUrl.href + ' FROM_CACHE:', response.fromCache());
 		} catch (e) {
 			const pageContext = this._pageContextResolver.resolveContext(command);
 			const page = this._pages[pageContext];

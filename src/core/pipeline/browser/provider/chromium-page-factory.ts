@@ -151,9 +151,6 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 				req.continue();
 			}
 		});
-		page.on('response', r => {
-			console.log(r.request().method(), r.url(), r.fromCache() ? '<CACHE>' : '<NETWORK>');
-		});
 	}
 
 	private _getUserAgent(): string {
