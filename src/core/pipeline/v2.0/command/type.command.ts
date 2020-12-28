@@ -26,9 +26,11 @@ export class TypeCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		await this.driver.waitElement(this);
-		await this.driver.type(this, this.text);
+		const text = await this.replaceMacros(this.text, this);
+		await this.driver.type(this, text);
 		await super.execute();
 	}
+
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
