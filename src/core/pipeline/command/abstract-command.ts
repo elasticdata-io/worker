@@ -106,7 +106,9 @@ export abstract class AbstractCommand implements Selectable {
 	public async replaceMacros(inputWithMacros: string, command: AbstractCommand): Promise<any> {
 		if (LineMacrosParser.hasAnyMacros(inputWithMacros)) {
 			const replaced = await this.store.replaceMacros(command, inputWithMacros);
-			// console.log(`from: ${inputWithMacros}, to: ${replaced}`);
+			if (replaced === '') {
+				throw new Error(`value with macros ${inputWithMacros} is empty`);
+			}
 			return replaced;
 		}
 		return inputWithMacros;
