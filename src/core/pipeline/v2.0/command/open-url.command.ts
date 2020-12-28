@@ -31,7 +31,13 @@ export class OpenUrlCommand extends AbstractCommand {
 
 	async execute(): Promise<void> {
 		const link = await this._getLink();
-		await this.driver.goToUrl(this, link, this.timeout);
+		const currentUrl = await this.driver.getCurrentUrl(this);
+		if (currentUrl !== link) {
+			await this.driver.goToUrl(this, link, this.timeout);
+		}
+		if (currentUrl === link) {
+			await this.driver.pageRefresh(this, this.timeout);
+		}
 		await super.execute();
 	}
 

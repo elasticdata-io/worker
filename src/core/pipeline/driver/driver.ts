@@ -7,6 +7,7 @@ export interface Driver {
 	pause(command: AbstractCommand): Promise<void>;
 	executeScript(command: AbstractCommand, ...args: any[]): Promise<string>;
 	goToUrl(command: AbstractCommand, url: string, timeoutSec?: number): Promise<void>;
+	pageRefresh(command: AbstractCommand, timeoutSec?: number): Promise<void>;
 	checkHasRecaptcha2(command: AbstractCommand): Promise<boolean>;
 	solveRecaptcha2(command: AbstractCommand): Promise<void>;
 	clickByCoordinate(command: AbstractCommand, coordinate: {x: number, y: number}): Promise<void>;
