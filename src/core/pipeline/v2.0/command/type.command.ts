@@ -17,7 +17,8 @@ export class TypeCommand extends AbstractCommand {
 	@Assignable({
 		required: true,
 		type: [String],
-		default: ''
+		default: '',
+		summary: 'Always supporting macros like "{$i}" or {$line.keyOfLine}',
 	})
 	public text = '';
 
