@@ -10,6 +10,7 @@ import { AttachFile } from '../dto/attach.file';
 import { SystemError } from '../../command/exception/system-error';
 import { DataRule } from '../dto/data-rule';
 import { KeyData } from '../dto/key.data';
+import { KeysValuesData } from '../dto/keys.values.data';
 
 @injectable()
 export class HttpDataClient {
@@ -27,9 +28,14 @@ export class HttpDataClient {
 	 * @param context
 	 * @param data
 	 */
-	async putAll(context: string, data: any[]): Promise<void> {
+	async putAll(context: string, data: KeysValuesData): Promise<void> {
 		try {
-			await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data);
+			const config = {
+				headers: {
+					userUuid: data.userUuid,
+				},
+			};
+			await axios.post(`${this._serviceUrl}${this._servicePath}/append`, data, config);
 		} catch (e) {
 			throw new SystemError(`putAll data is failed: ${e?.response?.data?.message || e.message}`);
 		}

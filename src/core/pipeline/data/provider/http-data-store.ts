@@ -8,6 +8,7 @@ import { Environment } from '../../environment';
 import { TaskResult } from '../dto/task.result';
 import { DataRule } from '../dto/data-rule';
 import { AbstractCommandAnalyzer } from '../../analyzer/abstract.command.analyzer';
+import { KeysValuesData } from '../dto/keys.values.data';
 
 @injectable()
 export class HttpDataStore extends AbstractStore {
@@ -50,9 +51,15 @@ export class HttpDataStore extends AbstractStore {
 	 * @param data
 	 * @param command
 	 */
-	async putAll(data: any[], command: AbstractCommand): Promise<void> {
+	async putAll(data: Array<object>, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
-		await this.httpDataClient.putAll(context, data);
+		const dto: KeysValuesData = {
+			values: data,
+			id: this.id,
+			userUuid: this.userUuid,
+			context: context,
+		};
+		await this.httpDataClient.putAll(context, dto);
 	}
 
 	/**
