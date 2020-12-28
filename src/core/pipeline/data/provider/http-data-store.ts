@@ -70,6 +70,7 @@ export class HttpDataStore extends AbstractStore {
 	 */
 	async put(key: string, value: string, command: AbstractCommand): Promise<void> {
 		const context = this.contextResolver.resolveContext(command);
+		const n1 = new Date();
 		await this.httpDataClient.put({
 			key: key,
 			value: value,
@@ -77,6 +78,8 @@ export class HttpDataStore extends AbstractStore {
 			id: this.id,
 			userUuid: this.userUuid,
 		});
+		const n2 = new Date();
+		console.log(n2.getTime() - n1.getTime());
 		await this.commandAnalyzer.setCommandData(command, value);
 	}
 
