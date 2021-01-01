@@ -1,7 +1,8 @@
 import {BrowserPageFactory} from "../browser-page-factory";
 import {Browser, Page} from "puppeteer";
-import puppeteer from "puppeteer-extra";
-import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
+import * as puppeteer from "puppeteer";
+// import puppeteer from "puppeteer-extra";
+// import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
 import {PageFactoryOptions} from "../model/page-factory-options";
 import {Environment} from "../../environment";
 
@@ -13,15 +14,15 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 
 	async create(): Promise<{page: Page, browser: Browser}> {
 		// todo: encapsulation this use declaration
-		puppeteer.use(
-			RecaptchaPlugin({
-				provider: {
-					id: '2captcha',
-					token: '868e274d75df7a72cb05d1eeb8bc05cb', // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
-				},
-				visualFeedback: true, // colorize reCAPTCHAs (violet = detected, green = solved)
-			})
-		);
+		// puppeteer.use(
+		// 	RecaptchaPlugin({
+		// 		provider: {
+		// 			id: '2captcha',
+		// 			token: '868e274d75df7a72cb05d1eeb8bc05cb', // REPLACE THIS WITH YOUR OWN 2CAPTCHA API KEY ⚡
+		// 		},
+		// 		visualFeedback: true, // colorize reCAPTCHAs (violet = detected, green = solved)
+		// 	})
+		// );
 		const config = this._config;
 		let args = await puppeteer.defaultArgs()
 			.filter(x => x !== '--enable-automation');

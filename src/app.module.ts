@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DocumentationModule } from './documentation/documentation.module';
 import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
+import { DataStoreModule } from './data-store/data-store.module';
 
 @Module({
 	imports: [
@@ -25,6 +26,7 @@ import * as path from 'path';
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),
+	    DataStoreModule,
 	],
 	controllers: [AppController],
 	providers: [

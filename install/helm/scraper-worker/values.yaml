@@ -27,7 +27,7 @@ ingress:
   #      - chart-example.local
 
 env:
-  DATA_SERVICE_URL: http://data-service
+  DATA_SERVICE_URL: http://localhost:3000/worker
   SCRAPER_SERVICE_URL: http://backend:8080
 
   RUN_TASK_QUEUE_NAME: PROD_TASK_RUN

@@ -54,7 +54,7 @@ export class ChromiumDriver implements Driver {
 
 	public async solveRecaptcha2(command: AbstractCommand): Promise<void> {
 		const page = await this._resolvePage(command);
-		await page.solveRecaptchas();
+		// await page.solveRecaptchas();
 	}
 
 	public async clickByCoordinate(command: AbstractCommand, coordinate: {x: number, y: number}): Promise<void> {

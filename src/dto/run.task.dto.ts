@@ -1,36 +1,38 @@
-interface PipelineUserInteractionSettings {
-	watchCommands: any[];
+import { ApiProperty } from '@nestjs/swagger';
+
+class PipelineUserInteractionSettings {
+	@ApiProperty() watchCommands: Array<object>;
 }
 
-interface PipelineWindowSettings {
-	width: number;
-	height: number;
-	lang: string;
+class PipelineWindowSettings {
+	@ApiProperty() width: number;
+	@ApiProperty() height: number;
+	@ApiProperty() lang: string;
 }
 
-interface PipelineSettings {
-	maxWorkingMinutes: number;
-	window: PipelineWindowSettings;
-	proxies: string[];
-	userInteraction: PipelineUserInteractionSettings
-	network: PipelineNetwork
+class NetworkSkipResourcesDslDto {
+	@ApiProperty() stylesheet: boolean;
+	@ApiProperty() image: boolean;
+	@ApiProperty() font: boolean;
 }
 
-interface PipelineNetwork {
-	skipResources: NetworkSkipResourcesDslDto;
+class PipelineNetwork {
+	@ApiProperty() skipResources: NetworkSkipResourcesDslDto;
 }
 
-interface NetworkSkipResourcesDslDto {
-	stylesheet: boolean;
-	image: boolean;
-	font: boolean;
+class PipelineSettings {
+	@ApiProperty() maxWorkingMinutes: number;
+	@ApiProperty() window: PipelineWindowSettings;
+	@ApiProperty() proxies: string[];
+	@ApiProperty() userInteraction: PipelineUserInteractionSettings
+	@ApiProperty() network: PipelineNetwork
 }
 
-export interface RunTaskDto {
-	json: string;
-	taskId: string;
-	pipelineId: string;
-	pipelineSettings: PipelineSettings;
-	userUuid: string;
-	proxies: string[];
+export class RunTaskDto {
+	@ApiProperty() json: string;
+	@ApiProperty() taskId: string;
+	@ApiProperty() pipelineId: string;
+	@ApiProperty() pipelineSettings: PipelineSettings;
+	@ApiProperty() userUuid: string;
+	@ApiProperty() proxies: string[];
 }
