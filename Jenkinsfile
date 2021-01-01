@@ -58,14 +58,11 @@ spec:
 
 				container('docker') {
                     env.DOCKER_TAG = "${BRANCH_NAME}_${BUILD_NUMBER}"
-                    stage('build application') {
+                    stage('build') {
                         sh 'docker build -f install/Dockerfile -t localhost:32000/scraper-worker:${DOCKER_TAG} .'
                     }
-                    stage('publish application') {
+                    stage('publish') {
                         sh 'docker push localhost:32000/scraper-worker:${DOCKER_TAG}'
-                    }
-                    stage('rm application') {
-
                     }
 				}
 
