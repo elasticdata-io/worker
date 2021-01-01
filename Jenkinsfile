@@ -34,6 +34,11 @@ spec:
     command:
     - cat
     tty: true
+  - name: node
+    image: node
+    command:
+    - cat
+    tty: true
 """
 )
 	{
