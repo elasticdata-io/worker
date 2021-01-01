@@ -43,6 +43,14 @@ spec:
 
 				checkout scm
 
+				container('node') {
+                    stage('ci tests') {
+                        env.SCRAPER_SERVICE_URL = 'https://app.elasticdata.io'
+	                    sh 'npm ci'
+	                    sh 'npm run test:ci'
+                    }
+				}
+
 				container('docker') {
                     env.DOCKER_TAG = "${BRANCH_NAME}_${BUILD_NUMBER}"
                     stage('build application') {

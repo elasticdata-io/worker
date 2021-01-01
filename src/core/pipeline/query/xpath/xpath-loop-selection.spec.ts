@@ -2,7 +2,7 @@ import { XpathLoopSelection } from './xpath-loop-selection';
 import { AbstractCommand } from '../../command/abstract-command';
 import { DataContextResolver } from '../../data/data-context-resolver';
 
-describe('XpathLoopSelection', () => {
+xdescribe('XpathLoopSelection', () => {
 	let command: AbstractCommand;
 	let dataContextResolver: DataContextResolver;
 	let xpathLoopSelection: XpathLoopSelection;
