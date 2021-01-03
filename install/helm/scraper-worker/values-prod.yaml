@@ -1,0 +1,2 @@
+env:
+  SCRAPER_SERVICE_URL: https://app.elasticdata.io
