@@ -63,6 +63,9 @@ spec:
                     }
                     stage('publish') {
                         sh 'docker push localhost:32000/scraper-worker:${DOCKER_TAG}'
+                        sh "docker login -u bombascter -p '!Prisoner31!'"
+                        sh 'docker tag localhost:32000/scraper-worker:${DOCKER_TAG} bombascter/scraper-worker:${DOCKER_TAG}'
+                        sh 'docker push bombascter/scraper-worker:${DOCKER_TAG}'
                     }
 				}
 
