@@ -35,8 +35,9 @@ export class ChromiumPuppeteer extends AbstractBrowser {
 			console.info(options);
 			const env = this._ioc.get<Environment>(ROOT_TYPES.Environment);
 			const pageFactory = new ChromiumPageFactory(options, env);
+			const maxTabs: number = parseInt(process.env.MAX_CHROME_TABS) || 3;
 			const opts = {
-				max: 3,
+				max: maxTabs,
 				min: 1
 			};
 			const pool: Pool<{page: Page, browser: Browser}> = genericPool.createPool(pageFactory, opts);
