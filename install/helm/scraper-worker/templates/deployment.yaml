@@ -57,6 +57,9 @@ spec:
               value: {{ .Values.env.AMQP_CONNECTION_STRING }}
             - name: AMQP_LOG_LEVEL
               value: {{ .Values.env.AMQP_LOG_LEVEL }}
+
+            - name: MAX_CHROME_TABS
+              value: {{ .Values.env.MAX_CHROME_TABS | quote }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
