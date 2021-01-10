@@ -9,7 +9,7 @@ import {PipelineProcess} from './core/pipeline/pipeline-process';
 import {ConfigService} from '@nestjs/config';
 import {TaskDto} from "./dto/task.dto";
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
-import {UserInteractionEvent} from "./core/pipeline/event-bus/events";
+import {UserInteractionEvent} from './core/pipeline/event-bus';
 import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
 import {TaskCompeteDto} from "./dto/task-compete.dto";
 import {TaskErrorDto} from "./dto/task-error.dto";
