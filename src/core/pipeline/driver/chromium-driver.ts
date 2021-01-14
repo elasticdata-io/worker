@@ -43,6 +43,8 @@ export class ChromiumDriver implements Driver {
 	}
 
 	public async checkHasRecaptcha2(command: AbstractCommand): Promise<boolean> {
+		// todo: disable functionality
+		return false;
 		const page = await this._resolvePage(command);
 		const script = `document.querySelector('div[style^="visibility: visible"] iframe[title^="recaptcha"]').contentWindow.document.querySelector('#rc-imageselect img') !== null;`;
 		try {
