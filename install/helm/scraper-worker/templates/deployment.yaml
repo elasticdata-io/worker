@@ -54,8 +54,8 @@ spec:
 
             - name: WORKER_TYPE
               value: {{ .Values.env.WORKER_TYPE }}
-            - name: WORKER_CONTAINER_ID
-              value: {{ .Values.env.WORKER_CONTAINER_ID }}
+            - name: CONTAINER_KEY
+              value: {{ .Values.env.CONTAINER_KEY }}
 
             - name: AMQP_CONNECTION_STRING
               value: {{ .Values.env.AMQP_CONNECTION_STRING }}

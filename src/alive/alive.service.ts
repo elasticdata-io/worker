@@ -14,12 +14,12 @@ export class AliveService {
 	public async handleCron(): Promise<void> {
 		const WORKER_TYPE = this.configService.get<string>('WORKER_TYPE');
 		const WORKER_MANAGER_URL = this.configService.get<string>('WORKER_MANAGER_URL');
-		const WORKER_CONTAINER_ID = this.configService.get<string>('WORKER_CONTAINER_ID');
+		const CONTAINER_KEY = this.configService.get<string>('CONTAINER_KEY');
 		const url = `${WORKER_MANAGER_URL}/worker/alive`;
 		try {
 			await axios.post(url, {
 				userId: WORKER_TYPE,
-				containerKey: WORKER_CONTAINER_ID,
+				containerKey: CONTAINER_KEY,
 			});
 		} catch (e) {
 			this.logger.error(e);
