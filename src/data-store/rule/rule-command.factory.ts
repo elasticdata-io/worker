@@ -9,6 +9,7 @@ import DataRuleDto from "../dto/data-rule.dto";
 import UniqueRuleCommand from "./command/unique-rule.command";
 import JoinRuleCommand from "./command/join-rule.command";
 import ExtractRegexRuleCommand from "./command/extract-regex-rule.command";
+import PluckRuleCommand from './command/pluck-rule.command';
 
 @Injectable()
 export default class RuleCommandFactory {
@@ -31,6 +32,8 @@ export default class RuleCommandFactory {
                 return new JoinRuleCommand(config);
             case 'extract_regex':
                 return new ExtractRegexRuleCommand(config);
+            case 'pluck':
+                return new PluckRuleCommand(config);
             default:
                 throw new Error(`not supported data rule: ${config.cmd}`)
         }

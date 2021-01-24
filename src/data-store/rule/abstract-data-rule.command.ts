@@ -5,7 +5,7 @@ export default abstract class AbstractDataRuleCommand {
     constructor(protected config: DataRuleDto) {}
 
     protected abstract transformString(inputValue: string, document: object): void;
-    protected abstract transformArray(inputValue: string[], document: object): void;
+    protected abstract transformArray(inputValue: any[], document: object): void;
     protected setToKey(document: any, newValue: string | string[]): void {
         const key = this.config.toKey || this.config.bindKey;
         document[key] = newValue;

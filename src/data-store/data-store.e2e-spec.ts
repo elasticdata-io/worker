@@ -56,7 +56,42 @@ describe('Data store', () => {
             {
                 key: 'iphone-name-array',
                 value: ['iPhone 5 16GB', 'iPhone 6 128GB'],
-            }
+            },
+            {
+                key: 'pages',
+                value: [
+                    {
+                        links: [
+                            {
+                                link: 'http://1.google.com.ua',
+                            },
+                            {
+                                link: 'http://2.google.com.ua',
+                            },
+                        ],
+                    },
+                    {
+                        links: [
+                            {
+                                link: 'http://1.yandex.com.ua',
+                            },
+                            {
+                                link: 'http://2.yandex.com.ua',
+                            },
+                        ],
+                    },
+                    {
+                        links: [
+                            {
+                                link: 'http://1.yahoo.com.ua',
+                            },
+                            {
+                                link: 'http://2.yahoo.com.ua',
+                            },
+                        ],
+                    },
+                ],
+            },
         ];
         const rules = [
             {
@@ -110,6 +145,12 @@ describe('Data store', () => {
                 toKey: 'iphone-name-array-memories',
                 regex: '(?<memory>[0-9]+GB)',
                 replacement: 'memory',
+            },
+            {
+                cmd: 'pluck',
+                bindKey: 'pages',
+                innerKey: 'links',
+                merge: true,
             }
         ];
         const expectedValues = [
@@ -127,6 +168,26 @@ describe('Data store', () => {
                 'iphone-memory': '16GB',
                 'iphone-name-array': ['iPhone 5 16GB', 'iPhone 6 128GB'],
                 'iphone-name-array-memories': ['16GB', '128GB'],
+                'pages': [
+                    {
+                        'link': 'http://1.google.com.ua',
+                    },
+                    {
+                        'link': 'http://2.google.com.ua',
+                    },
+                    {
+                        'link': 'http://1.yandex.com.ua',
+                    },
+                    {
+                        'link': 'http://2.yandex.com.ua',
+                    },
+                    {
+                        'link': 'http://1.yahoo.com.ua',
+                    },
+                    {
+                        'link': 'http://2.yahoo.com.ua',
+                    },
+                ],
             },
         ];
 
