@@ -74,6 +74,7 @@ export class BrowserProvider extends IBrowserProvider {
 	}
 
 	public async waitCompleted(): Promise<void> {
+		const startOn = new Date();
 		return new Promise((resolve, reject) => {
 			const waitPoolInterval = 1 * 1000;
 			this._waitCompletedInterval = setInterval(() => {
@@ -81,6 +82,12 @@ export class BrowserProvider extends IBrowserProvider {
 				if (pollCompleted || this._browser.hasBeenDestroyed()) {
 					clearInterval(this._waitCompletedInterval);
 					resolve();
+				}
+				const endOn = new Date();
+				const workingMinutes = (endOn.getTime() - startOn.getTime()) / 1000 / 60
+				if (workingMinutes > 60) {
+					clearInterval(this._waitCompletedInterval);
+					reject('WORKER STOPPED AFTER 60 minutes');
 				}
 			}, waitPoolInterval);
 		});
