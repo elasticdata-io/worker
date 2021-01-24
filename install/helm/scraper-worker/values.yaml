@@ -29,6 +29,7 @@ ingress:
 env:
   DATA_SERVICE_URL: http://localhost:3000/worker
   SCRAPER_SERVICE_URL: http://backend:8080
+  WORKER_MANAGER_URL: http://localhost:3005
 
   RUN_TASK_QUEUE_NAME: PROD_TASK_RUN
   INBOX_QUEUE_NAME: PROD_WORKER_INBOX
@@ -39,6 +40,7 @@ env:
   RUN_TASK_ROUTING_KEY: PROD_RUN_TASK
 
   WORKER_TYPE: A
+  WORKER_CONTAINER_ID: WORKER_CONTAINER_ID
 
   AMQP_CONNECTION_STRING: amqp://user:password@rabbitmq.rabbitmq:5672
   AMQP_LOG_LEVEL: info

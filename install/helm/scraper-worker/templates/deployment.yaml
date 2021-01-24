@@ -36,6 +36,8 @@ spec:
               value: {{ .Values.env.DATA_SERVICE_URL }}
             - name: SCRAPER_SERVICE_URL
               value: {{ .Values.env.SCRAPER_SERVICE_URL }}
+            - name: WORKER_MANAGER_URL
+              value: {{ .Values.env.WORKER_MANAGER_URL }}
 
             - name: RUN_TASK_QUEUE_NAME
               value: {{ .Values.env.RUN_TASK_QUEUE_NAME }}
@@ -52,6 +54,8 @@ spec:
 
             - name: WORKER_TYPE
               value: {{ .Values.env.WORKER_TYPE }}
+            - name: WORKER_CONTAINER_ID
+              value: {{ .Values.env.WORKER_CONTAINER_ID }}
 
             - name: AMQP_CONNECTION_STRING
               value: {{ .Values.env.AMQP_CONNECTION_STRING }}

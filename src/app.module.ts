@@ -9,6 +9,7 @@ import { DocumentationModule } from './documentation/documentation.module';
 import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
 import { DataStoreModule } from './data-store/data-store.module';
+import { AliveModule } from './alive/alive.module';
 
 @Module({
 	imports: [
@@ -20,13 +21,14 @@ import { DataStoreModule } from './data-store/data-store.module';
 				watch: true,
 			},
 		}),
-	  	PipelineModule,
+		PipelineModule,
 		TaskModule,
 		DocumentationModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
 		}),
-	    DataStoreModule,
+		DataStoreModule,
+		AliveModule,
 	],
 	controllers: [AppController],
 	providers: [
