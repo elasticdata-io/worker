@@ -10,10 +10,10 @@ import {AttachFile} from "./dto/attach.file";
 import AbstractDataRuleCommand from "./rule/abstract-data-rule.command";
 import {KeyData} from "./dto/key.data";
 import {LineMarcosReplacer} from "./line-marcos-replacer";
-import {DynamicLinkService} from "./dynamic-link-service";
 import { KeysValuesData } from './dto/keys.values.data';
 import { Injectable, Scope } from '@nestjs/common';
 import { AbstractFileClientService } from './abstract-file-client.service';
+import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class StorageService {
@@ -23,7 +23,7 @@ export class StorageService {
 
 	constructor(
 		private readonly configService: ConfigService,
-		private readonly dynamicLinkService: DynamicLinkService,
+		private readonly dynamicLinkService: AbstractDynamicLinkService,
 		private readonly fileClientService: AbstractFileClientService,
 	) {
 		this._contexts = {};

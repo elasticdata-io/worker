@@ -7,7 +7,6 @@ import {CommitDocument} from "./dto/commit.document";
 import {AttachFile} from "./dto/attach.file";
 import {DataRuleService} from "./rule/data-rule.service";
 import {KeyData} from "./dto/key.data";
-import {DynamicLinkService} from "./dynamic-link-service";
 import { KeysValuesData } from './dto/keys.values.data';
 import { ModuleRef } from '@nestjs/core';
 
@@ -18,7 +17,6 @@ export class DataStoreService {
 
 	constructor(
 		private dataRuleService: DataRuleService,
-		private readonly dynamicLinkService: DynamicLinkService,
 		private moduleRef: ModuleRef,
 	) {
 		this._storages = {};

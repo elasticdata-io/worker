@@ -5,11 +5,12 @@ import configuration from "./config";
 import { ConfigModule } from '@nestjs/config';
 import {DataRuleService} from "./rule/data-rule.service";
 import RuleCommandFactory from "./rule/rule-command.factory";
-import {DynamicLinkService} from "./dynamic-link-service";
+import {PersistenceLinkService} from "./persistence-link.service";
 import { StorageService } from './storage-service';
 import { AbstractFileClientService } from './abstract-file-client.service';
 import { MinioFileClientService } from './minio-file-client.service';
 import { EnvModule } from '../env/env.module';
+import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { EnvModule } from '../env/env.module';
   ],
   controllers: [DataStoreController],
   providers: [
-    DynamicLinkService,
+    PersistenceLinkService,
     DataStoreService,
     DataRuleService,
     RuleCommandFactory,
@@ -28,6 +29,10 @@ import { EnvModule } from '../env/env.module';
     {
       provide: AbstractFileClientService,
       useClass: MinioFileClientService,
+    },
+    {
+      provide: AbstractDynamicLinkService,
+      useClass: PersistenceLinkService,
     },
   ],
 })

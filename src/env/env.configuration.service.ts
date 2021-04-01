@@ -31,4 +31,8 @@ export class EnvConfigurationService extends EnvConfiguration {
 	get APP_MINIO_USE_SSL(): boolean {
 		return this.configService.get<boolean>('APP_MINIO_USE_SSL');
 	}
+
+	get SCRAPER_SERVICE_URL(): string {
+		return this.configService.get<string>('SCRAPER_SERVICE_URL');
+	}
 }

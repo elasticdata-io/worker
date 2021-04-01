@@ -8,4 +8,5 @@ export abstract class EnvConfiguration {
 	abstract get APP_MINIO_USE_SSL(): boolean;
 	abstract get APP_MINIO_ACCESS_KEY(): string;
 	abstract get APP_MINIO_SECRET_KEY(): string;
+	abstract get SCRAPER_SERVICE_URL(): string;
 }

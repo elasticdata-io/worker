@@ -25,8 +25,8 @@ export class TaskService {
 	) {}
 
 	public async run(dto: RunTaskDto): Promise<TaskResult> {
-		dto = this.appEnv.USE_ISOLATION_MODE ? RunTaskDto.fillEmpty(dto) : dto;
 		try {
+			dto = this.appEnv.USE_ISOLATION_MODE ? RunTaskDto.fillEmpty(dto) : dto;
 			this._currentTaskId = dto.taskId;
 			if (this.appEnv.USE_ISOLATION_MODE === false) {
 				const task: TaskDto = await this.taskDataClientSdk.get(this._currentTaskId);
