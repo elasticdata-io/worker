@@ -2,18 +2,21 @@ import axios from 'axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
+import { EnvConfiguration } from '../env/env.configuration';
 
 @Injectable()
 export class AliveService {
 	private readonly logger = new Logger(AliveService.name);
 
-	constructor(private readonly configService: ConfigService) {
+	constructor(
+		private readonly configService: ConfigService,
+		private readonly envConfiguration: EnvConfiguration,
+	) {
 	}
 
 	@Interval(10 * 1000)
 	public async handleCron(): Promise<void> {
-		const USE_ISOLATION_MODE = this.configService.get<string>('USE_ISOLATION_MODE') === '1';
-		if (USE_ISOLATION_MODE) {
+		if (this.envConfiguration.USE_ISOLATION_MODE) {
 			return;
 		}
 		const WORKER_TYPE = this.configService.get<string>('WORKER_TYPE');

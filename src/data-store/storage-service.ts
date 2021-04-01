@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { unflatten } from 'flat'
 import { ContextValidator } from './context-validator';
-import * as Minio from 'minio';
 import { ConfigService } from "@nestjs/config";
 import { KeyValueData } from "./dto/key.value.data";
 import { KeyFileData } from "./dto/key.file.data";
@@ -13,36 +12,21 @@ import {KeyData} from "./dto/key.data";
 import {LineMarcosReplacer} from "./line-marcos-replacer";
 import {DynamicLinkService} from "./dynamic-link-service";
 import { KeysValuesData } from './dto/keys.values.data';
+import { Injectable, Scope } from '@nestjs/common';
+import { AbstractFileClientService } from './abstract-file-client.service';
 
+@Injectable({ scope: Scope.TRANSIENT })
 export class StorageService {
 
 	private _dataRules: AbstractDataRuleCommand[] = [];
 	private _contexts: any;
-	private _minioClient: Minio.Client;
 
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly dynamicLinkService: DynamicLinkService,
+		private readonly fileClientService: AbstractFileClientService,
 	) {
 		this._contexts = {};
-		this._initMinio();
-	}
-
-	private _initMinio(): void {
-		const MINIO_END_POINT = this.configService.get<string>('APP_MINIO_END_POINT');
-		const MINIO_PORT = this.configService.get<number>('APP_MINIO_PORT');
-		const MINIO_USE_SSL = this.configService.get<boolean>('APP_MINIO_USE_SSL');
-		const MINIO_ACCESS_KEY = this.configService.get<string>('APP_MINIO_ACCESS_KEY');
-		const MINIO_SECRET_KEY = this.configService.get<string>('APP_MINIO_SECRET_KEY');
-		const options = {
-			endPoint: MINIO_END_POINT,
-			port: MINIO_PORT,
-			useSSL: MINIO_USE_SSL,
-			accessKey: MINIO_ACCESS_KEY,
-			secretKey: MINIO_SECRET_KEY
-		};
-		console.log(options);
-		this._minioClient = new Minio.Client(options);
 	}
 
 	private async _getHumanLink(link: string): Promise<string> {
@@ -76,11 +60,11 @@ export class StorageService {
 	}
 
 	protected async createIfNotExistsBucket(bucket: string): Promise<any> {
-		const bucketExists = await this._minioClient.bucketExists(bucket);
+		const bucketExists = await this.fileClientService.bucketExists(bucket);
 		if (bucketExists) {
 			return;
 		}
-		await this._minioClient.makeBucket(bucket, 'us-east-1');
+		await this.fileClientService.makeBucket(bucket, 'us-east-1');
 	}
 
 	protected async destroy(): Promise<void> {
@@ -96,8 +80,8 @@ export class StorageService {
 			ContextValidator.validate(data.context);
 			const objectName = `${uuidv4()}.${data.fileExtension}`;
 			await this.createIfNotExistsBucket(data.userUuid);
-			await this._minioClient.putObject(data.userUuid, objectName, data.file, data.file.length);
-			const fileLink = await this._minioClient.presignedGetObject(data.userUuid, objectName);
+			await this.fileClientService.putObject(data.userUuid, objectName, data.file);
+			const fileLink = await this.fileClientService.presignedGetObject(data.userUuid, objectName);
 			const link = await this._getHumanLink(fileLink);
 			await this._upsertLine(data.context, data.key, link);
 			return link;
@@ -116,8 +100,8 @@ export class StorageService {
 		try {
 			const objectName = `${uuidv4()}.${data.fileExtension}`;
 			await this.createIfNotExistsBucket(data.userUuid);
-			await this._minioClient.putObject(data.userUuid, objectName, data.file, data.file.length, data.metadata);
-			const fileLink = await this._minioClient.presignedGetObject(data.userUuid, objectName);
+			await this.fileClientService.putObject(data.userUuid, objectName, data.file, data.metadata);
+			const fileLink = await this.fileClientService.presignedGetObject(data.userUuid, objectName);
 			return await this._getHumanLink(fileLink);
 		} catch (e) {
 			console.error(e);
@@ -212,10 +196,10 @@ export class StorageService {
 		const contentType = 'application/json;charset=UTF-8';
 		const json = JSON.stringify(root, null, 2);
 		await this.createIfNotExistsBucket(data.bucket);
-		await this._minioClient.putObject(data.bucket, data.fileName, json, json.length, {
+		await this.fileClientService.putObject(data.bucket, data.fileName, json, {
 			'Content-Type': contentType,
 		});
-		const fileLink = await this._minioClient.presignedGetObject(data.bucket, data.fileName);
+		const fileLink = await this.fileClientService.presignedGetObject(data.bucket, data.fileName);
 		const humanLink = await this._getHumanLink(fileLink);
 		await this.destroy();
 		const fileBytes = Buffer.byteLength(json, 'utf8');

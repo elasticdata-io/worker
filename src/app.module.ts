@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { AppService } from './app.service';
 import { PipelineModule } from './pipeline/pipeline.module';
 import { AppConsumer } from './app.consumer';
-import { ConfigModule } from '@nestjs/config';
 import { DocumentationModule } from './documentation/documentation.module';
 import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
 import { DataStoreModule } from './data-store/data-store.module';
 import { AliveModule } from './alive/alive.module';
+import { EnvModule } from './env/env.module';
 
 @Module({
 	imports: [
@@ -21,9 +21,7 @@ import { AliveModule } from './alive/alive.module';
 		}),
 		PipelineModule,
 		DocumentationModule,
-		ConfigModule.forRoot({
-			isGlobal: true,
-		}),
+		EnvModule,
 		DataStoreModule,
 		AliveModule,
 	],

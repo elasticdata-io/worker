@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { KeyValueData } from './dto/key.value.data';
 import { StorageService } from './storage-service';
 import {KeyFileData} from "./dto/key.file.data";
-import { ConfigService } from "@nestjs/config";
 import {DataResult} from "./dto/data.result";
 import {CommitDocument} from "./dto/commit.document";
 import {AttachFile} from "./dto/attach.file";
@@ -10,6 +9,7 @@ import {DataRuleService} from "./rule/data-rule.service";
 import {KeyData} from "./dto/key.data";
 import {DynamicLinkService} from "./dynamic-link-service";
 import { KeysValuesData } from './dto/keys.values.data';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
 export class DataStoreService {
@@ -17,9 +17,9 @@ export class DataStoreService {
 	private readonly _storages: any;
 
 	constructor(
-		private configService: ConfigService,
-		private _dataRuleService: DataRuleService,
+		private dataRuleService: DataRuleService,
 		private readonly dynamicLinkService: DynamicLinkService,
+		private moduleRef: ModuleRef,
 	) {
 		this._storages = {};
 	}
@@ -27,7 +27,7 @@ export class DataStoreService {
 	private async resolveStorage(storageId: string): Promise<StorageService> {
 		let storage = this._storages[storageId];
 		if (!storage) {
-			storage =  this._storages[storageId] = new StorageService(this.configService, this.dynamicLinkService);
+			storage = this._storages[storageId] = this.moduleRef.resolve<StorageService>(StorageService);
 		}
 		return storage;
 	}
@@ -68,7 +68,7 @@ export class DataStoreService {
 	}
 
 	public async setDataRules(rulesConfigs: Array<{cmd: string, bindKey: string}>, storageId: string): Promise<void> {
-		const dataRules = this._dataRuleService.getDataRules(rulesConfigs);
+		const dataRules = this.dataRuleService.getDataRules(rulesConfigs);
 		if (!dataRules || dataRules.length === 0) {
 			return;
 		}

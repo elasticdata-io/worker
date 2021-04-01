@@ -8,7 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 import {InboxMessageType} from "./inbox-message.type";
 import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
-import { PipelineService } from './pipeline/pipeline.service';
+import { TaskService } from './pipeline/task.service';
+import { EnvConfiguration } from './env/env.configuration';
 
 interface InboxMessage {
 	_type: InboxMessageType;
@@ -17,8 +18,6 @@ interface InboxMessage {
 
 @Injectable()
 export class AppConsumer {
-
-	private readonly USE_ISOLATION_MODE: boolean;
 
 	private readonly INBOX_FANOUT_EXCHANGE_NAME: string;
 	private readonly RUN_TASK_EXCHANGE_NAME: string;
@@ -34,10 +33,10 @@ export class AppConsumer {
 
 	constructor(
 		private readonly appService: AppService,
-		private readonly pipelineService: PipelineService,
-		private readonly config: ConfigService
+		private readonly taskService: TaskService,
+		private readonly config: ConfigService,
+		private readonly envConfiguration: EnvConfiguration,
 	) {
-		this.USE_ISOLATION_MODE = this.config.get<string>('USE_ISOLATION_MODE') === '1';
 		this.RUN_TASK_QUEUE_NAME = this.config.get<string>('RUN_TASK_QUEUE_NAME');
 		this.INBOX_QUEUE_NAME = this.config.get<string>('INBOX_QUEUE_NAME');
 		this.AMQP_CONNECTION_STRING = this.config.get<string>('AMQP_CONNECTION_STRING');
@@ -46,7 +45,7 @@ export class AppConsumer {
 		this.INBOX_FANOUT_EXCHANGE_NAME = this.config.get<string>('INBOX_FANOUT_EXCHANGE_NAME');
 		this.WORKER_TYPE = this.config.get<string>('WORKER_TYPE');
 		Amqp.log.transports.console.level = this.config.get<string>('AMQP_LOG_LEVEL');
-		if (this.USE_ISOLATION_MODE) {
+		if (this.envConfiguration.USE_ISOLATION_MODE) {
 			return;
 		}
 		this.init();
@@ -146,7 +145,7 @@ export class AppConsumer {
 	}
 
 	private async runPipelineTask(dto: RunTaskDto): Promise<void> {
-		await this.pipelineService.runPipeline(dto);
+		await this.taskService.run(dto);
 	}
 
 	private async executeCommand(inboxMessage: InboxMessage) {
@@ -155,7 +154,7 @@ export class AppConsumer {
 	}
 
 	private async stopPipelineTask(inboxMessage: InboxMessage): Promise<void> {
-		await this.pipelineService.stopPipeline(inboxMessage.data);
+		await this.taskService.stop(inboxMessage.data);
 	}
 
 	private async disableInteractionMode(inboxMessage: InboxMessage): Promise<void> {

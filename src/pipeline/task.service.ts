@@ -10,33 +10,35 @@ import { PipelineBuilderFactory } from './pipeline-builder-factory';
 import { ConfigService } from '@nestjs/config';
 import { TaskCompeteDto } from '../dto/task-compete.dto';
 import { TaskErrorDto } from '../dto/task-error.dto';
+import { EnvConfiguration } from '../env/env.configuration';
 
 @Injectable()
-export class PipelineService {
-	private readonly USE_ISOLATION_MODE: boolean;
+export class TaskService {
 	private _currentTaskId: string;
 	private _pipelineProcess: PipelineProcess;
 
 	constructor(
-		private _pipelineBuilderFactory: PipelineBuilderFactory,
-		private _configService: ConfigService,
-		private _taskDataClientSdk: TaskDataClientSdk,
-	) {
-		this.USE_ISOLATION_MODE = this._configService.get<string>('USE_ISOLATION_MODE') === '1';
-	}
+		private pipelineBuilderFactory: PipelineBuilderFactory,
+		private configService: ConfigService,
+		private taskDataClientSdk: TaskDataClientSdk,
+		private readonly appEnv: EnvConfiguration,
+	) {}
 
-	public async runPipeline(dto: RunTaskDto): Promise<TaskResult> {
+	public async run(dto: RunTaskDto): Promise<TaskResult> {
+		dto = this.appEnv.USE_ISOLATION_MODE ? RunTaskDto.fillEmpty(dto) : dto;
 		try {
 			this._currentTaskId = dto.taskId;
-			const task: TaskDto = await this._taskDataClientSdk.get(this._currentTaskId);
-			const isTaskStopping = await this.isTaskStopping(task);
-			if (isTaskStopping) {
-				await this.stopTask(this._currentTaskId);
-				return;
-			}
-			const isTaskSuspended = await this.isTaskSuspended(task);
-			if (isTaskSuspended) {
-				return;
+			if (this.appEnv.USE_ISOLATION_MODE === false) {
+				const task: TaskDto = await this.taskDataClientSdk.get(this._currentTaskId);
+				const isTaskStopping = await this.isTaskStopping(task);
+				if (isTaskStopping) {
+					await this.stopTask(dto.taskId);
+					return;
+				}
+				const isTaskSuspended = await this.isTaskSuspended(task);
+				if (isTaskSuspended) {
+					return;
+				}
 			}
 			return await this.runTask(dto);
 		} catch (e) {
@@ -48,7 +50,7 @@ export class PipelineService {
 		}
 	}
 
-	public async stopPipeline(taskId?: string): Promise<boolean> {
+	public async stop(taskId?: string): Promise<boolean> {
 		try {
 			return await this.stopTask(taskId);
 		} catch (e) {
@@ -99,8 +101,8 @@ export class PipelineService {
 			taskId: dto.taskId,
 			pipelineId: dto.pipelineId,
 		} as Environment;
-		const pipelineBuilder = await this._pipelineBuilderFactory.resolve();
-		let json: string = dto.json;
+		const pipelineBuilder = await this.pipelineBuilderFactory.resolve();
+		let json: string = typeof dto.json === 'string' ? dto.json : JSON.stringify(dto.json);
 		if (typeof json === 'object') {
 			json = JSON.stringify(dto.json, null, 4);
 		}
@@ -133,7 +135,7 @@ export class PipelineService {
 		if (typeof taskId !== 'string') {
 			throw new Error('taskId must by string')
 		}
-		if (this.USE_ISOLATION_MODE) {
+		if (this.appEnv.USE_ISOLATION_MODE) {
 			return;
 		}
 		let patch: any[] = [
@@ -173,21 +175,21 @@ export class PipelineService {
 				},
 			];
 		}
-		await this._taskDataClientSdk.update(taskId, patch);
+		await this.taskDataClientSdk.update(taskId, patch);
 		console.log(`handleTaskStopped, taskId: ${taskId}`);
 	}
 
 	private _onPipelineEvents(pipelineProcess: PipelineProcess): void {
 		pipelineProcess.interactionStateChanged$.subscribe(async (state) => {
-			await this._taskDataClientSdk.updateUserInteraction(state);
+			await this.taskDataClientSdk.updateUserInteraction(state);
 		});
 		pipelineProcess.startExecuteCommand$.subscribe(async (command) => {
-			await this._taskDataClientSdk.notifyStartCommandExecute(command);
+			await this.taskDataClientSdk.notifyStartCommandExecute(command);
 		});
 	}
 
 	private async beforeRunTask(taskId: string): Promise<void> {
-		if (this.USE_ISOLATION_MODE) {
+		if (this.appEnv.USE_ISOLATION_MODE) {
 			return;
 		}
 		const patch = [
@@ -202,11 +204,11 @@ export class PipelineService {
 				value: moment().utc().format('YYYY-MM-DD HH:mm:ss')
 			}
 		];
-		await this._taskDataClientSdk.update(taskId, patch);
+		await this.taskDataClientSdk.update(taskId, patch);
 	}
 
 	private async afterRunTask(taskId: string, taskResult: TaskResult): Promise<void> {
-		if (this.USE_ISOLATION_MODE) {
+		if (this.appEnv.USE_ISOLATION_MODE) {
 			return;
 		}
 		const taskCompleteDto: TaskCompeteDto = {
@@ -225,14 +227,14 @@ export class PipelineService {
 			failureReason: taskResult.taskInformation.failureReason,
 		};
 		if (taskResult.taskInformation.failureReason) {
-			await this._taskDataClientSdk.error(taskErrorDto);
+			await this.taskDataClientSdk.error(taskErrorDto);
 		} else {
-			await this._taskDataClientSdk.complete(taskCompleteDto);
+			await this.taskDataClientSdk.complete(taskCompleteDto);
 		}
 	}
 
 	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {
-		if (this.USE_ISOLATION_MODE) {
+		if (this.appEnv.USE_ISOLATION_MODE) {
 			console.error(error);
 			return;
 		}
@@ -244,6 +246,6 @@ export class PipelineService {
 			docsBytes: 0,
 			failureReason: error.toString()
 		};
-		await this._taskDataClientSdk.error(dto);
+		await this.taskDataClientSdk.error(dto);
 	}
 }
