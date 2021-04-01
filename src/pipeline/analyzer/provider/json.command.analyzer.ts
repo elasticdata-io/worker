@@ -8,7 +8,7 @@ import { DataContextResolver } from '../../data/data-context-resolver';
 import { PageContextResolver } from '../../browser/page-context-resolver';
 import { OpenTabCommand } from '../../v2.0/command/open-tab.command';
 import {EventBus, PipelineCommandEvent} from "../../event-bus";
-import { TaskCommandExecuteDto } from "../../../../dto/task.command.execute.dto";
+import { TaskCommandExecuteDto } from "../../../dto/task.command.execute.dto";
 import {Environment} from "../../environment";
 
 @injectable()

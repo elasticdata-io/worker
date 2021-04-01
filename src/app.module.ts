@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PipelineModule } from './core/pipeline/pipeline.module';
-import { TaskModule } from './task/task.module';
+import { PipelineModule } from './pipeline/pipeline.module';
 import { AppConsumer } from './app.consumer';
 import { ConfigModule } from '@nestjs/config';
 import { DocumentationModule } from './documentation/documentation.module';
@@ -22,7 +20,6 @@ import { AliveModule } from './alive/alive.module';
 			},
 		}),
 		PipelineModule,
-		TaskModule,
 		DocumentationModule,
 		ConfigModule.forRoot({
 			isGlobal: true,
@@ -30,7 +27,7 @@ import { AliveModule } from './alive/alive.module';
 		DataStoreModule,
 		AliveModule,
 	],
-	controllers: [AppController],
+	controllers: [],
 	providers: [
 		AppService,
 		AppConsumer,

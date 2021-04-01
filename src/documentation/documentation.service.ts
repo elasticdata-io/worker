@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import * as Doc from '../core/pipeline/documentation/specification';
-import { CommandSpec } from '../core/pipeline/documentation/specification';
+import * as Doc from '../pipeline/documentation/specification';
+import { CommandSpec } from '../pipeline/documentation/specification';
 import { I18nService } from 'nestjs-i18n';
 import * as DOC from '../i18n/en/doc.json'
 

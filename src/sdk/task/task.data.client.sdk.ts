@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import {TaskDto} from "../dto/task.dto";
-import {TaskCommandExecuteDto} from "../dto/task.command.execute.dto";
-import {UserInteractionState} from "../core/pipeline/user-interaction";
+import {TaskDto} from "../../dto/task.dto";
+import {TaskCommandExecuteDto} from "../../dto/task.command.execute.dto";
+import {UserInteractionState} from "../../pipeline/user-interaction";
 import { TaskCompeteDto } from 'src/dto/task-compete.dto';
-import {TaskErrorDto} from "../dto/task-error.dto";
+import {TaskErrorDto} from "../../dto/task-error.dto";
 
 @Injectable()
-export class TaskDataClient {
+export class TaskDataClientSdk {
 
 	private readonly _serviceUrl: string;
 
@@ -68,7 +68,7 @@ export class TaskDataClient {
 		await axios.post(`${url}`, dto);
 	}
 
-	async changeUserInteractionMode(dto: UserInteractionState): Promise<void> {
+	async updateUserInteraction(dto: UserInteractionState): Promise<void> {
 		if (parseInt(this._serviceUrl) === 0) {
 			return;
 		}

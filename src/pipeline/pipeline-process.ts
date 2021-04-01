@@ -9,7 +9,7 @@ import { TaskInformation } from './analyzer/task.information';
 import { DataRule } from './data/dto/data-rule';
 import {EventBus, PipelineCommandEvent, UserInteractionEvent} from "./event-bus";
 import {PipelineEvent} from "./event-bus/events/pipeline";
-import {TaskCommandExecuteDto} from "../../dto/task.command.execute.dto";
+import {TaskCommandExecuteDto} from "../dto/task.command.execute.dto";
 import {Subject} from "rxjs";
 import {UserInteractionState} from "./user-interaction";
 import {IBrowserProvider} from "./browser/i-browser-provider";

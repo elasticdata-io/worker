@@ -10,9 +10,9 @@ import {PageContextResolver} from "../browser/page-context-resolver";
 import {Driver} from "../driver/driver";
 import {AbstractStore} from "../data/abstract-store";
 import {Environment} from "../environment";
-import {ExecuteCmdDto} from "../../../dto/execute-cmd.dto";
+import {ExecuteCmdDto} from "../../dto/execute-cmd.dto";
 import {UserInteractionState} from "./interface";
-import {DisableUserInteractionStateDto} from "../../../dto/disable-user-interaction-state.dto";
+import {DisableUserInteractionStateDto} from "../../dto/disable-user-interaction-state.dto";
 
 @injectable()
 export class UserInteractionInspector {

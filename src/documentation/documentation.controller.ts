@@ -1,6 +1,6 @@
 import {Controller, HttpException, HttpStatus, Get, Param, Headers} from '@nestjs/common';
 import { DocumentationService } from './documentation.service';
-import { CommandSpec } from '../core/pipeline/documentation/specification';
+import { CommandSpec } from '../pipeline/documentation/specification';
 
 @Controller('doc')
 export class DocumentationController {

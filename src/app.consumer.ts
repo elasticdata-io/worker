@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 import {InboxMessageType} from "./inbox-message.type";
 import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
+import { PipelineService } from './pipeline/pipeline.service';
 
 interface InboxMessage {
 	_type: InboxMessageType;
@@ -33,6 +34,7 @@ export class AppConsumer {
 
 	constructor(
 		private readonly appService: AppService,
+		private readonly pipelineService: PipelineService,
 		private readonly config: ConfigService
 	) {
 		this.USE_ISOLATION_MODE = this.config.get<string>('USE_ISOLATION_MODE') === '1';
@@ -144,7 +146,7 @@ export class AppConsumer {
 	}
 
 	private async runPipelineTask(dto: RunTaskDto): Promise<void> {
-		await this.appService.runPipelineTask(dto);
+		await this.pipelineService.runPipeline(dto);
 	}
 
 	private async executeCommand(inboxMessage: InboxMessage) {
@@ -153,7 +155,7 @@ export class AppConsumer {
 	}
 
 	private async stopPipelineTask(inboxMessage: InboxMessage): Promise<void> {
-		await this.appService.stopPipelineTask(inboxMessage.data);
+		await this.pipelineService.stopPipeline(inboxMessage.data);
 	}
 
 	private async disableInteractionMode(inboxMessage: InboxMessage): Promise<void> {
