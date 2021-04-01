@@ -11,6 +11,10 @@ import { AbstractFileClientService } from './abstract-file-client.service';
 import { MinioFileClientService } from './minio-file-client.service';
 import { EnvModule } from '../env/env.module';
 import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
+import { ModuleRef } from '@nestjs/core';
+import { EnvConfiguration } from '../env/env.configuration';
+import { PlugLinkService } from './plug-link.service';
+import { LocalFileClientService } from './local-file-client.service';
 
 @Module({
   imports: [
@@ -28,11 +32,23 @@ import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
     StorageService,
     {
       provide: AbstractFileClientService,
-      useClass: MinioFileClientService,
+      useFactory: async (moduleRef: ModuleRef, appEnv: EnvConfiguration) => {
+        if (appEnv.USE_ISOLATION_MODE) {
+          return moduleRef.create(LocalFileClientService);
+        }
+        return moduleRef.create(MinioFileClientService);
+      },
+      inject: [ModuleRef, EnvConfiguration],
     },
     {
       provide: AbstractDynamicLinkService,
-      useClass: PersistenceLinkService,
+      useFactory: async (moduleRef: ModuleRef, appEnv: EnvConfiguration) => {
+        if (appEnv.USE_ISOLATION_MODE) {
+          return moduleRef.create(PlugLinkService);
+        }
+        return moduleRef.create(PersistenceLinkService);
+      },
+      inject: [ModuleRef, EnvConfiguration],
     },
   ],
 })

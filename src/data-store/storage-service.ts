@@ -19,7 +19,7 @@ import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
 export class StorageService {
 
 	private _dataRules: AbstractDataRuleCommand[] = [];
-	private _contexts: any;
+	private _contexts: object;
 
 	constructor(
 		private readonly configService: ConfigService,

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { v4 as uuidv4 } from 'uuid';
 
 class PipelineUserInteractionSettings {
 	@ApiProperty() watchCommands: Array<object>;
@@ -37,7 +38,7 @@ export class RunTaskDto {
 	@ApiProperty({required: false}) proxies?: string[];
 
 	public static fillEmpty(dto: RunTaskDto): RunTaskDto {
-		dto.taskId = dto.taskId ?? 'empty';
+		dto.taskId = dto.taskId ?? uuidv4();
 		dto.pipelineId = dto.pipelineId ?? 'empty';
 		dto.pipelineSettings = dto.pipelineSettings ?? {} as PipelineSettings;
 		dto.userUuid = dto.userUuid ?? 'empty';
