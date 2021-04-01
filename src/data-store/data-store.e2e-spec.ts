@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 import axios from 'axios';
@@ -8,16 +10,25 @@ import { KeysValuesData } from './dto/keys.values.data';
 
 describe('Data store', () => {
     let app: INestApplication;
-    const storeId = 'testStoreId';
-    const bucket = '591b716f6e87cc0789badadb' || 'testBucket';
+    let storeId: string;
+    let bucket: string;
     const fileName = 'testFileName';
-    const useruuid = 'useruuid';
+    const useruuid = 'testuser';
     const context = 'root.0';
 
-    const readFile = async (link) => {
+    const readFile = async (link: string): Promise<object> => {
+        if (link.startsWith('file://')) {
+            const content = fs.readFileSync(link.replace('file://', ''));
+            return JSON.parse(content.toString());
+        }
         const response = await axios.get(link)
         return response.data;
     }
+
+    beforeEach(() => {
+        storeId = uuidv4();
+        bucket = 'testBucket' + uuidv4();
+    });
 
     beforeAll(async () => {
         const moduleRef = await Test.createTestingModule({
