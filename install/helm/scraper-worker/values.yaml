@@ -27,6 +27,8 @@ ingress:
   #      - chart-example.local
 
 env:
+  USE_ISOLATION_MODE: 0
+
   DATA_SERVICE_URL: http://localhost:3000/worker
   SCRAPER_SERVICE_URL: http://backend:8080
   WORKER_MANAGER_URL: http://localhost:3005

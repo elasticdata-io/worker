@@ -17,7 +17,7 @@ interface InboxMessage {
 @Injectable()
 export class AppConsumer {
 
-	private readonly USE_SIMPLE_WORKER: boolean;
+	private readonly USE_ISOLATION_MODE: boolean;
 
 	private readonly INBOX_FANOUT_EXCHANGE_NAME: string;
 	private readonly RUN_TASK_EXCHANGE_NAME: string;
@@ -35,7 +35,7 @@ export class AppConsumer {
 		private readonly appService: AppService,
 		private readonly config: ConfigService
 	) {
-		this.USE_SIMPLE_WORKER = this.config.get<string>('USE_SIMPLE_WORKER') === '1';
+		this.USE_ISOLATION_MODE = this.config.get<string>('USE_ISOLATION_MODE') === '1';
 		this.RUN_TASK_QUEUE_NAME = this.config.get<string>('RUN_TASK_QUEUE_NAME');
 		this.INBOX_QUEUE_NAME = this.config.get<string>('INBOX_QUEUE_NAME');
 		this.AMQP_CONNECTION_STRING = this.config.get<string>('AMQP_CONNECTION_STRING');
@@ -44,7 +44,7 @@ export class AppConsumer {
 		this.INBOX_FANOUT_EXCHANGE_NAME = this.config.get<string>('INBOX_FANOUT_EXCHANGE_NAME');
 		this.WORKER_TYPE = this.config.get<string>('WORKER_TYPE');
 		Amqp.log.transports.console.level = this.config.get<string>('AMQP_LOG_LEVEL');
-		if (this.USE_SIMPLE_WORKER) {
+		if (this.USE_ISOLATION_MODE) {
 			return;
 		}
 		this.init();

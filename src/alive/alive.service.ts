@@ -12,6 +12,10 @@ export class AliveService {
 
 	@Interval(10 * 1000)
 	public async handleCron(): Promise<void> {
+		const USE_ISOLATION_MODE = this.configService.get<string>('USE_ISOLATION_MODE') === '1';
+		if (USE_ISOLATION_MODE) {
+			return;
+		}
 		const WORKER_TYPE = this.configService.get<string>('WORKER_TYPE');
 		const WORKER_MANAGER_URL = this.configService.get<string>('WORKER_MANAGER_URL');
 		const FROM_CONTAINER_KEY = this.configService.get<string>('FROM_CONTAINER_KEY');

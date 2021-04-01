@@ -17,7 +17,7 @@ import {TaskErrorDto} from "./dto/task-error.dto";
 @Injectable()
 export class AppService {
 	private _pipelineProcess: PipelineProcess;
-	private readonly USE_SIMPLE_WORKER: boolean;
+	private readonly USE_ISOLATION_MODE: boolean;
 	private _currentTaskId: string;
 
 	constructor(
@@ -25,7 +25,7 @@ export class AppService {
 		private _taskService: TaskService,
 		private _configService: ConfigService,
 	) {
-		this.USE_SIMPLE_WORKER = this._configService.get<string>('USE_SIMPLE_WORKER') === '1';
+		this.USE_ISOLATION_MODE = this._configService.get<string>('USE_ISOLATION_MODE') === '1';
 	}
 
 	public async stopPipelineTask(taskId?: string): Promise<boolean> {
@@ -162,7 +162,7 @@ export class AppService {
 	}
 
 	private async beforeRunTask(taskId: string): Promise<void> {
-		if (this.USE_SIMPLE_WORKER) {
+		if (this.USE_ISOLATION_MODE) {
 			return;
 		}
 		const patch = [
@@ -181,7 +181,7 @@ export class AppService {
 	}
 
 	private async afterRunTask(taskId: string, taskResult: TaskResult): Promise<void> {
-		if (this.USE_SIMPLE_WORKER) {
+		if (this.USE_ISOLATION_MODE) {
 			return;
 		}
 		const taskCompleteDto: TaskCompeteDto = {
@@ -207,7 +207,7 @@ export class AppService {
 	}
 
 	private async handleErrorOfTask(taskId: string, error: string): Promise<void> {
-		if (this.USE_SIMPLE_WORKER) {
+		if (this.USE_ISOLATION_MODE) {
 			console.error(error);
 			return;
 		}
@@ -226,7 +226,7 @@ export class AppService {
 		if (typeof taskId !== 'string') {
 			throw new Error('taskId must by string')
 		}
-		if (this.USE_SIMPLE_WORKER) {
+		if (this.USE_ISOLATION_MODE) {
 			return;
 		}
 		let patch: any[] = [
