@@ -128,7 +128,10 @@ export class TaskService {
 		if (taskInformation.failureReason) {
 			throw taskInformation.failureReason;
 		}
-		return data;
+		return {
+			...data,
+			taskInformation: taskInformation,
+		};
 	}
 
 	private async handleTaskStopped(taskId: string, taskResult?: TaskResult): Promise<void> {

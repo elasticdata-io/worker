@@ -133,7 +133,7 @@ export class HttpDataStore extends AbstractStore {
 	async attachJsonFile(json: any, command: AbstractCommand): Promise<string> {
 		const buffer = Buffer.from(JSON.stringify(json, null, 4));
 		const metadata = {'content-type': 'application/json;charset=UTF-8'};
-		const link = await this.attachFile(buffer, '.json', metadata, command);
+		const link = await this.attachFile(buffer, 'json', metadata, command);
 		await this.commandAnalyzer.setCommandData(command, link);
 		return link;
 	}
