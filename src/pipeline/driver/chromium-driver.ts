@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import { Driver } from './driver';
-import {Base64ScreenShotOptions, Browser, Page} from 'puppeteer';
+import { Base64ScreenShotOptions, Browser, EvaluateFn, Page } from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
@@ -16,6 +16,8 @@ import { FunctionParser } from '../util/function.parser';
 // @ts-ignore
 import { documentPack } from "web-page-teleport";
 import {StringGenerator} from "../util/string.generator";
+import { CssQueryProvider } from '../query/css/css-query-provider';
+import { getSelectorType, parse, toJsSelector } from '../query';
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -101,7 +103,12 @@ export class ChromiumDriver implements Driver {
 
 	public async getElText(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, '.innerText');
+		let getElFn = queryProvider.getElementFn(command, '.innerText');
+		if (queryProvider instanceof CssQueryProvider) {
+			const selectors = parse(command.getSelector());
+			const jsSelector = toJsSelector(selectors);
+			getElFn = jsSelector + '.innerText';
+		}
 		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
@@ -194,8 +201,17 @@ export class ChromiumDriver implements Driver {
 	public async waitElement(command: AbstractCommand): Promise<void> {
 		const skipAfterTimeout = command.timeout * 1000;
 		const interval = 250;
-		const queryProvider = command.getQueryProvider();
-		const getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
+		const selector: string = command.getSelector();
+		const selectorType = getSelectorType(selector);
+		let getOuterHTMLFn;
+		if (selectorType === 'css') {
+			const selectors = parse(selector);
+			const jsSelector = toJsSelector(selectors);
+			getOuterHTMLFn = jsSelector + '.outerHTML';
+		} else {
+			const queryProvider = command.getQueryProvider();
+			getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
+		}
 		try {
 			await this.wait(skipAfterTimeout, interval, async () => {
 				const page = await this._resolvePage(command);
@@ -203,7 +219,9 @@ export class ChromiumDriver implements Driver {
 				return Boolean(html);
 			});
 		} catch (e) {
-			const fnBody = FunctionParser.getBody(getOuterHTMLFn);
+			const fnBody = typeof getOuterHTMLFn === 'string'
+				? getOuterHTMLFn
+				:FunctionParser.getBody(getOuterHTMLFn);
 			throw `Terminated after: ${skipAfterTimeout}ms.
 			Page not has present element:
 			${fnBody}`
@@ -224,9 +242,8 @@ export class ChromiumDriver implements Driver {
 	public async scrollBy(command: AbstractCommand, position: 'top' | 'bottom', px: number): Promise<void> {
 		const distance = position === 'bottom' ? px : -px;
 		const expression = `window.scrollBy(0, ${distance})`;
-		const fn = new Function(expression);
 		const page = await this._resolvePage(command);
-		await this.pageEvaluate(fn, page);
+		await this.pageEvaluate(expression, page);
 	}
 
 	/**
@@ -328,7 +345,7 @@ export class ChromiumDriver implements Driver {
 		});
 	}
 
-	protected async pageEvaluate(fn: any, page: Page): Promise<string> {
+	protected async pageEvaluate(fn: EvaluateFn, page: Page): Promise<string> {
 		try {
 			return await page.evaluate(fn) as Promise<string>;
 		} catch (e) {

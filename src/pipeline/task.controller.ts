@@ -16,7 +16,10 @@ export class TaskController {
 			req.on('close', async () => await this.taskService.stop());
 			return await this.taskService.run(dto);
 		} catch (e) {
-			throw new HttpException(e.stack, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new HttpException({
+				message: e.toString(),
+				stack: e.stack,
+			}, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
