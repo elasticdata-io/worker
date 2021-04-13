@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn'],
   });
-  app.setGlobalPrefix('worker');
+  app.setGlobalPrefix(process.env.GLOBAL_PREFIX);
   const options = new DocumentBuilder()
     .setTitle('Worker API Documentation')
     .setVersion('1.0')
