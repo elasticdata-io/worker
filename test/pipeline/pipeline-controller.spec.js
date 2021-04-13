@@ -2,7 +2,9 @@
 const request = require('supertest')('http://localhost:3000');
 const expect = require('chai').expect;
 
-describe('POST /', async function() {
+const endpoint = '/v1/run-sync';
+
+describe(`POST ${endpoint}`, async function() {
 	this.timeout(30000);
 
 	describe('when data is invalid', async () => {
@@ -10,28 +12,28 @@ describe('POST /', async function() {
 		it('should return expected error message', async function () {
 			const json = {version: 'v2'};
 			const response = await request
-				.post('/', )
-				.send({ json });
+				.post(endpoint )
+				.send(json);
 
 			expect(response.status).to.eql(500);
-			expect(response.body.message).to.eql('Error: version "v2" not supported');
+			expect(response.body.message).to.eql('Error: version "v2" is not supported');
 		});
 		it('should return expected error message', async function () {
 			const json = {version: '2.0', commands: []};
 			const response = await request
-				.post('/', )
-				.send({ json });
+				.post(endpoint)
+				.send(json);
 
 			expect(response.status).to.eql(500);
 			expect(response.body.message).to.eql('Error: commands cannot be empty');
 		});
 		it('should return expected error message', async function () {
 			const response = await request
-				.post('/', )
+				.post(endpoint)
 				.send();
 
 			expect(response.status).to.eql(500);
-			expect(response.body.message).to.eql('Error: json is required field');
+			expect(response.body.message).to.eql('Error: version is required field');
 		});
 	});
 
@@ -51,8 +53,8 @@ describe('POST /', async function() {
 				],
 			};
 			const response = await request
-				.post('/')
-				.send( { json });
+				.post(endpoint)
+				.send( json );
 			expect(response.status).to.eql(201);
 			const data = response.body;
 			const taskInformation = data.taskInformation;
