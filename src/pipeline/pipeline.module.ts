@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PipelineBuilderFactory } from './pipeline-builder-factory';
-import { TaskService } from './task.service';
-import { TaskController } from './task.controller';
+import { PipelineService } from './pipeline.service';
+import { PipelineController } from './pipeline.controller';
 import { TaskSdkModule } from '../sdk/task/task.sdk.module';
 import { EnvModule } from '../env/env.module';
 
@@ -15,10 +15,10 @@ import { EnvModule } from '../env/env.module';
 			provide: PipelineBuilderFactory,
 			useClass: PipelineBuilderFactory,
 		},
-		TaskService,
+		PipelineService,
 	],
-	controllers: [TaskController],
-	exports: [TaskService],
+	controllers: [PipelineController],
+	exports: [PipelineService],
 })
 export class PipelineModule {
 }

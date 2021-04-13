@@ -1,12 +1,12 @@
 import { Body, Controller, HttpException, HttpStatus, Post, Request } from '@nestjs/common';
-import { TaskService } from './task.service';
+import { PipelineService } from './pipeline.service';
 import { RunTaskDto } from '../dto/run.task.dto';
 import { TaskResult } from './data/dto/task.result';
 
 @Controller()
-export class TaskController {
+export class PipelineController {
 	constructor(
-		private readonly taskService: TaskService,
+		private readonly taskService: PipelineService,
 	) {}
 
 	@Post()

@@ -8,6 +8,7 @@ import { DataRule } from '../../data/dto/data-rule';
 @injectable()
 export class PipelineConfigurationBuilder implements IPipelineConfigurationBuilder {
 	private _json: string;
+	private readonly SUPPORTING_VERSIONS = ['2.0'];
 
 	constructor(@inject(TYPES.ICommandFactory) private _commandFactory: ICommandFactory) {}
 
@@ -47,9 +48,11 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 	}
 
 	private validate() {
-		if (this._version === '2.0') {
-			return;
+		if (!this.SUPPORTING_VERSIONS.includes(this._version)) {
+			throw `version: ${this._version} not supported`;
 		}
-		throw `version: ${this._version} not supported`;
+		if (!this._commands.length) {
+			throw `commands cannot be empty`;
+		}
 	}
 }
