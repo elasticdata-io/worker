@@ -12,6 +12,7 @@ export class PipelineController {
 	@Post()
 	async run(@Body() dto: RunTaskDto, @Request() req: any): Promise<TaskResult> {
 		try {
+			RunTaskDto.validate(dto);
 			// todo: maybe abort task
 			req.on('close', async () => await this.taskService.stop());
 			return await this.taskService.run(dto);

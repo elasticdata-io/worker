@@ -25,7 +25,7 @@ describe('PipelineController', () => {
                       json: {}
                   } as RunTaskDto);
                 expect(response.status).toBe(500);
-                expect(response.body.message).toEqual('version: undefined not supported');
+                expect(response.body.message).toEqual('Error: version "undefined" not supported');
             });
         });
         describe('with incorrect version', () => {
@@ -36,7 +36,7 @@ describe('PipelineController', () => {
                       json: { version: 'v2' }
                   } as RunTaskDto);
                 expect(response.status).toBe(500);
-                expect(response.body.message).toEqual('version: v2 not supported');
+                expect(response.body.message).toEqual('Error: version "v2" not supported');
             });
         });
         describe('with empty commands', () => {
@@ -47,7 +47,7 @@ describe('PipelineController', () => {
                       json: { version: '2.0', commands: [] }
                   } as RunTaskDto);
                 expect(response.status).toBe(500);
-                expect(response.body.message).toBe('commands cannot be empty');
+                expect(response.body.message).toBe('Error: commands cannot be empty');
             });
         });
     });

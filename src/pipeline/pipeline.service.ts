@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { TaskCompeteDto } from '../dto/task-compete.dto';
 import { TaskErrorDto } from '../dto/task-error.dto';
 import { EnvConfiguration } from '../env/env.configuration';
+import { SystemError } from './command/exception/system-error';
 
 @Injectable()
 export class PipelineService {
@@ -26,7 +27,7 @@ export class PipelineService {
 
 	public async run(dto: RunTaskDto): Promise<TaskResult> {
 		if (this._currentTaskId) {
-			throw new Error(`Another task has been started: ${this._currentTaskId}.
+			throw new SystemError(`Another task has been started: ${this._currentTaskId}.
 			 Wait for the task to complete and try again`);
 		}
 		try {
@@ -50,9 +51,11 @@ export class PipelineService {
 				return;
 			}
 			await this.handleErrorOfTask(dto.taskId, e);
+			this._pipelineProcess = null;
 			this._currentTaskId = null;
 			throw e
 		} finally {
+			this._pipelineProcess = null;
 			this._currentTaskId = null;
 		}
 	}

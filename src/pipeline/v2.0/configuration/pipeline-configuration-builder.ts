@@ -49,10 +49,10 @@ export class PipelineConfigurationBuilder implements IPipelineConfigurationBuild
 
 	private validate() {
 		if (!this.SUPPORTING_VERSIONS.includes(this._version)) {
-			throw `version: ${this._version} not supported`;
+			throw new Error(`version "${this._version}" not supported`);
 		}
 		if (!this._commands.length) {
-			throw `commands cannot be empty`;
+			throw new Error(`commands cannot be empty`);
 		}
 	}
 }

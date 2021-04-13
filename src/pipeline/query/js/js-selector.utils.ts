@@ -3,7 +3,7 @@ import { CssSelector, ElasticSelector, LoopSelector, ParentSelector, TextSelecto
 type JsSelector = string;
 
 export function toJsSelector(selectors: Array<ElasticSelector>) : JsSelector {
-	let jsSelectors: JsSelector[] = ['document.body'];
+	let jsSelectors: JsSelector[] = ['document'];
 	for (const selector of selectors) {
 		switch (selector.type) {
 			case 'css':
@@ -25,6 +25,8 @@ export function toJsSelector(selectors: Array<ElasticSelector>) : JsSelector {
 				break;
 		}
 	}
-	jsSelectors.push('[0]');
+	if (jsSelectors.length > 1) {
+		jsSelectors.push('[0]');
+	}
 	return jsSelectors.join('');
 }
