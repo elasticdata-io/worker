@@ -1,8 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const request = require('supertest')('http://localhost:3000');
 const expect = require('chai').expect;
 
 const endpoint = '/v1/run-sync';
+
+function readFile(fileLink) {
+	fileLink = path.resolve(path.normalize(fileLink.replace('file:', '')));
+	return JSON.parse(fs.readFileSync(fileLink).toString('utf-8'));
+}
 
 describe(`POST ${endpoint}`, async function() {
 	this.timeout(30000);
@@ -38,19 +47,20 @@ describe(`POST ${endpoint}`, async function() {
 	});
 
 	describe('when data is valid', async () => {
-		it('should return expected error message', async function () {
+		it('should return expected response', async function () {
 			const json = {
-				version: '2.0',
-				commands: [
+				"version": "2.0",
+				"commands": [
 					{
-						cmd: 'openurl',
-						link: 'http://localhost:3000/api'
+						"cmd": "openurl",
+						"link": "http://localhost:3000/api"
 					},
 					{
-						cmd: 'gettext',
-						selector: 'head title'
+						"cmd": "gettext",
+						"selector": "head title",
+						"key": "title"
 					}
-				],
+				]
 			};
 			const response = await request
 				.post(endpoint)
@@ -58,15 +68,9 @@ describe(`POST ${endpoint}`, async function() {
 			expect(response.status).to.eql(201);
 			const data = response.body;
 			const taskInformation = data.taskInformation;
-			expect(data).to.have.all.keys(
-				'taskInformation', 'bytes', 'fileLink', 'rootLines');
-			expect(data.bytes).to.be.a('number');
-			expect(data.fileLink).to.be.a('string');
-			expect(data.rootLines).to.be.a('number');
-			expect(taskInformation).to.have.all.keys(
-				'commandsInformationLink', 'failureReason');
-			expect(taskInformation.commandsInformationLink).to.be.a('string');
-			expect(taskInformation.failureReason).to.eq(null);
+			expect(taskInformation.failureReason).to.eql(null);
+			const parsedData = readFile(data.fileLink);
+			expect(parsedData).to.deep.equal([ { title: "Swagger UI" } ]);
 		});
 	});
 });
