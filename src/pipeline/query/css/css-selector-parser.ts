@@ -138,6 +138,11 @@ function parseElasticSelector(selectors: Array<Selector>): ElasticSelector {
 			} as CssSelector;
 		case 'universal':
 			return {type: 'css', selector: '*'} as CssSelector
+		case 'tag':
+			return {
+				type: 'css',
+				selector: toCssSelector(css)
+			} as CssSelector
 	}
 }
 
