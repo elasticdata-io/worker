@@ -34,6 +34,8 @@ spec:
           env:
             - name: USE_ISOLATION_MODE
               value: {{ .Values.env.USE_ISOLATION_MODE | quote }}
+            - name: PUPPETEER_HEADLESS
+              value: {{ .Values.env.PUPPETEER_HEADLESS | quote }}
 
             - name: GLOBAL_PREFIX
               value: {{ .Values.env.GLOBAL_PREFIX }}

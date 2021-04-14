@@ -28,6 +28,7 @@ ingress:
 
 env:
   USE_ISOLATION_MODE: 0
+  PUPPETEER_HEADLESS: 1
 
   GLOBAL_PREFIX: worker
   DATA_SERVICE_URL: http://localhost:3000/worker

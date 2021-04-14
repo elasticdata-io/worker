@@ -1,9 +1,13 @@
 {
-  "name": "scraper-worker-ts",
-  "version": "0.0.1",
-  "description": "",
+  "name": "@elasticdataio/worker",
+  "version": "0.0.7",
+  "main": "dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "description": "Scraper worker of https://elasticdata.io",
   "author": "",
-  "private": true,
+  "private": false,
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -33,6 +37,7 @@
     "chalk": "^4.0.0",
     "css-what": "^5.0.0",
     "emittery": "^0.7.1",
+    "flat": "^5.0.2",
     "form-data": "^3.0.0",
     "generic-pool": "^3.7.1",
     "inversify": "^5.0.1",
