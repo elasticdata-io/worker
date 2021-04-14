@@ -45,8 +45,8 @@ spec:
 		node(label) {
 			properties([disableConcurrentBuilds()])
 			stage('checkout') {
-			    when {
-                    branch 'master'
+			    if (env.BRANCH_NAME != 'master') {
+                    return
                 }
 
 				checkout scm
