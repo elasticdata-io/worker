@@ -5,7 +5,7 @@ import * as path from 'path';
 
 @Injectable()
 export class LocalFileClientService extends AbstractFileClientService {
-	private tmpFolder = '/tmp';
+	private tmpFolder = process.env.TMP_FOLDER || '/tmp';
 
 	async bucketExists(bucket: string): Promise<boolean> {
 		return fs.existsSync(path.join(this.tmpFolder, bucket))
