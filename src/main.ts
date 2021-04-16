@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env nodejs
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
