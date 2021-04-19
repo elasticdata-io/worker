@@ -161,8 +161,13 @@ function validate(selector: CSS): void {
 	}
 }
 
+function convertOldMacrosToNew(selector: string) {
+	return selector.replace(/\{\$i\}/gi, '[__loop]')
+}
+
 export function parse(selector: CSS) : Array<ElasticSelector> {
 	validate(selector);
+	selector = convertOldMacrosToNew(selector);
 	const cssSelectors = css.parse(selector);
 	const elasticSelectors = [];
 	let selectors: Array<Selector> = [];

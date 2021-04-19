@@ -141,5 +141,26 @@ describe('selector-parser', () => {
 				]);
 			});
 		});
+
+		describe('backward compatibility support', () => {
+			it('should return expected values', () => {
+				const selector = 'div.h{$i} #child';
+				const selectors: ElasticSelector[] = parse(selector);
+				expect(selectors).toEqual([
+					{
+						type: 'css',
+						selector: 'div.h',
+					} as CssSelector,
+					{
+						type: 'loop',
+						index: 0,
+					} as LoopSelector,
+					{
+						type: 'css',
+						selector: '#child',
+					} as CssSelector,
+				]);
+			});
+		});
 	});
 });
