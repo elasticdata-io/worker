@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
 import {InboxMessageType} from "./inbox-message.type";
 import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
-import { TaskService } from './pipeline/task.service';
+import { PipelineService } from './pipeline/pipeline.service';
 import { EnvConfiguration } from './env/env.configuration';
 
 interface InboxMessage {
@@ -33,7 +33,7 @@ export class AppConsumer {
 
 	constructor(
 		private readonly appService: AppService,
-		private readonly taskService: TaskService,
+		private readonly taskService: PipelineService,
 		private readonly config: ConfigService,
 		private readonly envConfiguration: EnvConfiguration,
 	) {

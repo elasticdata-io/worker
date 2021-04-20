@@ -33,7 +33,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			'--disable-dev-shm-usage',
 			'--disable-canvas-aa', // Disable antialiasing on 2d canvas
 			'--disable-2d-canvas-clip-aa', // Disable antialiasing on 2d canvas clips
-			'--disable-gl-drawing-for-tests', // BEST OPTION EVER! Disables GL drawing operations which produce pixel output. With this the GL output will not be correct but tests will run faster.
+			'--disable-gl-drawing-for-test', // BEST OPTION EVER! Disables GL drawing operations which produce pixel output. With this the GL output will not be correct but test will run faster.
 			'--disable-dev-shm-usage', // ???
 			'--no-zygote', // wtf does that mean ?
 			'--use-gl=swiftshader', // better cpu usage with --use-gl=desktop rather than --use-gl=swiftshader, still needs more testing.
@@ -61,17 +61,22 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		const headless = process.env.PUPPETEER_HEADLESS === undefined || process.env.PUPPETEER_HEADLESS === '1';
 		console.log(`process.env.PUPPETEER_HEADLESS = ${process.env.PUPPETEER_HEADLESS}`);
 		if (headless) {
-			browser = await puppeteer.launch({
-				userDataDir: './profile',
-				headless: headless,
-				ignoreDefaultArgs: [
-					'--enable-automation',
-					/*'--no-sandbox'*/
-					'--enable-automation',
-					'--disable-extensions',
-				],
-				args: args,
-			});
+			try {
+				browser = await puppeteer.launch({
+					userDataDir: './profile',
+					headless: headless,
+					ignoreDefaultArgs: [
+						'--enable-automation',
+						/*'--no-sandbox'*/
+						'--enable-automation',
+						'--disable-extensions',
+					],
+					args: args,
+				});
+			} catch (err) {
+				console.error(err);
+				process.exit(1);
+			}
 		} else {
 			const args = await puppeteer.defaultArgs()
 				.filter(flag => flag !== '--enable-automation')
@@ -87,22 +92,32 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 			}
 			args.push(`-–disable-images`);
 			args.push(`--user-agent=${this._getUserAgent()}`);
-			browser = await puppeteer.launch({
-				args: args,
-				headless: false,
-				devtools: false,
-				defaultViewport: null,
-				ignoreDefaultArgs: [
-					'--enable-automation',
-					'--disable-extensions',
-				],
-			});
+			try {
+				browser = await puppeteer.launch({
+					args: args,
+					headless: false,
+					devtools: false,
+					defaultViewport: null,
+					ignoreDefaultArgs: [
+						'--enable-automation',
+						'--disable-extensions',
+					],
+				});
+			} catch (err) {
+				console.error(err);
+				process.exit(1);
+			}
 		}
-		const page = await this._createNewPage(browser);
-		return {
-			browser,
-			page,
-		};
+		try {
+			const page = await this._createNewPage(browser);
+			return {
+				browser,
+				page,
+			};
+		} catch (err) {
+			console.error(err);
+			process.exit(1);
+		}
 	}
 
 	public async destroy(resource: {page: Page, browser: Browser}): Promise<void> {

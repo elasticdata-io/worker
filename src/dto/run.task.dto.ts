@@ -45,4 +45,11 @@ export class RunTaskDto {
 		dto.proxies = dto.proxies ?? [];
 		return dto;
 	}
+
+	public static validate(dto: RunTaskDto): void {
+		if (!dto.json) {
+			throw new Error('json is required field');
+		}
+	}
 }
+

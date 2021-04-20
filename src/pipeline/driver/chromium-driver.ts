@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import { Driver } from './driver';
-import {Base64ScreenShotOptions, Browser, Page} from 'puppeteer';
+import { Base64ScreenShotOptions, Browser, EvaluateFn, Page } from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
@@ -16,6 +16,8 @@ import { FunctionParser } from '../util/function.parser';
 // @ts-ignore
 import { documentPack } from "web-page-teleport";
 import {StringGenerator} from "../util/string.generator";
+import { CssQueryProvider } from '../query/css/css-query-provider';
+import { getJsSelector, getSelectorType, parse } from '../query';
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -67,7 +69,11 @@ export class ChromiumDriver implements Driver {
 
 	public async domClick(command: AbstractCommand): Promise<void> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, `.click()`);
+		let getElFn = queryProvider.getElementFn(command, `.click()`);
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			getElFn = jsSelector + `.click()`;
+		}
 		const page = await this._resolvePage(command);
 		await this.pageEvaluate(getElFn, page);
 	}
@@ -94,28 +100,44 @@ export class ChromiumDriver implements Driver {
 
 	public async getElAttribute(command: AbstractCommand, attributeName: string): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, `.getAttribute('${attributeName}')`);
+		let getElFn = queryProvider.getElementFn(command, `.getAttribute('${attributeName}')`);
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			getElFn = jsSelector + `.getAttribute('${attributeName}')`;
+		}
 		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
 
 	public async getElText(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, '.innerText');
+		let getElFn = queryProvider.getElementFn(command, '.innerText');
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			getElFn = jsSelector + '.innerText';
+		}
 		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
 
 	public async getElHtml(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
-		const getElFn = queryProvider.getElementFn(command, '.innerHTML');
+		let getElFn = queryProvider.getElementFn(command, '.innerHTML');
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			getElFn = jsSelector + '.innerText';
+		}
 		const page = await this._resolvePage(command);
 		return await this.pageEvaluate(getElFn, page);
 	}
 
 	public async getElementsCount(command: AbstractCommand): Promise<number> {
 		const queryProvider = command.getQueryProvider();
-		const getCountFn = queryProvider.getElementsFn(command, '.length');
+		let getCountFn = queryProvider.getElementsFn(command, '.length');
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			getCountFn = jsSelector + '.length';
+		}
 		const page = await this._resolvePage(command);
 		const count = await page.evaluate(getCountFn) as string;
 		return count && parseInt(count, 10) || 0;
@@ -182,6 +204,11 @@ export class ChromiumDriver implements Driver {
 		await this.delay(command.timeout * 1000);
 	}
 
+	/**
+	 * @deprecated Use type command
+	 * @param command
+	 * @param value
+	 */
 	public async setElValue(command: AbstractCommand, value: string): Promise<void> {
 		const queryProvider = command.getQueryProvider();
 		// todo : input, textarea, select
@@ -195,7 +222,11 @@ export class ChromiumDriver implements Driver {
 		const skipAfterTimeout = command.timeout * 1000;
 		const interval = 250;
 		const queryProvider = command.getQueryProvider();
-		const getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
+		let getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			getOuterHTMLFn = jsSelector + '.outerHTML';
+		}
 		try {
 			await this.wait(skipAfterTimeout, interval, async () => {
 				const page = await this._resolvePage(command);
@@ -203,7 +234,9 @@ export class ChromiumDriver implements Driver {
 				return Boolean(html);
 			});
 		} catch (e) {
-			const fnBody = FunctionParser.getBody(getOuterHTMLFn);
+			const fnBody = typeof getOuterHTMLFn === 'string'
+				? getOuterHTMLFn
+				:FunctionParser.getBody(getOuterHTMLFn);
 			throw `Terminated after: ${skipAfterTimeout}ms.
 			Page not has present element:
 			${fnBody}`
@@ -224,9 +257,8 @@ export class ChromiumDriver implements Driver {
 	public async scrollBy(command: AbstractCommand, position: 'top' | 'bottom', px: number): Promise<void> {
 		const distance = position === 'bottom' ? px : -px;
 		const expression = `window.scrollBy(0, ${distance})`;
-		const fn = new Function(expression);
 		const page = await this._resolvePage(command);
-		await this.pageEvaluate(fn, page);
+		await this.pageEvaluate(expression, page);
 	}
 
 	/**
@@ -328,7 +360,7 @@ export class ChromiumDriver implements Driver {
 		});
 	}
 
-	protected async pageEvaluate(fn: any, page: Page): Promise<string> {
+	protected async pageEvaluate(fn: EvaluateFn, page: Page): Promise<string> {
 		try {
 			return await page.evaluate(fn) as Promise<string>;
 		} catch (e) {
@@ -343,7 +375,11 @@ export class ChromiumDriver implements Driver {
 	private async _getCssSelector(command: AbstractCommand): Promise<string> {
 		const queryProvider = command.getQueryProvider();
 		const fakeId = StringGenerator.generate();
-		const setAttributeFn = queryProvider.getElementFn(command, `.setAttribute("fake-id", "${fakeId}")`);
+		let setAttributeFn = queryProvider.getElementFn(command, `.setAttribute("fake-id", "${fakeId}")`);
+		if (queryProvider instanceof CssQueryProvider) {
+			const jsSelector = await getJsSelector(command);
+			setAttributeFn = jsSelector + `.setAttribute("fake-id", "${fakeId}")`;
+		}
 		const page = await this._resolvePage(command);
 		await this.pageEvaluate(setAttributeFn, page);
 		return `[fake-id="${fakeId}"]`;

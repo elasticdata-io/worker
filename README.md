@@ -42,13 +42,29 @@ BODY:
 		},
 		{
 			"cmd": "getscreenshot",
-			"key": "jpegScreenshotBase64"
+			"key": "my-screenshot"
 		},
 		{
 			"cmd": "gettext",
 			"selector": "body",
-			"key": "key1"
+			"key": "page-text-content"
 		}
 	]
 }
+```
+
+
+## Docker
+
+### Build 
+
+```
+docker build -f install/Dockerfile -t elasticdataio/worker:0.1 .
+```
+
+### Push 
+
+```
+docker login elasticdataio
+docker push elasticdataio/worker:0.1
 ```

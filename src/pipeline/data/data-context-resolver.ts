@@ -25,6 +25,11 @@ export class DataContextResolver {
 			.forEach(command => command.setDataContext(commandsContext));
 	}
 
+	/**
+	 * @deprecated
+	 * @param command
+	 * @param contextName
+	 */
 	public resolveIndex(command: AbstractCommand, contextName: string): number {
 		const context = this.commands[command.uuid];
 		if (contextName) {
@@ -80,4 +85,12 @@ export class DataContextResolver {
 			throw new SystemError(e);
 		}
 	}
+}
+
+export function resolveIndex(commandContext: string, loopContext: string): number {
+	const contexts = commandContext.split(`${loopContext}.`);
+	if (contexts.length !== 2) {
+		throw new SystemError(`contextName: '${loopContext}' is not correct with context: ${commandContext}`);
+	}
+	return parseInt(contexts[1], 10);
 }

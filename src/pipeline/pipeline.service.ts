@@ -11,9 +11,10 @@ import { ConfigService } from '@nestjs/config';
 import { TaskCompeteDto } from '../dto/task-compete.dto';
 import { TaskErrorDto } from '../dto/task-error.dto';
 import { EnvConfiguration } from '../env/env.configuration';
+import { SystemError } from './command/exception/system-error';
 
 @Injectable()
-export class TaskService {
+export class PipelineService {
 	private _currentTaskId: string;
 	private _pipelineProcess: PipelineProcess;
 
@@ -25,6 +26,10 @@ export class TaskService {
 	) {}
 
 	public async run(dto: RunTaskDto): Promise<TaskResult> {
+		if (this._currentTaskId) {
+			throw new SystemError(`Another task has been started: ${this._currentTaskId}.
+			 Wait for the task to complete and try again`);
+		}
 		try {
 			dto = this.appEnv.USE_ISOLATION_MODE ? RunTaskDto.fillEmpty(dto) : dto;
 			this._currentTaskId = dto.taskId;
@@ -46,7 +51,12 @@ export class TaskService {
 				return;
 			}
 			await this.handleErrorOfTask(dto.taskId, e);
+			this._pipelineProcess = null;
+			this._currentTaskId = null;
 			throw e
+		} finally {
+			this._pipelineProcess = null;
+			this._currentTaskId = null;
 		}
 	}
 
@@ -57,7 +67,6 @@ export class TaskService {
 			console.error(e);
 			throw e
 		}
-		return false;
 	}
 
 	private async isTaskSuspended(taskDto: TaskDto): Promise<boolean> {

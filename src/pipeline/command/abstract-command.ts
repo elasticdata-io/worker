@@ -9,7 +9,7 @@ import { AbstractStore } from '../data/abstract-store';
 import { PipelineIoc } from '../pipeline-ioc';
 import { DataContextResolver } from '../data/data-context-resolver';
 import { AbstractCommandAnalyzer } from '../analyzer/abstract.command.analyzer';
-import {LineMacrosParser} from "../data/line-macros-parser";
+import {MacrosParser} from '../../data-store';
 import {PageContextResolver} from "../browser/page-context-resolver";
 import { StringGenerator } from '../util/string.generator';
 import {UserInteractionInspector} from "../user-interaction/user-interaction-inspector";
@@ -104,7 +104,7 @@ export abstract class AbstractCommand implements Selectable {
 	}
 
 	public async replaceMacros(inputWithMacros: string, command: AbstractCommand): Promise<any> {
-		if (LineMacrosParser.hasAnyMacros(inputWithMacros)) {
+		if (MacrosParser.hasAnyMacros(inputWithMacros)) {
 			const replaced = await this.store.replaceMacros(command, inputWithMacros);
 			if (replaced === '') {
 				throw new Error(`value with macros ${inputWithMacros} is empty`);

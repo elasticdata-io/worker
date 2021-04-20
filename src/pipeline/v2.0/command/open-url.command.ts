@@ -4,7 +4,7 @@ import { TYPES as ROOT_TYPES } from '../../types';
 import { Cmd } from '../../command/decorator/command.decorator';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 import { CommandType } from '../../documentation/specification';
-import { LineMacrosParser } from '../../data/line-macros-parser';
+import { MacrosParser } from '../../../data-store/macros-parser';
 
 @Cmd({
 	cmd: 'openurl',
@@ -50,7 +50,7 @@ export class OpenUrlCommand extends AbstractCommand {
 			'link',
 		];
 		if (typeof this.link === 'string') {
-			if (LineMacrosParser.hasAnyMacros(this.link)) {
+			if (MacrosParser.hasAnyMacros(this.link)) {
 				keys.push({
 					key: 'link_runtime',
 					fn: this._getLink

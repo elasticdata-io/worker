@@ -11,7 +11,8 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "types": ["reflect-metadata", "jest"]
+    "types": ["reflect-metadata", "jest"],
+    "lib": ["es2020", "dom"]
   },
   "exclude": ["node_modules", "dist"]
 }
