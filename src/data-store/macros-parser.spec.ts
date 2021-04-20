@@ -111,13 +111,13 @@ describe('MacrosParser', () => {
 		describe('with complex macros', () => {
 			it('should return expected', () => {
 				const actual = MacrosParser.replaceMacros({
-					stringWithMacros: '.cls[__loop="cntx"] .{$line.name}{$i}',
-					commandDataContext: 'root.0.cntx.5',
+					stringWithMacros: '.cls[__loop="pages"] .{$line.name}{$i}',
+					commandDataContext: 'root.0.pages.2.links.5',
 					dataStoreContext: {
-						'root.0.cntx.5': { name: 'value' }
+						'root.0.pages.2.links.5': { name: 'value' }
 					}
 				});
-				expect(actual).toBe('.cls[__loop="5"] .value[__loop="0"]');
+				expect(actual).toBe('.cls[__loop="2"] .value[__loop="5"]');
 			});
 		})
 	})

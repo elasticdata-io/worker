@@ -3,7 +3,7 @@ import { LineMacros } from './models';
 import { SystemError } from '../pipeline/command/exception/system-error';
 
 const LINE_MACROS_PATTERN = /\{\$line\.([^}.]+)\}/i;
-const LOOP_INDEX_PATTERN = /\[__loop(=('|")(([^0-9][^'"])*)('|"))?\]/i;
+const LOOP_INDEX_PATTERN = /\[__loop(=('|")([^0-9'"]*)('|"))?\]/i;
 const OLD_LOOP_INDEX_PATTERN = /\{\$i(:([^}]+))?\}/i;
 
 function parseLineMacros(input: string): LineMacros {
