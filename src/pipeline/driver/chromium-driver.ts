@@ -17,7 +17,7 @@ import { FunctionParser } from '../util/function.parser';
 import { documentPack } from "web-page-teleport";
 import {StringGenerator} from "../util/string.generator";
 import { CssQueryProvider } from '../query/css/css-query-provider';
-import { getSelectorType, parse, toJsSelector } from '../query';
+import { getJsSelector, getSelectorType, parse } from '../query';
 
 @injectable()
 export class ChromiumDriver implements Driver {
@@ -105,8 +105,7 @@ export class ChromiumDriver implements Driver {
 		const queryProvider = command.getQueryProvider();
 		let getElFn = queryProvider.getElementFn(command, '.innerText');
 		if (queryProvider instanceof CssQueryProvider) {
-			const selectors = parse(command.getSelector());
-			const jsSelector = toJsSelector(selectors);
+			const jsSelector = await getJsSelector(command);
 			getElFn = jsSelector + '.innerText';
 		}
 		const page = await this._resolvePage(command);
@@ -189,6 +188,11 @@ export class ChromiumDriver implements Driver {
 		await this.delay(command.timeout * 1000);
 	}
 
+	/**
+	 * @deprecated Use type command
+	 * @param command
+	 * @param value
+	 */
 	public async setElValue(command: AbstractCommand, value: string): Promise<void> {
 		const queryProvider = command.getQueryProvider();
 		// todo : input, textarea, select
@@ -205,10 +209,9 @@ export class ChromiumDriver implements Driver {
 		const selectorType = getSelectorType(selector);
 		let getOuterHTMLFn;
 		if (selectorType === 'css') {
-			const selectors = parse(selector);
-			const jsSelector = toJsSelector(selectors);
+			const jsSelector = await getJsSelector(command);
 			getOuterHTMLFn = jsSelector + '.outerHTML';
-		} else {
+		} else { // todo: for xpath -> old logic
 			const queryProvider = command.getQueryProvider();
 			getOuterHTMLFn = queryProvider.getElementFn(command, '.outerHTML');
 		}

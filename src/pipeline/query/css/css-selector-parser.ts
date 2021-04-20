@@ -127,9 +127,10 @@ function parseElasticSelector(selectors: Array<Selector>): ElasticSelector {
 				} as TextSelector;
 			}
 			if (css.name.startsWith('__loop')) {
+				const index = parseInt(css.value, 10) || 0;
 				return {
 					type: 'loop',
-					index: 0,
+					index: index,
 				} as LoopSelector;
 			}
 			return {
@@ -162,12 +163,30 @@ function validate(selector: CSS): void {
 }
 
 function convertOldMacrosToNew(selector: string) {
-	return selector.replace(/\{\$i\}/gi, '[__loop]')
+	selector = selector.replace(/\{\$i:([0-9a-z]+)\}/gi, `[__loop="$1"]`);
+	selector = selector.replace(/\{\$i\}/gi, '[__loop]');
+	return selector;
 }
 
+/**
+ * @deprecated Not used this method - it is private.
+ * @param selector
+ */
+export function getSelectorType(selector: Xpath | CSS): 'css' | 'xpath' {
+	selector = selector.trim();
+	if (selector.startsWith('//') || selector.startsWith('(')) {
+		return 'xpath';
+	}
+	return 'css';
+}
+
+/**
+ * @public
+ * @param selector Selector with macros
+ */
 export function parse(selector: CSS) : Array<ElasticSelector> {
 	validate(selector);
-	selector = convertOldMacrosToNew(selector);
+	// selector = convertOldMacrosToNew(selector);
 	const cssSelectors = css.parse(selector);
 	const elasticSelectors = [];
 	let selectors: Array<Selector> = [];
@@ -196,12 +215,4 @@ export function parse(selector: CSS) : Array<ElasticSelector> {
 		elasticSelectors.push(parseElasticSelector(selectors));
 	}
 	return elasticSelectors.filter(Boolean);
-}
-
-export function getSelectorType(selector: Xpath | CSS): 'css' | 'xpath' {
-	selector = selector.trim();
-	if (selector.startsWith('//') || selector.startsWith('(')) {
-		return 'xpath';
-	}
-	return 'css';
 }

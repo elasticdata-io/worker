@@ -2,7 +2,7 @@ import { AbstractCommand } from '../../command/abstract-command';
 import { Assignable } from '../../command/decorator/assignable.decorator';
 import { Cmd } from '../../command/decorator/command.decorator';
 import { CommandType } from '../../documentation/specification';
-import { LineMacrosParser } from '../../data/line-macros-parser';
+import { MacrosParser } from '../../../data-store/macros-parser';
 
 @Cmd({
 	cmd: 'type',
@@ -39,7 +39,7 @@ export class TypeCommand extends AbstractCommand {
 
 	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
 		const keys = super.getManagedKeys();
-		if (LineMacrosParser.hasAnyMacros(this.text)) {
+		if (MacrosParser.hasAnyMacros(this.text)) {
 			keys.push({
 				key: 'text_runtime',
 				fn: this._getText

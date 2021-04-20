@@ -9,17 +9,17 @@ import {CommitDocument} from "./dto/commit.document";
 import {AttachFile} from "./dto/attach.file";
 import AbstractDataRuleCommand from "./rule/abstract-data-rule.command";
 import {KeyData} from "./dto/key.data";
-import {LineMarcosReplacer} from "./line-marcos-replacer";
 import { KeysValuesData } from './dto/keys.values.data';
 import { Injectable, Scope } from '@nestjs/common';
 import { AbstractFileClientService } from './abstract-file-client.service';
 import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
+import { MacrosParser, TaskDataStoreContext } from './index';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class StorageService {
 
 	private _dataRules: AbstractDataRuleCommand[] = [];
-	private _contexts: object;
+	private _contexts: TaskDataStoreContext;
 
 	constructor(
 		private readonly configService: ConfigService,
@@ -169,9 +169,13 @@ export class StorageService {
 	 */
 	public async getByMacros(data: { context: string, inputWithMacros: string }): Promise<any> {
 		ContextValidator.validate(data.context);
-		const document = this._contexts[data.context] || {};
-		if (LineMarcosReplacer.hasAnyMacros(data.inputWithMacros)) {
-			return LineMarcosReplacer.replaceMacros(data.inputWithMacros, document);
+		const stringWithMacros = data.inputWithMacros;
+		if (MacrosParser.hasAnyMacros(stringWithMacros)) {
+			return MacrosParser.replaceMacros({
+				stringWithMacros,
+				dataStoreContext: {...this._contexts},
+				commandDataContext: data.context,
+			});
 		}
 		return null;
 	}

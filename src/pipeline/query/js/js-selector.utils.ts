@@ -1,9 +1,11 @@
 import { CssSelector, ElasticSelector, LoopSelector, ParentSelector, TextSelector } from '../models';
+import { AbstractCommand } from '../../command/abstract-command';
+import { parse } from '../css';
 
-type JsSelector = string;
+type JavaScriptsSelector = string;
 
-export function toJsSelector(selectors: Array<ElasticSelector>) : JsSelector {
-	let jsSelectors: JsSelector[] = ['document'];
+function toJsSelector( selectors: Array<ElasticSelector> ) : JavaScriptsSelector {
+	let jsSelectors: JavaScriptsSelector[] = ['document'];
 	for (const selector of selectors) {
 		switch (selector.type) {
 			case 'css':
@@ -29,4 +31,10 @@ export function toJsSelector(selectors: Array<ElasticSelector>) : JsSelector {
 		jsSelectors.push('[0]');
 	}
 	return jsSelectors.join('');
+}
+
+export async function getJsSelector(command: AbstractCommand) : Promise<JavaScriptsSelector> {
+	const selector = await command.replaceMacros(command.getSelector(), command)
+	const selectors = parse(selector);
+	return toJsSelector(selectors);
 }
