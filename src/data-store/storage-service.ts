@@ -171,6 +171,7 @@ export class StorageService {
 		ContextValidator.validate(data.context);
 		const stringWithMacros = data.inputWithMacros;
 		if (MacrosParser.hasAnyMacros(stringWithMacros)) {
+			console.log(stringWithMacros, data.context)
 			return MacrosParser.replaceMacros({
 				stringWithMacros,
 				dataStoreContext: {...this._contexts},

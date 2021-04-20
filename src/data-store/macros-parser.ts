@@ -42,7 +42,10 @@ function parseOldLoopMacros(input: string): LoopMacros {
   }
 }
 
-function resolveLoopIndex(commandContext: string, loopContext: string): number {
+function resolveLoopIndex(commandContext: string, loopContext: string | undefined): number {
+  if (!loopContext) {
+    return parseInt(commandContext.split(`.`).pop(), 10) || 0;
+  }
   const contexts = commandContext.split(`${loopContext}.`);
   if (contexts.length !== 2) {
     throw new SystemError(`contextName: '${loopContext}' is not correct with context: ${commandContext}`);
@@ -93,9 +96,7 @@ export abstract class MacrosParser {
           stringWithMacros = stringWithMacros.replace(macros.macros, lineValue);
           break;
         case 'loop':
-          const loopIndex = macros.context === undefined
-            ? 0
-            : resolveLoopIndex(config.commandDataContext, macros.context);
+          const loopIndex = resolveLoopIndex(config.commandDataContext, macros.context);
           stringWithMacros = stringWithMacros.replace(macros.macros, `[__loop="${loopIndex}"]`);
           break;
       }
