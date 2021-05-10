@@ -1,17 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { RunTaskDto } from '../dto/run.task.dto';
 import { TaskResult } from './data/dto/task.result';
-import { TaskDto } from '../dto/task.dto';
 import { TaskDataClientSdk } from '../sdk/task/task.data.client.sdk';
 import { PipelineProcess } from './pipeline-process';
 import { Environment } from './environment';
 import * as moment from 'moment';
 import { PipelineBuilderFactory } from './pipeline-builder-factory';
 import { ConfigService } from '@nestjs/config';
-import { TaskCompeteDto } from '../dto/task-compete.dto';
-import { TaskErrorDto } from '../dto/task-error.dto';
 import { EnvConfiguration } from '../env/env.configuration';
 import { SystemError } from './command/exception/system-error';
+import {
+	RunTaskDto,
+	TaskDto,
+	TaskCompeteDto,
+	TaskErrorDto,
+	DisableUserInteractionStateDto,
+	ExecuteCmdDto
+} from '../dto';
+import { UserInteractionEvent } from './event-bus';
 
 @Injectable()
 export class PipelineService {
@@ -67,6 +72,22 @@ export class PipelineService {
 			console.error(e);
 			throw e
 		}
+	}
+
+	public async disableInteractionMode(dto: DisableUserInteractionStateDto): Promise<void> {
+		if (this._currentTaskId !== dto.taskId) {
+			return;
+		}
+		await this._pipelineProcess.eventBus
+			.emit(UserInteractionEvent.DISABLE_USER_INTERACTION_MODE, dto);
+	}
+
+	public async executeCommand(dto: ExecuteCmdDto): Promise<void> {
+		if (this._currentTaskId !== dto.taskId) {
+			return;
+		}
+		await this._pipelineProcess
+			.eventBus.emit(UserInteractionEvent.EXECUTE_CMD, dto);
 	}
 
 	private async isTaskSuspended(taskDto: TaskDto): Promise<boolean> {

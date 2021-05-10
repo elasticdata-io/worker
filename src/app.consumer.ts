@@ -2,12 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 import * as chalk from 'chalk';
 import * as Amqp from 'amqp-ts';
 import { Injectable } from '@nestjs/common';
-import { RunTaskDto } from './dto/run.task.dto';
-import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
-import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
+import {
+	RunTaskDto,
+	ExecuteCmdDto,
+	DisableUserInteractionStateDto
+} from './dto';
 import {InboxMessageType} from "./inbox-message.type";
-import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
 import { PipelineService } from './pipeline/pipeline.service';
 import { EnvConfiguration } from './env/env.configuration';
 
@@ -32,7 +33,6 @@ export class AppConsumer {
 	private readonly WORKER_TYPE: string;
 
 	constructor(
-		private readonly appService: AppService,
 		private readonly taskService: PipelineService,
 		private readonly config: ConfigService,
 		private readonly envConfiguration: EnvConfiguration,
@@ -150,7 +150,7 @@ export class AppConsumer {
 
 	private async executeCommand(inboxMessage: InboxMessage) {
 		const dto = JSON.parse(inboxMessage.data) as ExecuteCmdDto;
-		await this.appService.executeCommand(dto);
+		await this.taskService.executeCommand(dto);
 	}
 
 	private async stopPipelineTask(inboxMessage: InboxMessage): Promise<void> {
@@ -159,7 +159,7 @@ export class AppConsumer {
 
 	private async disableInteractionMode(inboxMessage: InboxMessage): Promise<void> {
 		const dto = JSON.parse(inboxMessage.data) as DisableUserInteractionStateDto;
-		await this.appService.disableInteractionMode(dto);
+		await this.taskService.disableInteractionMode(dto);
 	}
 
 	private static validateDto(dto: RunTaskDto) {

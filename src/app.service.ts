@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
-import {ExecuteCmdDto} from "./dto/execute-cmd.dto";
-import {DisableUserInteractionStateDto} from "./dto/disable-user-interaction-state.dto";
+import {ExecuteCmdDto} from './dto';
+import {DisableUserInteractionStateDto} from './dto';
 
 @Injectable()
 export class AppService {
