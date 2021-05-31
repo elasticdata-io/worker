@@ -2,6 +2,7 @@ FROM node:15-stretch-slim AS build
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 RUN npm ci
 
 COPY src src
@@ -14,7 +15,7 @@ RUN npm run build
 
 FROM node:15-alpine
 WORKDIR /app
-RUN apk add --no-cache  chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
+RUN apk add --no-cache g++ chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
 COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/dist dist
 COPY --from=build /app/nest-cli.json .
