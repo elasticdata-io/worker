@@ -250,7 +250,8 @@ export class ChromiumDriver implements Driver {
 			quality: options?.quality,
 			type: options?.quality ? 'jpeg': 'png',
 		};
-		return await page.screenshot(config) as Buffer;
+		const base64 = await page.screenshot(config);
+		return Buffer.from((base64 as string), 'base64');
 	}
 
 	public async scrollBy(command: AbstractCommand, position: 'top' | 'bottom', px: number): Promise<void> {
