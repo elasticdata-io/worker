@@ -51,6 +51,8 @@ function toCssSelector(css: Selector): CSS {
 			return '*';
 		case 'child':
 			return ' > ';
+		case 'adjacent':
+			return ' + ';
 		default:
 			throw new Error(`not supporting selector: ${JSON.stringify(css)}`);
 	}
