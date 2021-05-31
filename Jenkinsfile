@@ -66,9 +66,9 @@ spec:
                     }
                     stage('publish') {
                         sh 'docker push localhost:32000/scraper-worker:${DOCKER_TAG}'
-                        sh "docker login -u elasticdataio -p '!Prisoner31!'"
-                        sh 'docker tag localhost:32000/scraper-worker:${DOCKER_TAG} elasticdataio/worker:0.1'
-                        sh 'docker push elasticdataio/worker:0.1'
+//                         sh "docker login -u elasticdataio -p '!Prisoner31!'"
+//                         sh 'docker tag localhost:32000/scraper-worker:${DOCKER_TAG} elasticdataio/worker:0.1'
+//                         sh 'docker push elasticdataio/worker:0.1'
                     }
 				}
 

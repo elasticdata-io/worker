@@ -14,7 +14,7 @@ RUN npm run build
 
 FROM node:15-alpine
 WORKDIR /app
-RUN apk add --no-cache  chromium --repository=http://dl-cdn.alpinelinux.org/alpine/v3.13/main
+RUN apk add --no-cache  chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
 COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/dist dist
 COPY --from=build /app/nest-cli.json .
