@@ -1,4 +1,4 @@
-FROM node:13.10.1-stretch-slim AS build
+FROM node:15-stretch-slim AS build
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
@@ -12,7 +12,7 @@ COPY .eslintrc.js .
 COPY .prettierrc .
 RUN npm run build
 
-FROM node:13.10.1-slim@sha256:88da5cd281ece24309c4e6fcce000a8001b17804e19f94a0439954568716a668
+FROM node:15-slim
 WORKDIR /app
 RUN  apt-get update \
      # Install latest chrome dev package, which installs the necessary libs to
