@@ -17,7 +17,7 @@ export class PluckRuleCommand extends AbstractDataRuleCommand {
         function getValue(doc: Array<object | string | number> | object, key: string) {
             if (Array.isArray(doc)) {
                 const value = [...doc.map(x => x[key])];
-                return Array.prototype.flat.call(value, value);
+                return value.flat();
             }
             return doc[key];
         }
