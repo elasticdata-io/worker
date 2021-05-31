@@ -7,6 +7,10 @@ export class PluckRuleCommand extends AbstractDataRuleCommand {
     }
 
     public applyBeforeCommit(document: object): void {
+        const isWatched = Object.keys(document).find(key => this.isWatchKey(key))
+        if (!isWatched) {
+            return;
+        }
         const config = this.config as any;
         const keys = config.bindKey.split('.');
         let values: Array<object | string | number> | object = { ...document };
@@ -24,21 +28,13 @@ export class PluckRuleCommand extends AbstractDataRuleCommand {
         document[toKey] = values as Array<any>;
     }
 
-    public applyAfterInsert(inputKey: string, inputValue: string | Array<any>, document: object): void {
-        if (!this.isWatchKey(inputKey)) {
-            return;
-        }
-        if (inputValue === undefined || inputValue === null) {
-            return;
-        }
-        if (Array.isArray(inputValue)) {
-            this.transformArray(inputValue, document);
-        }
-    };
-
     public isWatchKey(key: string): boolean {
         return this.config.bindKey === key || this.config.bindKey.startsWith(`${key}.`);
     }
+
+    public applyAfterInsert(inputKey: string, inputValue: string | Array<any>, document: object): void {
+        throw 'not supported applyAfterInsert of PluckRuleCommand class';
+    };
 
     protected transformArray(inputValue: Array<any>, document: object): void {
         throw 'not supported transformArray of PluckRuleCommand class';

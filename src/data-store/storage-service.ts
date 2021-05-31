@@ -143,13 +143,8 @@ export class StorageService {
 	}
 
 	private _applyRulesBeforeCommit(document: object): object {
-		const rules = this._dataRules
-			.filter(dataRule => dataRule.keyStrategy === 'beforeCommit');
-		for (const [key, value] of Object.entries(document)) {
-			rules
-				.filter(rule => rule.isWatchKey(key))
-				.forEach(rule => rule.applyBeforeCommit(document))
-		}
+		const rules = this._dataRules.filter(dataRule => dataRule.keyStrategy === 'beforeCommit');
+		rules.forEach(rule => rule.applyBeforeCommit(document))
 		return document;
 	}
 

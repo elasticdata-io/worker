@@ -32,7 +32,7 @@ export default abstract class AbstractDataRuleCommand {
     };
 
     public applyBeforeCommit(document: object): void {
-        return;
+        return
     }
 
     public isWatchKey(key: string): boolean {
