@@ -1,9 +1,14 @@
 import DataRuleDto from "../dto/data-rule.dto";
 
+export type KeyStrategy = 'afterInsert' | 'beforeCommit';
+
 export default abstract class AbstractDataRuleCommand {
 
     constructor(protected config: DataRuleDto) {}
 
+    public get keyStrategy() : KeyStrategy {
+        return 'afterInsert';
+    }
     protected abstract transformString(inputValue: string, document: object): void;
     protected abstract transformArray(inputValue: any[], document: object): void;
     protected setToKey(document: any, newValue: string | string[]): void {
@@ -11,7 +16,7 @@ export default abstract class AbstractDataRuleCommand {
         document[key] = newValue;
     }
 
-    public apply(inputKey: string, inputValue: string, document: object): void {
+    public applyAfterInsert(inputKey: string, inputValue: string, document: object): void {
         if (!this.isWatchKey(inputKey)) {
             return;
         }
@@ -25,6 +30,10 @@ export default abstract class AbstractDataRuleCommand {
             this.transformString(inputValue, document);
         }
     };
+
+    public applyBeforeCommit(document: object): void {
+        return;
+    }
 
     public isWatchKey(key: string): boolean {
         return this.config.bindKey === key;

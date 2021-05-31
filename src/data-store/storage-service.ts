@@ -35,7 +35,8 @@ export class StorageService {
 
 	private async _upsertLine(context: string, key: string, value: string): Promise<void> {
 		if (!this._contexts[context]) {
-			this._contexts[context] = this._getContextProxy(this._dataRules);
+			const rules = this._dataRules.filter(x => x.keyStrategy === 'afterInsert');
+			this._contexts[context] = this._getContextProxy(rules);
 		}
 		return this._setToLine(context, key, value);
 	}
@@ -49,7 +50,7 @@ export class StorageService {
 				target[prop] = value;
 				dataRules
 					.filter(dataRule => dataRule.isWatchKey(prop))
-					.forEach(dataRule => dataRule.apply(prop, target[prop], target))
+					.forEach(dataRule => dataRule.applyAfterInsert(prop, target[prop], target))
 				return true;
 			}
 		});
@@ -141,6 +142,17 @@ export class StorageService {
 		await this._upsertLine(context, key, value);
 	}
 
+	private _applyRulesBeforeCommit(document: object): object {
+		const rules = this._dataRules
+			.filter(dataRule => dataRule.keyStrategy === 'beforeCommit');
+		for (const [key, value] of Object.entries(document)) {
+			rules
+				.filter(rule => rule.isWatchKey(key))
+				.forEach(rule => rule.applyBeforeCommit(document))
+		}
+		return document;
+	}
+
 	/**
 	 * Put key-value data to store.
 	 * @param data
@@ -198,6 +210,12 @@ export class StorageService {
 	public async commit(data: CommitDocument): Promise<DataResult> {
 		const document = unflatten(this._contexts) || {root: []};
 		const root = document.root || [];
+		let main = root.shift();
+		if (typeof main === 'object') {
+			main = this._applyRulesBeforeCommit(main);
+			root.unshift(main);
+		}
+
 		const contentType = 'application/json;charset=UTF-8';
 		const json = JSON.stringify(root, null, 2);
 		await this.createIfNotExistsBucket(data.bucket);

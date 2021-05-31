@@ -1,6 +1,6 @@
 import AbstractDataRuleCommand from "../abstract-data-rule.command";
 
-export default class ReplaceRegexRuleCommand extends AbstractDataRuleCommand {
+export class ReplaceRegexRuleCommand extends AbstractDataRuleCommand {
 
     protected transformString(inputValue: string, document: object): void {
         const config = this.config as any;

@@ -1,6 +1,6 @@
 import AbstractDataRuleCommand from "../abstract-data-rule.command";
 
-export default class TrimRuleCommand extends AbstractDataRuleCommand {
+export class TrimRuleCommand extends AbstractDataRuleCommand {
 
     protected transformString(inputValue: string, document: object): void {
         const outputValue = inputValue.toString().trim();

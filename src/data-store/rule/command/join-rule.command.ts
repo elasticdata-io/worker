@@ -1,6 +1,6 @@
 import AbstractDataRuleCommand from "../abstract-data-rule.command";
 
-export default class JoinRuleCommand extends AbstractDataRuleCommand {
+export class JoinRuleCommand extends AbstractDataRuleCommand {
 
     protected transformString(inputValue: string, document: object): void {
         return;

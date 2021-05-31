@@ -1,6 +1,6 @@
 import AbstractDataRuleCommand from "../abstract-data-rule.command";
 
-export default class OnlyNumberRuleCommand extends AbstractDataRuleCommand {
+export class OnlyNumberRuleCommand extends AbstractDataRuleCommand {
 
     protected transformString(inputValue: string, document: object): void {
         const outputValue = inputValue.toString().replace(/[^0-9]/g, '');

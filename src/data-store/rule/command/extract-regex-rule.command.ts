@@ -1,6 +1,6 @@
 import AbstractDataRuleCommand from "../abstract-data-rule.command";
 
-export default class ExtractRegexRuleCommand extends AbstractDataRuleCommand {
+export class ExtractRegexRuleCommand extends AbstractDataRuleCommand {
 
     protected transformArray(inputValue: string[], document: object): void {
         const config = this.config as any;

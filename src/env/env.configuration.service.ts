@@ -8,6 +8,10 @@ export class EnvConfigurationService extends EnvConfiguration {
 		super();
 	}
 
+	get USE_ALIVE_PROBE(): boolean {
+		return this.configService.get<string>('USE_ALIVE_PROBE') !== '0';
+	}
+
 	get USE_ISOLATION_MODE(): boolean {
 		return this.configService.get<string>('USE_ISOLATION_MODE') === '1';
 	}

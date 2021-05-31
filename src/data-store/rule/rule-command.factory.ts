@@ -1,15 +1,17 @@
 import AbstractDataRuleCommand from "./abstract-data-rule.command";
-import OnlyNumberRuleCommand from "./command/only-number-rule.command";
 import {Injectable} from "@nestjs/common";
-import TrimRuleCommand from "./command/trim-rule.command";
-import SplitRuleCommand from "./command/split-rule.command";
-import ReplaceRuleCommand from "./command/replace-rule.command";
-import ReplaceRegexRuleCommand from "./command/replace-regex-rule.command";
-import DataRuleDto from "../dto/data-rule.dto";
-import UniqueRuleCommand from "./command/unique-rule.command";
-import JoinRuleCommand from "./command/join-rule.command";
-import ExtractRegexRuleCommand from "./command/extract-regex-rule.command";
-import PluckRuleCommand from './command/pluck-rule.command';
+import DataRuleDto from '../dto/data-rule.dto';
+import {
+    ExtractRegexRuleCommand,
+    JoinRuleCommand,
+    OnlyNumberRuleCommand,
+    ReplaceRegexRuleCommand,
+    ReplaceRuleCommand,
+    SplitRuleCommand,
+    TrimRuleCommand,
+    UniqueRuleCommand,
+    PluckRuleCommand,
+} from './command';
 
 @Injectable()
 export default class RuleCommandFactory {

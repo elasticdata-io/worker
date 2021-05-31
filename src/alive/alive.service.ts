@@ -16,7 +16,7 @@ export class AliveService {
 
 	@Interval(10 * 1000)
 	public async handleCron(): Promise<void> {
-		if (this.envConfiguration.USE_ISOLATION_MODE) {
+		if (this.envConfiguration.USE_ISOLATION_MODE || !this.envConfiguration.USE_ALIVE_PROBE) {
 			return;
 		}
 		const WORKER_TYPE = this.configService.get<string>('WORKER_TYPE');

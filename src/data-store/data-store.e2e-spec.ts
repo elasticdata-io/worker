@@ -159,9 +159,7 @@ describe('Data store', () => {
             },
             {
                 cmd: 'pluck',
-                bindKey: 'pages',
-                innerKey: 'links',
-                merge: true,
+                bindKey: 'pages.links',
             }
         ];
         const expectedValues = [
@@ -218,9 +216,7 @@ describe('Data store', () => {
                     const initialValue = initialValues[i];
                     const response = await request(app.getHttpServer())
                         .post('/v1/store')
-                        .set({
-                            useruuid: useruuid,
-                        })
+                        .set({ useruuid: useruuid, })
                         .send({
                             key: initialValue.key,
                             value: initialValue.value,
