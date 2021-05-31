@@ -12,7 +12,7 @@
     "baseUrl": "./",
     "incremental": true,
     "types": ["reflect-metadata", "jest"],
-    "lib": ["es2020", "dom"]
+    "lib": ["es2019", "es2020", "dom"]
   },
   "exclude": ["node_modules", "dist"]
 }
