@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import { Driver } from './driver';
-import { Base64ScreenShotOptions, Browser, EvaluateFn, Page } from 'puppeteer';
+import { Browser, EvaluateFn, Page, ScreenshotOptions } from 'puppeteer';
 import { DriverOptions } from './driver.options';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
@@ -245,13 +245,12 @@ export class ChromiumDriver implements Driver {
 
 	public async getScreenshot(command: AbstractCommand, options?: {quality: number}): Promise<Buffer> {
 		const page = await this._resolvePage(command);
-		const config: Base64ScreenShotOptions = {
+		const config: ScreenshotOptions = {
 			encoding: 'base64',
 			quality: options?.quality,
 			type: options?.quality ? 'jpeg': 'png',
 		};
-		const base64 = await page.screenshot(config);
-		return Buffer.from(base64, 'base64');
+		return await page.screenshot(config) as Buffer;
 	}
 
 	public async scrollBy(command: AbstractCommand, position: 'top' | 'bottom', px: number): Promise<void> {
@@ -354,9 +353,7 @@ export class ChromiumDriver implements Driver {
 	protected async delay(time: number) {
 		return new Promise((resolve) => {
 			const id = setTimeout(resolve, time);
-			this._timer.addSetTimeoutId(id, () => {
-				resolve();
-			});
+			this._timer.addSetTimeoutId(id, resolve);
 		});
 	}
 

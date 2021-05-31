@@ -24,8 +24,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 		// 	})
 		// );
 		const config = this._config;
-		let args = await puppeteer.defaultArgs()
-			.filter(x => x !== '--enable-automation');
+		let args = [];
 		args.push('--no-sandbox');
 		args.push('--disable-setuid-sandbox');
 		args = [
@@ -78,7 +77,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
 				process.exit(1);
 			}
 		} else {
-			const args = await puppeteer.defaultArgs()
+			const args = []
 				.filter(flag => flag !== '--enable-automation')
 				.filter(flag => flag !== '--headless');
 			if (config.windowWidth && config.windowHeight) {
