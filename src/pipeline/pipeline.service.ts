@@ -30,6 +30,13 @@ export class PipelineService {
 		private readonly appEnv: EnvConfiguration,
 	) {}
 
+	public async getCurrentTask(): Promise<TaskDto> {
+		if (this._currentTaskId) {
+			return await this.taskDataClientSdk.get(this._currentTaskId);
+		}
+		return {} as TaskDto;
+	}
+
 	public async run(dto: RunTaskDto): Promise<TaskResult> {
 		if (this._currentTaskId) {
 			throw new SystemError(`Another task has been started: ${this._currentTaskId}.
