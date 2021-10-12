@@ -390,6 +390,9 @@ export class ChromiumDriver implements Driver {
 	private async _resolvePage(command: AbstractCommand): Promise<Page> {
 		const pageContextResolver = this._ioc.get<PageContextResolver>(ROOT_TYPES.PageContextResolver);
 		const context = pageContextResolver.resolveContext(command);
+		if (context === undefined) {
+			throw new SystemError(`CONTEXT is undefined of command: ${command.cmd}`);
+		}
 		console.log(`RESOLVE_CONTEXT CONTEXT: ${context}, command: ${command.constructor.name}`);
 		let resource = this._pages[context];
 		console.log(`HAS RESOURCES: ${!!resource}`);
