@@ -68,7 +68,7 @@ spec:
                         sh 'docker push localhost:32000/scraper-worker:${DOCKER_TAG}'
                         sh "docker login -u bombascter -p '!Prisoner31!'"
                         sh 'docker tag localhost:32000/scraper-worker:${DOCKER_TAG} bombascter/scraper-worker:${DOCKER_TAG}'
-                        // sh 'docker push elasticdataio/worker:0.1'
+                        sh 'docker push bombascter/scraper-worker:${DOCKER_TAG}'
                     }
 				}
 
