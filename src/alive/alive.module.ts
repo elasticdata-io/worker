@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
-import { AliveService } from './alive.service';
 import { EnvModule } from '../env/env.module';
 
 @Module({
@@ -10,6 +9,6 @@ import { EnvModule } from '../env/env.module';
 		ConfigModule.forRoot(),
 		EnvModule,
 	],
-	providers: [AliveService,]
+	providers: []
 })
 export class AliveModule {}
