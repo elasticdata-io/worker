@@ -60,7 +60,7 @@ spec:
 				}
 
 				container('docker') {
-                    env.DOCKER_TAG = "${BRANCH_NAME}_${BUILD_NUMBER}"
+				    env.DOCKER_TAG = "${BRANCH_NAME}_00_${BUILD_NUMBER}"
                     stage('build') {
                         sh 'docker build -f install/Dockerfile -t localhost:32000/scraper-worker:${DOCKER_TAG} .'
                     }
