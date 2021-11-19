@@ -16,14 +16,25 @@ RUN npm run build
 
 FROM node:15-alpine
 WORKDIR /app
-RUN apk add --no-cache g++ chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
-RUN apk add --no-cache \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+RUN apk update && apk upgrade && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
+    apk add --no-cache \
+    chromium@edge \
+    nss@edge \
+    freetype@edge \
+    harfbuzz@edge \
+    ttf-freefont@edge
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+#RUN apk add --no-cache g++ chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
+#RUN apk add --no-cache \
+#      nss \
+#      freetype \
+#      harfbuzz \
+#      ca-certificates \
+#      ttf-freefont
+#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY --from=build /app/node_modules node_modules
