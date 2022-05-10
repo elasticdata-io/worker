@@ -10,7 +10,10 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /worker
+          - pathType: Prefix
+            path: /worker
             backend:
-              serviceName: {{ template "scraper-worker.fullname" . }}
-              servicePort: {{ .Values.service.port }}
+              service:
+                name: {{ template "scraper-worker.fullname" . }}
+                port:
+                  number: {{ .Values.service.port }}
