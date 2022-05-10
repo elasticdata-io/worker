@@ -19,7 +19,7 @@ spec:
       path: /opt/kubernetes/storage/.kube
   containers:
   - name: k8s-helm
-    image: lachlanevenson/k8s-helm:v2.12.3
+    image: lachlanevenson/k8s-helm:v3.6.0
     command:
     - cat
     tty: true
@@ -60,46 +60,25 @@ spec:
 				}
 
 				container('docker') {
-				    env.DOCKER_TAG = "${BRANCH_NAME}_00_${BUILD_NUMBER}"
-                    stage('build') {
-                        sh 'docker build -f install/Dockerfile -t localhost:32000/scraper-worker:${DOCKER_TAG} .'
-                    }
-                    stage('publish') {
-                        sh 'docker push localhost:32000/scraper-worker:${DOCKER_TAG}'
-                        sh "docker login -u bombascter -p '!Prisoner31!'"
-                        sh 'docker tag localhost:32000/scraper-worker:${DOCKER_TAG} bombascter/ts-worker:${DOCKER_TAG}'
-                        sh 'docker push bombascter/ts-worker:${DOCKER_TAG}'
-                    }
+					env.DOCKER_TAG = "${BRANCH_NAME}_${BUILD_NUMBER}"
+					stage('build application') {
+						sh 'docker login  \
+							-u ${DOCKER_CONTAINER_LOGIN}  \
+							-p ${DOCKER_CONTAINER_PASSWORD}'
+						sh 'docker build -f install/Dockerfile -t  ${DOCKER_CONTAINER_PREFIX}/scraper-worker-ts:${DOCKER_TAG} .'
+					}
+					stage('publish application') {
+						sh 'docker push ${DOCKER_CONTAINER_PREFIX}/scraper-worker-ts:${DOCKER_TAG}'
+					}
 				}
 
 				container('k8s-helm') {
-					stage('SET ENV') {
-						if (env.BRANCH_NAME == 'dev') {
-							env.VALUES_FILE = 'values.yaml'
-							env.KUBECONFIG = '~/.kube/config'
-						}
-						if (env.BRANCH_NAME == 'local') {
-							env.VALUES_FILE = 'values-local.yaml'
-							env.KUBECONFIG = '~/.kube/config'
-						}
-						if (env.BRANCH_NAME == 'test') {
-							env.VALUES_FILE = 'values-test.yaml'
-							env.KUBECONFIG = '/opt/.kube/test-kube-config'
-						}
-						if (env.BRANCH_NAME == 'master') {
-							env.VALUES_FILE = 'values-prod.yaml'
-							env.KUBECONFIG = '/opt/.kube/prod-kube-config'
-						}
-					}
-					stage('helm init') {
-						sh 'helm init --stable-repo-url=https://charts.helm.sh/stable --wait --client-only'
-					}
 					stage('helm upgrade') {
 						sh "helm upgrade \
-                            -f install/helm/scraper-worker/values.yaml \
-                            -f install/helm/scraper-worker/${VALUES_FILE} \
+                            -f install/helm/scraper-worker/values-production.yaml \
 							--install scraper-worker \
-							--namespace scraper \
+							--namespace app \
+							--set image.repository=${DOCKER_CONTAINER_PREFIX}/scraper-worker-ts \
 							--set image.tag=${DOCKER_TAG} \
 							install/helm/scraper-worker"
 					}
