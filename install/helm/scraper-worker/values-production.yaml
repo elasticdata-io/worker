@@ -2,3 +2,4 @@ env:
   SCRAPER_SERVICE_URL: https://app.elasticdata.io
   WORKER_MANAGER_URL: https://worker-manager.elasticdata.io
   USE_ALIVE_PROBE: 0
+  AMQP_CONNECTION_STRING: amqp://user:password@rabbitmq:5672
