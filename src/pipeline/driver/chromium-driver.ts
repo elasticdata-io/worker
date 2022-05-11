@@ -248,7 +248,8 @@ export class ChromiumDriver implements Driver {
 		const config: ScreenshotOptions = {
 			encoding: 'base64',
 			quality: options?.quality,
-			type: options?.quality ? 'jpeg': 'png',
+			fullPage: true,
+			type: 'webp',
 		};
 		const base64 = await page.screenshot(config);
 		return Buffer.from((base64 as string), 'base64');
