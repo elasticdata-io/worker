@@ -3,7 +3,6 @@ WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 RUN npm ci
 
 COPY src src
@@ -14,28 +13,17 @@ COPY .eslintrc.js .
 COPY .prettierrc .
 RUN npm run build
 
-FROM node:15-alpine
+FROM node:15-slim
 WORKDIR /app
-RUN apk update && apk upgrade && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
-    apk add --no-cache \
-    chromium@edge \
-    nss@edge \
-    freetype@edge \
-    harfbuzz@edge \
-    ttf-freefont@edge
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+RUN apt-get update && apt-get install curl gnupg -y \
+  && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+  && apt-get update \
+  && apt-get install google-chrome-stable -y --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/* \
 
-#RUN apk add --no-cache g++ chromium --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
-#RUN apk add --no-cache \
-#      nss \
-#      freetype \
-#      harfbuzz \
-#      ca-certificates \
-#      ttf-freefont
-#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/dist dist
