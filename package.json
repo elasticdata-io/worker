@@ -41,7 +41,7 @@
     "form-data": "^3.0.0",
     "generic-pool": "^3.7.1",
     "inversify": "^5.0.1",
-    "minio": "^7.0.15",
+    "minio": "^7.0.28",
     "moment": "^2.24.0",
     "nestjs-i18n": "^8.0.6",
     "puppeteer": "^14.0.0",

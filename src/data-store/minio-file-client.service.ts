@@ -13,8 +13,8 @@ export class MinioFileClientService extends AbstractFileClientService {
 		super();
 		const options = {
 			endPoint: this.appEnv.APP_MINIO_END_POINT,
-			// port: this.appEnv.APP_MINIO_PORT,
-			// useSSL: this.appEnv.APP_MINIO_USE_SSL,
+			port: this.appEnv.APP_MINIO_PORT,
+			useSSL: this.appEnv.APP_MINIO_USE_SSL,
 			accessKey: this.appEnv.APP_MINIO_ACCESS_KEY,
 			secretKey: this.appEnv.APP_MINIO_SECRET_KEY
 		};
