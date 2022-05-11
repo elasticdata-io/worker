@@ -21,8 +21,8 @@ export class GetScreenshotCommand extends AbstractCommand {
 	async execute(): Promise<void> {
 		const buffer = await this.driver.getScreenshot(this);
 		const key = await this.getKey();
-		const pngFileLink = await this.store.attachWebpFile(buffer, this);
-		await this.store.put(key, pngFileLink, this);
+		const webpFileLink = await this.store.attachWebpFile(buffer, this);
+		await this.store.put(key, webpFileLink, this);
 		await super.execute();
 	}
 
