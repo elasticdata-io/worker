@@ -18,6 +18,7 @@ export class MinioFileClientService extends AbstractFileClientService {
 			accessKey: this.appEnv.APP_MINIO_ACCESS_KEY,
 			secretKey: this.appEnv.APP_MINIO_SECRET_KEY
 		};
+		console.log(options);
 		this._minioClient = new Minio.Client(options);
 	}
 
