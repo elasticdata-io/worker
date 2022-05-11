@@ -53,9 +53,9 @@ env:
 
   APP_MINIO_ACCESS_KEY: elasticdataio
   APP_MINIO_SECRET_KEY: wJalrXUtnFEMI/9874c97c907209cpuvpw97bpb/asdasdasdasdasd
-  APP_MINIO_END_POINT: minio
-  APP_MINIO_PORT: 9000
-  APP_MINIO_USE_SSL: false
+  APP_MINIO_END_POINT: storage.elasticdata.io
+  APP_MINIO_PORT: 443
+  APP_MINIO_USE_SSL: true
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
