@@ -73,6 +73,17 @@ spec:
 
             - name: MAX_CHROME_TABS
               value: {{ .Values.env.MAX_CHROME_TABS | quote }}
+
+            - name: APP_MINIO_END_POINT
+              value: {{ .Values.env.APP_MINIO_END_POINT }}
+            - name: APP_MINIO_PORT
+              value: {{ .Values.env.APP_MINIO_PORT | quote }}
+            - name: APP_MINIO_ACCESS_KEY
+              value: {{ .Values.env.APP_MINIO_ACCESS_KEY }}
+            - name: APP_MINIO_SECRET_KEY
+              value: {{ .Values.env.APP_MINIO_SECRET_KEY }}
+            - name: APP_MINIO_USE_SSL
+              value: {{ .Values.env.APP_MINIO_USE_SSL | quote }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}
