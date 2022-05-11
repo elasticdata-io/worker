@@ -25,7 +25,7 @@ export class EnvConfigurationService extends EnvConfiguration {
 	}
 
 	get APP_MINIO_PORT(): number {
-		return this.configService.get<number>('APP_MINIO_PORT');
+		return parseFloat(this.configService.get<string>('APP_MINIO_PORT'));
 	}
 
 	get APP_MINIO_SECRET_KEY(): string {
@@ -33,7 +33,7 @@ export class EnvConfigurationService extends EnvConfiguration {
 	}
 
 	get APP_MINIO_USE_SSL(): boolean {
-		return this.configService.get<boolean>('APP_MINIO_USE_SSL');
+		return this.configService.get<string>('APP_MINIO_USE_SSL') === 'true';
 	}
 
 	get SCRAPER_SERVICE_URL(): string {
