@@ -187,6 +187,30 @@ export class HttpDataStore extends AbstractStore {
 		}
 		return link;
 	}
+	/**
+	 * Attach Webp file to data store
+	 * @param webpScreenshotBuffer
+	 * @param command
+	 */
+	async attachWebpFile(webpScreenshotBuffer: Buffer, command: AbstractCommand): Promise<string> {
+		const contentLength = webpScreenshotBuffer.toString().length;
+		const metadata = {
+			'accept-ranges': 'bytes',
+			'content-length': contentLength,
+			'content-type': 'image/webp;charset=UTF-8',
+		};
+		const link = await this.httpDataClient.attachFile({
+			file: webpScreenshotBuffer,
+			fileExtension: 'webp',
+			id: this.id,
+			userUuid: this.userUuid,
+			metadata: metadata,
+		});
+		if (command) {
+			await this.commandAnalyzer.setCommandData(command, link);
+		}
+		return link;
+	}
 
 	/**
 	 * Attach file without context but in user folder.

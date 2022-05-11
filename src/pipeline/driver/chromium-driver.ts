@@ -246,13 +246,13 @@ export class ChromiumDriver implements Driver {
 	public async getScreenshot(command: AbstractCommand, options?: {quality: number}): Promise<Buffer> {
 		const page = await this._resolvePage(command);
 		const config: ScreenshotOptions = {
-			encoding: 'base64',
+			encoding: 'binary',
 			quality: options?.quality,
 			fullPage: true,
 			type: 'webp',
 		};
-		const base64 = await page.screenshot(config);
-		return Buffer.from((base64 as string), 'base64');
+		const buffer: Buffer = await page.screenshot(config) as Buffer;
+		return buffer;
 	}
 
 	public async scrollBy(command: AbstractCommand, position: 'top' | 'bottom', px: number): Promise<void> {
