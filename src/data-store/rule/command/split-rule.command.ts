@@ -1,16 +1,14 @@
-import AbstractDataRuleCommand from "../abstract-data-rule.command";
+import AbstractDataRuleCommand from '../abstract-data-rule.command';
 
 export class SplitRuleCommand extends AbstractDataRuleCommand {
+  protected transformString(inputValue: string, document: object): void {
+    const config = this.config as any;
+    const delimiter = config.delimiter;
+    const outputValue = inputValue.toString().split(delimiter);
+    this.setToKey(document, outputValue);
+  }
 
-    protected transformString(inputValue: string, document: object): void {
-        const config = this.config as any;
-        const delimiter = config.delimiter;
-        const outputValue = inputValue.toString().split(delimiter);
-        this.setToKey(document, outputValue);
-    }
-
-    protected transformArray(inputValue: string[], document: object): void {
-        return;
-    }
-
+  protected transformArray(inputValue: string[], document: object): void {
+    return;
+  }
 }

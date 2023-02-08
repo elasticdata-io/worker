@@ -4,21 +4,18 @@ import { EnvConfigurationService } from './env.configuration.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-	imports: [
-		ConfigModule.forRoot({
-			isGlobal: true,
-		}),
-	],
-	controllers: [],
-	providers: [
-		{
-			provide: EnvConfiguration,
-			useClass: EnvConfigurationService
-		},
-	],
-	exports: [
-		EnvConfiguration,
-	]
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
+  controllers: [],
+  providers: [
+    {
+      provide: EnvConfiguration,
+      useClass: EnvConfigurationService,
+    },
+  ],
+  exports: [EnvConfiguration],
 })
-export class EnvModule {
-}
+export class EnvModule {}

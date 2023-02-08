@@ -1,2 +1,2 @@
-export * from './interface'
-export * from './user-interaction-inspector'
+export * from './interface';
+export * from './user-interaction-inspector';

@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { DataStoreController } from './data-store.controller';
 import { DataStoreService } from './data-store.service';
-import configuration from "./config";
+import configuration from './config';
 import { ConfigModule } from '@nestjs/config';
-import {DataRuleService} from "./rule/data-rule.service";
-import RuleCommandFactory from "./rule/rule-command.factory";
-import {PersistenceLinkService} from "./persistence-link.service";
+import { DataRuleService } from './rule/data-rule.service';
+import RuleCommandFactory from './rule/rule-command.factory';
+import { PersistenceLinkService } from './persistence-link.service';
 import { StorageService } from './storage-service';
 import { AbstractFileClientService } from './abstract-file-client.service';
 import { MinioFileClientService } from './minio-file-client.service';
@@ -19,7 +19,7 @@ import { LocalFileClientService } from './local-file-client.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configuration] ,
+      load: [configuration],
     }),
     EnvModule,
   ],

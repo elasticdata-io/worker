@@ -1,18 +1,16 @@
-import AbstractDataRuleCommand from "../abstract-data-rule.command";
+import AbstractDataRuleCommand from '../abstract-data-rule.command';
 
 export class UniqueRuleCommand extends AbstractDataRuleCommand {
+  protected transformString(inputValue: string, document: object): void {
+    return;
+  }
 
-    protected transformString(inputValue: string, document: object): void {
-        return
-    }
+  protected transformArray(inputValue: string[], document: object): void {
+    const outputValue = inputValue.filter(this._onlyUnique);
+    this.setToKey(document, outputValue);
+  }
 
-    protected transformArray(inputValue: string[], document: object): void {
-        const outputValue = inputValue.filter(this._onlyUnique);
-        this.setToKey(document, outputValue);
-    }
-
-    private _onlyUnique(value, index, self) {
-        return self.indexOf(value) === index;
-    }
-
+  private _onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
 }

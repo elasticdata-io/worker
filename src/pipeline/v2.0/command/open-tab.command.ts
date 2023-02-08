@@ -1,7 +1,7 @@
 import { AbstractCommand } from '../../command/abstract-command';
-import { Cmd } from "../../command/decorator/command.decorator";
-import { CommandType } from "../../documentation/specification";
-import { Assignable } from "../../command/decorator/assignable.decorator";
+import { Cmd } from '../../command/decorator/command.decorator';
+import { CommandType } from '../../documentation/specification';
+import { Assignable } from '../../command/decorator/assignable.decorator';
 import { CommandFactory } from './command-factory';
 import { TYPES as ROOT_TYPES } from '../../types';
 
@@ -9,54 +9,57 @@ import { TYPES as ROOT_TYPES } from '../../types';
  * Open new tab with old browser session.
  */
 @Cmd({
-	cmd: 'opentab',
-	version: '2.0',
-	type: CommandType.ACTION,
-	summary: `doc.OPENTAB.SUMMARY`,
+  cmd: 'opentab',
+  version: '2.0',
+  type: CommandType.ACTION,
+  summary: `doc.OPENTAB.SUMMARY`,
 })
 export class OpenTabCommand extends AbstractCommand {
+  @Assignable({
+    required: false,
+    type: Number,
+    default: 30,
+  })
+  public timeout = 30;
 
-	@Assignable({
-		required: false,
-		type: Number,
-		default: 30
-	})
-	public timeout = 30;
+  @Assignable({
+    type: [String],
+    default: '',
+  })
+  public link = '';
 
-	@Assignable({
-		type: [String],
-		default: '',
-	})
-	public link = '';
+  @Assignable({
+    required: true,
+    type: Array,
+    default: [],
+  })
+  public commands: string;
 
-	@Assignable({
-		required: true,
-		type: Array,
-		default: []
-	})
-	public commands: string;
+  /**
+   * Create new opentab command with inner commands.
+   * OpenTab command running in async mode and not block main tab thread
+   */
+  public async execute(): Promise<void> {
+    const commandFactory = this.ioc.get<CommandFactory>(
+      ROOT_TYPES.ICommandFactory,
+    );
+    const pageContext = this.pageContextResolver.resolveContext(this);
+    const dataContext = this.dataContextResolver.resolveContext(this);
+    const openTabRuntimeCommand = commandFactory.createOpenTabRuntimeCommand({
+      openTabCommand: this,
+      dataContext: dataContext,
+      pageContext: pageContext,
+    });
+    await this.browserProvider.execute(openTabRuntimeCommand);
+    await super.execute();
+  }
 
-	/**
-	 * Create new opentab command with inner commands.
-	 * OpenTab command running in async mode and not block main tab thread
-	 */
-	public async execute(): Promise<void> {
-		const commandFactory = this.ioc.get<CommandFactory>(ROOT_TYPES.ICommandFactory);
-		const pageContext = this.pageContextResolver.resolveContext(this);
-		const dataContext = this.dataContextResolver.resolveContext(this);
-		const openTabRuntimeCommand = commandFactory.createOpenTabRuntimeCommand({
-			openTabCommand: this,
-			dataContext: dataContext,
-			pageContext: pageContext,
-		})
-		await this.browserProvider.execute(openTabRuntimeCommand)
-		await super.execute();
-	}
-
-	/**
-	 * @override
-	 */
-	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
-		return [];
-	}
+  /**
+   * @override
+   */
+  public getManagedKeys(): Array<
+    { key: string; fn: () => Promise<string> } | string
+  > {
+    return [];
+  }
 }

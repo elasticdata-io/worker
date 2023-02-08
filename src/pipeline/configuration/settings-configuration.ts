@@ -1,7 +1,7 @@
 import { SettingsWindowConfiguration } from './settings-window-configuration';
 
 export interface UserInteractionSettingsConfiguration {
-  watchCommands: any[]
+  watchCommands: any[];
 }
 
 export class SettingsConfiguration {
@@ -35,9 +35,9 @@ export class SettingsConfiguration {
    */
   public network: {
     skipResources: {
-      stylesheet: boolean,
-      image: boolean,
-      font: boolean,
-    }
-  }
+      stylesheet: boolean;
+      image: boolean;
+      font: boolean;
+    };
+  };
 }

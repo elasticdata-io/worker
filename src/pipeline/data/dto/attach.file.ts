@@ -1,7 +1,7 @@
 export class AttachFile {
-	file: Buffer;
-	fileExtension: string;
-	id: string;
-	userUuid: string;
-	metadata: any;
+  file: Buffer;
+  fileExtension: string;
+  id: string;
+  userUuid: string;
+  metadata: any;
 }

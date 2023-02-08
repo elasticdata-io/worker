@@ -4,29 +4,30 @@ import { Cmd } from '../../command/decorator/command.decorator';
 import { CommandType } from '../../documentation/specification';
 
 @Cmd({
-	cmd: 'geturl',
-	version: '2.0',
-	type: CommandType.SELECTABLE,
-	summary: `doc.GETURL.SUMMARY`,
+  cmd: 'geturl',
+  version: '2.0',
+  type: CommandType.SELECTABLE,
+  summary: `doc.GETURL.SUMMARY`,
 })
 export class GetUrlCommand extends AbstractCommand {
+  @Assignable({
+    required: false,
+    type: [String, AbstractCommand],
+    default: '',
+  })
+  public key: string | AbstractCommand = '';
 
-	@Assignable({
-		required: false,
-		type: [String, AbstractCommand],
-		default: '',
-	})
-	public key: string | AbstractCommand = '';
+  async execute(): Promise<void> {
+    const url = await this.driver.getCurrentUrl(this);
+    const key = await this.getKey();
+    await this.store.put(key, url, this);
+    await super.execute();
+  }
 
-	async execute(): Promise<void> {
-		const url = await this.driver.getCurrentUrl(this);
-		const key = await this.getKey();
-		await this.store.put(key, url, this);
-		await super.execute();
-	}
-
-	public getManagedKeys(): Array<{key: string, fn: () => Promise<string> } | string> {
-		const keys = super.getManagedKeys();
-		return keys.concat(['key']);
-	}
+  public getManagedKeys(): Array<
+    { key: string; fn: () => Promise<string> } | string
+  > {
+    const keys = super.getManagedKeys();
+    return keys.concat(['key']);
+  }
 }

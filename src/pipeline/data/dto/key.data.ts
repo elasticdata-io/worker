@@ -1,6 +1,6 @@
 export class KeyData {
-	userUuid: string;
-	key: string;
-	context: string;
-	id: string;
+  userUuid: string;
+  key: string;
+  context: string;
+  id: string;
 }

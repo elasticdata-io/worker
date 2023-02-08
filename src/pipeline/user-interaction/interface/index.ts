@@ -1,1 +1,1 @@
-export * from './user-interaction-state'
+export * from './user-interaction-state';

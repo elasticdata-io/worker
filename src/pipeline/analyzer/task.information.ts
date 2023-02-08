@@ -1,4 +1,4 @@
 export class TaskInformation {
-	commandsInformationLink: string;
-	failureReason?: string;
+  commandsInformationLink: string;
+  failureReason?: string;
 }

@@ -1,4 +1,4 @@
 export class DataRule {
-	cmd: string;
-	bindKey: string;
+  cmd: string;
+  bindKey: string;
 }

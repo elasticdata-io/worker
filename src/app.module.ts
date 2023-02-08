@@ -10,26 +10,22 @@ import { AliveModule } from './alive/alive.module';
 import { EnvModule } from './env/env.module';
 
 @Module({
-	imports: [
-		I18nModule.forRoot({
-			fallbackLanguage: 'en',
-			parser: I18nJsonParser,
-			parserOptions: {
-				path: path.join(__dirname, 'i18n'),
-				watch: true,
-			},
-		}),
-		PipelineModule,
-		DocumentationModule,
-		EnvModule,
-		DataStoreModule,
-		AliveModule,
-	],
-	controllers: [],
-	providers: [
-		AppService,
-		AppConsumer,
-	],
+  imports: [
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      parser: I18nJsonParser,
+      parserOptions: {
+        path: path.join(__dirname, 'i18n'),
+        watch: true,
+      },
+    }),
+    PipelineModule,
+    DocumentationModule,
+    EnvModule,
+    DataStoreModule,
+    AliveModule,
+  ],
+  controllers: [],
+  providers: [AppService, AppConsumer],
 })
-export class AppModule {
-}
+export class AppModule {}

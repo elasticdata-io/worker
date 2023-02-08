@@ -1,5 +1,5 @@
 export class CommitDocument {
-    storeId: string;
-    bucket: string;
-    fileName: string;
+  storeId: string;
+  bucket: string;
+  fileName: string;
 }

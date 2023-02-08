@@ -42,13 +42,18 @@ function parseOldLoopMacros(input: string): LoopMacros {
   }
 }
 
-function resolveLoopIndex(commandContext: string, loopContext: string | undefined): number {
+function resolveLoopIndex(
+  commandContext: string,
+  loopContext: string | undefined,
+): number {
   if (!loopContext) {
     return parseInt(commandContext.split(`.`).pop(), 10) || 0;
   }
   const contexts = commandContext.split(`${loopContext}.`);
   if (contexts.length !== 2) {
-    throw new SystemError(`contextName: '${loopContext}' is not correct with context: ${commandContext}`);
+    throw new SystemError(
+      `contextName: '${loopContext}' is not correct with context: ${commandContext}`,
+    );
   }
   return parseInt(contexts[1], 10);
 }
@@ -60,17 +65,19 @@ export interface ReplaceMacrosConfig {
 }
 
 export abstract class MacrosParser {
-
   public static hasAnyMacros(input: string): boolean {
-    return input.search(LINE_MACROS_PATTERN) !== -1
-      || input.search(OLD_LOOP_INDEX_PATTERN) !== -1
-      || input.search(LOOP_INDEX_PATTERN) !== -1
+    return (
+      input.search(LINE_MACROS_PATTERN) !== -1 ||
+      input.search(OLD_LOOP_INDEX_PATTERN) !== -1 ||
+      input.search(LOOP_INDEX_PATTERN) !== -1
+    );
   }
 
   public static parseMacros(input: string): Macros {
-    const macros: Macros = parseLineMacros(input)
-      || parseLoopMacros(input)
-      || parseOldLoopMacros(input);
+    const macros: Macros =
+      parseLineMacros(input) ||
+      parseLoopMacros(input) ||
+      parseOldLoopMacros(input);
     if (!macros) {
       throw new Error(`no macros found in the string: ${input}`);
     }
@@ -82,7 +89,9 @@ export abstract class MacrosParser {
     let max = 50;
     while (MacrosParser.hasAnyMacros(stringWithMacros)) {
       if (max < 0) {
-        throw new Error(`Max loop iteration (${max}) in MacrosParser.replaceMacros`);
+        throw new Error(
+          `Max loop iteration (${max}) in MacrosParser.replaceMacros`,
+        );
       }
       max--;
       const macros = MacrosParser.parseMacros(stringWithMacros);
@@ -90,14 +99,19 @@ export abstract class MacrosParser {
         case 'line':
           const line = config.dataStoreContext[config.commandDataContext] || {};
           let lineValue = line[macros.key] ?? '';
-          lineValue = lineValue === 'undefined' || lineValue === 'null'
-            ? ''
-            : lineValue;
+          lineValue =
+            lineValue === 'undefined' || lineValue === 'null' ? '' : lineValue;
           stringWithMacros = stringWithMacros.replace(macros.macros, lineValue);
           break;
         case 'loop':
-          const loopIndex = resolveLoopIndex(config.commandDataContext, macros.context);
-          stringWithMacros = stringWithMacros.replace(macros.macros, `[__loop="${loopIndex}"]`);
+          const loopIndex = resolveLoopIndex(
+            config.commandDataContext,
+            macros.context,
+          );
+          stringWithMacros = stringWithMacros.replace(
+            macros.macros,
+            `[__loop="${loopIndex}"]`,
+          );
           break;
       }
     }

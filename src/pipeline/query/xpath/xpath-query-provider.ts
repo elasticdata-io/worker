@@ -8,24 +8,36 @@ import { XpathLoopSelection } from './xpath-loop-selection';
 
 @injectable()
 export class XpathQueryProvider extends AbstractQueryProvider {
+  constructor(
+    @inject(TYPES.DataContextResolver)
+    protected dataContextResolver: DataContextResolver,
+    @inject(TYPES.XpathLoopSelection)
+    protected xpathLoopSelection: XpathLoopSelection,
+  ) {
+    super(dataContextResolver);
+  }
 
-	constructor(@inject(TYPES.DataContextResolver) protected dataContextResolver: DataContextResolver,
-				@inject(TYPES.XpathLoopSelection) protected xpathLoopSelection: XpathLoopSelection) {
-		super(dataContextResolver);
-	}
+  protected getElementActionFn(command: AbstractCommand, suffix: string) {
+    const querySelector = this.xpathLoopSelection.querySelector(
+      command,
+      this.dataContextResolver,
+    );
+    return new Function(`${querySelector}${suffix}`);
+  }
 
-	protected getElementActionFn(command: AbstractCommand, suffix: string) {
-		const querySelector = this.xpathLoopSelection.querySelector(command, this.dataContextResolver);
-		return new Function(`${querySelector}${suffix}`);
-	}
+  protected getElementsActionFn(
+    command: AbstractCommand,
+    actionSuffix: string,
+  ): Function {
+    const querySelector = this.xpathLoopSelection.querySelectorAll(
+      command,
+      this.dataContextResolver,
+    );
+    return new Function(`${querySelector}${actionSuffix}`);
+  }
 
-	protected getElementsActionFn(command: AbstractCommand, actionSuffix: string): Function {
-		const querySelector = this.xpathLoopSelection.querySelectorAll(command, this.dataContextResolver);
-		return new Function(`${querySelector}${actionSuffix}`);
-	}
-
-	public isSupporting(command: AbstractCommand): boolean {
-		const selector = command.getSelector();
-		return selector.startsWith('//') || selector.startsWith('(');
-	}
+  public isSupporting(command: AbstractCommand): boolean {
+    const selector = command.getSelector();
+    return selector.startsWith('//') || selector.startsWith('(');
+  }
 }

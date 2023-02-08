@@ -25,100 +25,93 @@ import { CssQueryProvider } from './query/css/css-query-provider';
 import { XpathQueryProvider } from './query/xpath/xpath-query-provider';
 import { CssLoopSelection } from './query/css/css-loop-selection';
 import { XpathLoopSelection } from './query/xpath/xpath-loop-selection';
-import {PageContextResolver} from "./browser/page-context-resolver";
-import {UserInteractionInspector} from "./user-interaction";
-import {EventBus} from "./event-bus";
-import {CaptchaService} from "./service/captcha.service";
+import { PageContextResolver } from './browser/page-context-resolver';
+import { UserInteractionInspector } from './user-interaction';
+import { EventBus } from './event-bus';
+import { CaptchaService } from './service/captcha.service';
 
 @Injectable()
 export class PipelineBuilderFactory {
+  constructor(private configService: ConfigService) {}
 
-	constructor(private configService: ConfigService) {}
-
-	public async resolve(): Promise<IPipelineBuilder> {
-		const dataServiceUrl = this.configService.get<string>('DATA_SERVICE_URL');
-		const ioc = new Container();
-		ioc
-		  .bind<ICommandFactory>(TYPES.ICommandFactory)
-		  .to(CommandFactory)
-		  .inSingletonScope();
-		ioc
-		  .bind<IPipelineConfigurationBuilder>(TYPES.IPipelineConfigurationBuilder)
-		  .to(PipelineConfigurationBuilder)
-		  .inSingletonScope();
-		ioc
-		  .bind<IPipelineBuilder>(TYPES.IPipelineBuilder)
-		  .to(PipelineBuilder)
-		  .inSingletonScope();
-		ioc
-		  .bind<PipelineLogger>(TYPES.PipelineLogger)
-		  .to(PipelineLogger)
-		  .inSingletonScope();
-		ioc
-		  .bind<AbstractBrowser>(TYPES.AbstractBrowser)
-		  .to(ChromiumPuppeteer)
-		  .inSingletonScope();
-		ioc
-		  .bind<IBrowserProvider>(TYPES.IBrowserProvider)
-		  .to(BrowserProvider)
-		  .inSingletonScope();
-		ioc
-		  .bind<XpathQueryProvider>(TYPES.XpathQueryProvider)
-		  .to(XpathQueryProvider)
-		  .inSingletonScope();
-		ioc
-		  .bind<CssLoopSelection>(TYPES.CssLoopSelection)
-		  .to(CssLoopSelection)
-		  .inSingletonScope();
-		ioc
-		  .bind<XpathLoopSelection>(TYPES.XpathLoopSelection)
-		  .to(XpathLoopSelection)
-		  .inSingletonScope();
-		ioc
-		  .bind<CssQueryProvider>(TYPES.CssQueryProvider)
-		  .to(CssQueryProvider)
-		  .inSingletonScope();
-		ioc
-		  .bind<QueryProviderFactory>(TYPES.QueryProviderFactory)
-		  .to(QueryProviderFactory)
-		  .inSingletonScope();
-		ioc
-		  .bind<DataContextResolver>(TYPES.DataContextResolver)
-		  .to(DataContextResolver)
-		  .inSingletonScope();
-		ioc
-		  .bind<PageContextResolver>(TYPES.PageContextResolver)
-		  .to(PageContextResolver)
-		  .inSingletonScope();
-		ioc
-		  .bind<AbstractStore>(TYPES.AbstractStore)
-		  .to(HttpDataStore)
-		  .inSingletonScope();
-		ioc
-		  .bind<HttpDataClient>(TYPES.HttpDataClient)
-		  .to(HttpDataClient)
-		  .inSingletonScope();
-		ioc
-		  .bind<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer)
-		  .to(JsonCommandAnalyzer)
-		  .inSingletonScope();
-		ioc
-		  .bind<UserInteractionInspector>(TYPES.UserInteractionInspector)
-		  .to(UserInteractionInspector)
-		  .inSingletonScope();
-		ioc
-		  .bind<CaptchaService>(TYPES.CaptchaService)
-		  .to(CaptchaService)
-		  .inSingletonScope();
-		ioc
-		  .bind<string>(TYPES.DataServiceUrl)
-		  .toConstantValue(dataServiceUrl);
-		ioc
-		  .bind<PipelineIoc>(TYPES.PipelineIoc)
-		  .toConstantValue(ioc);
-		ioc
-		  .bind<EventBus>(TYPES.EventBus)
-		  .toConstantValue(new EventBus());
-		return ioc.get<IPipelineBuilder>(TYPES.IPipelineBuilder);
-	}
+  public async resolve(): Promise<IPipelineBuilder> {
+    const dataServiceUrl = this.configService.get<string>('DATA_SERVICE_URL');
+    const ioc = new Container();
+    ioc
+      .bind<ICommandFactory>(TYPES.ICommandFactory)
+      .to(CommandFactory)
+      .inSingletonScope();
+    ioc
+      .bind<IPipelineConfigurationBuilder>(TYPES.IPipelineConfigurationBuilder)
+      .to(PipelineConfigurationBuilder)
+      .inSingletonScope();
+    ioc
+      .bind<IPipelineBuilder>(TYPES.IPipelineBuilder)
+      .to(PipelineBuilder)
+      .inSingletonScope();
+    ioc
+      .bind<PipelineLogger>(TYPES.PipelineLogger)
+      .to(PipelineLogger)
+      .inSingletonScope();
+    ioc
+      .bind<AbstractBrowser>(TYPES.AbstractBrowser)
+      .to(ChromiumPuppeteer)
+      .inSingletonScope();
+    ioc
+      .bind<IBrowserProvider>(TYPES.IBrowserProvider)
+      .to(BrowserProvider)
+      .inSingletonScope();
+    ioc
+      .bind<XpathQueryProvider>(TYPES.XpathQueryProvider)
+      .to(XpathQueryProvider)
+      .inSingletonScope();
+    ioc
+      .bind<CssLoopSelection>(TYPES.CssLoopSelection)
+      .to(CssLoopSelection)
+      .inSingletonScope();
+    ioc
+      .bind<XpathLoopSelection>(TYPES.XpathLoopSelection)
+      .to(XpathLoopSelection)
+      .inSingletonScope();
+    ioc
+      .bind<CssQueryProvider>(TYPES.CssQueryProvider)
+      .to(CssQueryProvider)
+      .inSingletonScope();
+    ioc
+      .bind<QueryProviderFactory>(TYPES.QueryProviderFactory)
+      .to(QueryProviderFactory)
+      .inSingletonScope();
+    ioc
+      .bind<DataContextResolver>(TYPES.DataContextResolver)
+      .to(DataContextResolver)
+      .inSingletonScope();
+    ioc
+      .bind<PageContextResolver>(TYPES.PageContextResolver)
+      .to(PageContextResolver)
+      .inSingletonScope();
+    ioc
+      .bind<AbstractStore>(TYPES.AbstractStore)
+      .to(HttpDataStore)
+      .inSingletonScope();
+    ioc
+      .bind<HttpDataClient>(TYPES.HttpDataClient)
+      .to(HttpDataClient)
+      .inSingletonScope();
+    ioc
+      .bind<AbstractCommandAnalyzer>(TYPES.AbstractCommandAnalyzer)
+      .to(JsonCommandAnalyzer)
+      .inSingletonScope();
+    ioc
+      .bind<UserInteractionInspector>(TYPES.UserInteractionInspector)
+      .to(UserInteractionInspector)
+      .inSingletonScope();
+    ioc
+      .bind<CaptchaService>(TYPES.CaptchaService)
+      .to(CaptchaService)
+      .inSingletonScope();
+    ioc.bind<string>(TYPES.DataServiceUrl).toConstantValue(dataServiceUrl);
+    ioc.bind<PipelineIoc>(TYPES.PipelineIoc).toConstantValue(ioc);
+    ioc.bind<EventBus>(TYPES.EventBus).toConstantValue(new EventBus());
+    return ioc.get<IPipelineBuilder>(TYPES.IPipelineBuilder);
+  }
 }

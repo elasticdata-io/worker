@@ -1,3 +1,3 @@
-import * as Emittery from "emittery";
+import * as Emittery from 'emittery';
 
 export class EventBus extends Emittery {}

@@ -1,5 +1,5 @@
 export interface DisableUserInteractionStateDto {
-	taskId: string;
-	pageContext: number;
-	interactionId: string;
+  taskId: string;
+  pageContext: number;
+  interactionId: string;
 }
