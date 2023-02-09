@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { AbstractCommand } from '../command/abstract-command';
 import { DataContextResolver } from '../data/data-context-resolver';
