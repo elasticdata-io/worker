@@ -1,4 +1,4 @@
-FROM node:15-stretch-slim AS build
+FROM node:16-stretch-slim AS build
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
@@ -13,14 +13,19 @@ COPY .eslintrc.js .
 COPY .prettierrc .
 RUN npm run build
 
-FROM node:15-slim
+FROM node:18-slim
 WORKDIR /app
-RUN apt-get update && apt-get install curl gnupg -y \
-  && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
-  && apt-get update \
-  && apt-get install google-chrome-stable -y --no-install-recommends \
-  && rm -rf /var/lib/apt/lists/* \
+RUN apt-get update && apt-get install wget curl gnupg -y
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+RUN apt-get update && apt-get -y install google-chrome-stable
+#
+#RUN apt-get update && apt-get install curl gnupg -y \
+#  && curl --location --silent https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+#  && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+#  && apt-get update \
+#  && apt-get install google-chrome-stable -y --no-install-recommends \
+#  && rm -rf /var/lib/apt/lists/* \
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable

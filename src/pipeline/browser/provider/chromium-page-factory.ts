@@ -1,6 +1,7 @@
 import { BrowserPageFactory } from '../browser-page-factory';
 import { Browser, Page } from 'puppeteer';
 import { executablePath } from 'puppeteer';
+import { getRandom } from 'random-useragent';
 // import * as puppeteer from "puppeteer";
 // import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
 import { PageFactoryOptions } from '../model/page-factory-options';
@@ -28,28 +29,30 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     // 	})
     // );
     const config = this._config;
-    let args = [];
+    const args = [];
     args.push('--no-sandbox');
-    args.push('--disable-setuid-sandbox');
-    args = [
-      ...args,
-      '--disable-dev-shm-usage',
-      '--disable-canvas-aa', // Disable antialiasing on 2d canvas
-      '--disable-2d-canvas-clip-aa', // Disable antialiasing on 2d canvas clips
-      '--disable-gl-drawing-for-test', // BEST OPTION EVER! Disables GL drawing operations which produce pixel output. With this the GL output will not be correct but test will run faster.
-      '--disable-dev-shm-usage', // ???
-      '--no-zygote', // wtf does that mean ?
-      '--use-gl=swiftshader', // better cpu usage with --use-gl=desktop rather than --use-gl=swiftshader, still needs more testing.
-      '--enable-webgl',
-      '--hide-scrollbars',
-      '--mute-audio',
-      '--no-first-run',
-      '--disable-infobars',
-      '--disable-breakpad',
-      '--disable-web-security',
-      '--disable-features=IsolateOrigins,site-per-process',
-      //'--ignore-gpu-blacklist'
-    ];
+    // args.push('--disable-setuid-sandbox');
+    /**
+     args = [
+     ...args,
+     '--disable-dev-shm-usage',
+     '--disable-canvas-aa', // Disable antialiasing on 2d canvas
+     '--disable-2d-canvas-clip-aa', // Disable antialiasing on 2d canvas clips
+     '--disable-gl-drawing-for-test', // BEST OPTION EVER! Disables GL drawing operations which produce pixel output. With this the GL output will not be correct but test will run faster.
+     '--disable-dev-shm-usage', // ???
+     '--no-zygote', // wtf does that mean ?
+     '--use-gl=swiftshader', // better cpu usage with --use-gl=desktop rather than --use-gl=swiftshader, still needs more testing.
+     '--enable-webgl',
+     '--hide-scrollbars',
+     '--mute-audio',
+     '--no-first-run',
+     '--disable-infobars',
+     '--disable-breakpad',
+     '--disable-web-security',
+     '--disable-features=IsolateOrigins,site-per-process',
+     //'--ignore-gpu-blacklist'
+     ];
+     **/
     if (config.windowWidth && config.windowHeight) {
       args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
     }
@@ -59,7 +62,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     if (config.proxies.length) {
       args.push(`--proxy-server=${config.proxies[0]}`);
     }
-    args.push(`--user-agent=${this._getUserAgent()}`);
+    // args.push(`--user-agent=${this._getUserAgent()}`);
     let browser: Browser;
     const headless =
       process.env.PUPPETEER_HEADLESS === undefined ||
@@ -69,15 +72,11 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     );
     if (headless) {
       try {
-        browser = await puppeteer.launch({
+        browser = await puppeteer.use(StealthPlugin()).launch({
           userDataDir: './profile',
+          executablePath: executablePath(),
           headless: headless,
-          ignoreDefaultArgs: [
-            '--enable-automation',
-            /*'--no-sandbox'*/
-            '--enable-automation',
-            '--disable-extensions',
-          ],
+          ignoreDefaultArgs: ['--enable-automation', '--disable-extensions'],
           args: args,
         });
       } catch (err) {
@@ -115,6 +114,15 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     }
     try {
       const page = await this._createNewPage(browser);
+      const ua = getRandom(function (ua) {
+        return (
+          ua.browserName === 'Firefox' && parseFloat(ua.browserVersion) >= 20
+        );
+      });
+      console.log(ua);
+      await page.setUserAgent(
+        `Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:107.0) Gecko/20100101 Firefox/107.0`,
+      );
       return {
         browser,
         page,
