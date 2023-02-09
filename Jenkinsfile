@@ -1,9 +1,7 @@
-#!groovy
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
-
-def label = "frontend-${UUID.randomUUID().toString()}"
-podTemplate(label: label, yaml: """
+pipeline {
+    agent {
+        kubernetes {
+            yaml '''
 apiVersion: v1
 kind: Pod
 metadata:
@@ -39,50 +37,46 @@ spec:
     command:
     - cat
     tty: true
-"""
-)
-	{
-		node(label) {
-			properties([disableConcurrentBuilds()])
-			stage('checkout') {
-			    if (env.BRANCH_NAME != 'master') {
-                    return
+'''
+        }
+    }
+    environment {
+        SCRAPER_SERVICE_URL = 'https://app.elasticdata.io'
+    }
+    stages {
+        stage('ci tests') {
+            steps {
+                container('node') {
+                    sh 'npm ci'
+                    sh 'npm run test:ci'
                 }
-
-				checkout scm
-
-				container('node') {
-                    stage('ci tests') {
-                        env.SCRAPER_SERVICE_URL = 'https://app.elasticdata.io'
-	                    sh 'npm ci'
-	                    sh 'npm run test:ci'
+            }
+        }
+        stage('docker build & push') {
+            steps {
+                container('docker') {
+                    script{
+                        def now = new Date()
+                        env.dateFormatted = now.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
                     }
-				}
-
-				container('docker') {
-					env.DOCKER_TAG = "${BRANCH_NAME}_${BUILD_NUMBER}"
-					stage('build application') {
-						sh 'docker login  \
-							-u ${DOCKER_CONTAINER_LOGIN}  \
-							-p ${DOCKER_CONTAINER_PASSWORD}'
-						sh 'docker build -f install/Dockerfile -t  ${DOCKER_CONTAINER_PREFIX}/scraper-worker-ts:${DOCKER_TAG} .'
-					}
-					stage('publish application') {
-						sh 'docker push ${DOCKER_CONTAINER_PREFIX}/scraper-worker-ts:${DOCKER_TAG}'
-					}
-				}
-
-				container('k8s-helm') {
-					stage('helm upgrade') {
-						sh "helm upgrade \
-                            -f install/helm/scraper-worker/values-production.yaml \
-							--install scraper-worker \
-							--namespace app \
-							--set image.repository=${DOCKER_CONTAINER_PREFIX}/scraper-worker-ts \
-							--set image.tag=${DOCKER_TAG} \
-							install/helm/scraper-worker"
-					}
-				}
-			}
-		}
-	}
+                    sh 'docker login -u bombascter -p "!Prisoner31!"'
+                    sh 'docker build -f install/Dockerfile -t bombascter/scraper-worker:${GIT_COMMIT} .'
+                    sh 'docker push bombascter/scraper-worker:${GIT_COMMIT}'
+                }
+            }
+        }
+        stage('helm') {
+            steps {
+                container('k8s-helm') {
+                    sh "helm upgrade \
+                        -f install/helm/scraper-worker/values-production.yaml \
+                        --install scraper-worker \
+                        --namespace app \
+                        --set image.repository=bombascter/scraper-worker-ts \
+                        --set image.tag=${GIT_COMMIT} \
+                        install/helm/scraper-worker"
+                }
+            }
+        }
+    }
+}
