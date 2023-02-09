@@ -72,7 +72,7 @@ spec:
                         -f install/helm/scraper-worker/values-production.yaml \
                         --install scraper-worker \
                         --namespace app \
-                        --set image.repository=bombascter/scraper-worker-ts \
+                        --set image.repository=bombascter/scraper-worker \
                         --set image.tag=${GIT_COMMIT} \
                         install/helm/scraper-worker"
                 }
