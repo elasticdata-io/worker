@@ -169,6 +169,7 @@ export class HttpDataClient {
       const result = await axios.post(url.href, form, config);
       return result.data && result.data.file;
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `attachFile data is failed: ${e?.response?.data?.message || e.message}`,
       );
