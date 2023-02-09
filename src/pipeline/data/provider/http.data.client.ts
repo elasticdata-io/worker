@@ -40,6 +40,7 @@ export class HttpDataClient {
         config,
       );
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `putAll data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -66,6 +67,7 @@ export class HttpDataClient {
         throw new SystemError(res.data.message);
       }
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `put data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -90,6 +92,7 @@ export class HttpDataClient {
       }
       return res.data;
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `get data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -113,6 +116,7 @@ export class HttpDataClient {
         throw new SystemError(res.data.message);
       }
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `remove data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -140,6 +144,7 @@ export class HttpDataClient {
       const result = await axios.post(url.href, form, config);
       return result.data && result.data.link;
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `putFile data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -188,6 +193,7 @@ export class HttpDataClient {
       );
       return res.data;
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `commit data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -205,6 +211,7 @@ export class HttpDataClient {
     try {
       await axios.post(`${this._serviceUrl}${this._servicePath}/rule`, config);
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `commit data is failed: ${e?.response?.data?.message || e.message}`,
       );
@@ -238,6 +245,7 @@ export class HttpDataClient {
       }
       return res.data;
     } catch (e) {
+      console.error(e);
       throw new SystemError(
         `request 'replaceMacros' is failed: ${
           e?.response?.data?.message || e.message
