@@ -27,6 +27,7 @@ ingress:
   #      - chart-example.local
 
 env:
+  NODE_ENV: production
   USE_ISOLATION_MODE: 0
   PUPPETEER_HEADLESS: 1
 
