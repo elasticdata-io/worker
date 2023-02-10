@@ -32,7 +32,7 @@ env:
   PUPPETEER_HEADLESS: 1
 
   GLOBAL_PREFIX: worker
-  DATA_SERVICE_URL: http://localhost:3001
+  DATA_SERVICE_URL: http://scraper-worker:3001
   #DATA_SERVICE_URL: https://app.elasticdata.io/worker
   SCRAPER_SERVICE_URL: http://backend:8080
   WORKER_MANAGER_URL: http://localhost:3005
