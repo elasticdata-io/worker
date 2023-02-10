@@ -5,7 +5,6 @@ import { AppConsumer } from './app.consumer';
 import { DocumentationModule } from './documentation/documentation.module';
 import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
-import { DataStoreModule } from './data-store/data-store.module';
 import { AliveModule } from './alive/alive.module';
 import { EnvModule } from './env/env.module';
 
@@ -22,7 +21,6 @@ import { EnvModule } from './env/env.module';
     PipelineModule,
     DocumentationModule,
     EnvModule,
-    DataStoreModule,
     AliveModule,
   ],
   controllers: [],
