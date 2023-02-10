@@ -3,7 +3,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import * as bodyParser from 'body-parser';
 import { DataStoreModule } from './data-store/data-store.module';
 
 async function bootstrap() {
