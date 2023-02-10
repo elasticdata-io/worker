@@ -11,6 +11,9 @@ import { SystemError } from '../../command/exception/system-error';
 import { DataRule } from '../dto/data-rule';
 import { KeyData } from '../dto/key.data';
 import { KeysValuesData } from '../dto/keys.values.data';
+import * as http from 'http';
+
+axios.defaults.httpsAgent = new http.Agent({ keepAlive: true });
 
 @injectable()
 export class HttpDataClient {
