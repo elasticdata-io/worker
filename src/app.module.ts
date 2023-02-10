@@ -7,9 +7,14 @@ import { I18nJsonParser, I18nModule } from 'nestjs-i18n';
 import * as path from 'path';
 import { AliveModule } from './alive/alive.module';
 import { EnvModule } from './env/env.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './data-store/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       parser: I18nJsonParser,
