@@ -122,6 +122,7 @@ export class StorageService {
    */
   public async attachFile(data: AttachFile): Promise<string> {
     try {
+      console.log('createIfNotExistsBucket');
       const objectName = `${uuidv4()}.${data.fileExtension}`;
       await this.createIfNotExistsBucket(data.userUuid);
       await this.fileClientService.putObject(
