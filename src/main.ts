@@ -19,9 +19,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   const port = process.env.PORT || 3000;
 
-  app.use(bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.urlencoded({ limit: '150mb', extended: true }));
-
   await app.listen(port, '127.0.0.1');
   console.debug(`Application stated on ${port} port...`);
 
