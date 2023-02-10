@@ -13,7 +13,7 @@ import { KeyData } from '../dto/key.data';
 import { KeysValuesData } from '../dto/keys.values.data';
 import * as http from 'http';
 
-axios.defaults.httpsAgent = new http.Agent({ keepAlive: true });
+axios.defaults.httpAgent = new http.Agent({ keepAlive: true });
 
 @injectable()
 export class HttpDataClient {
