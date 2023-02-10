@@ -33,5 +33,9 @@ async function bootstrap() {
 
   http.createServer(server).listen(port);
   http.createServer(server).listen(80);
+
+  process.on('uncaughtException', function (err) {
+    console.error(err);
+  });
 }
 bootstrap();
