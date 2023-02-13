@@ -21,6 +21,7 @@ export class DocumentationController {
     try {
       return await this.docService.getCommands(params.version, lang);
     } catch (e) {
+      console.error(e);
       throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
