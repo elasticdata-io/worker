@@ -20,7 +20,7 @@ async function bootstrap() {
   await app.listen(port, '127.0.0.1');
   console.debug(`Application stated on ${port} port...`);
 
-  process.on('uncaughtException', function (err) {
+  process.on('uncaughtException', (err) => {
     console.error(err);
   });
 }

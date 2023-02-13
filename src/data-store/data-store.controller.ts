@@ -137,6 +137,7 @@ export class DataStoreController {
     @Param('fileExtension') fileExtension: string,
   ): Promise<{ file: string }> {
     try {
+      console.log('Start attachFile');
       const buffer: Buffer = file.buffer;
       const link = await this.dataStoreService.attachFile({
         metadata: JSON.parse(metadataJson || '{}'),
