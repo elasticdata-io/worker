@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as FormData from 'form-data';
 import { inject, injectable } from 'inversify';
+import fetch from 'node-fetch';
 import { TYPES } from '../../types';
 import { KeyValueData } from '../dto/key.value.data';
 import { KeyFileData } from '../dto/key.file.data';
@@ -11,9 +12,6 @@ import { SystemError } from '../../command/exception/system-error';
 import { DataRule } from '../dto/data-rule';
 import { KeyData } from '../dto/key.data';
 import { KeysValuesData } from '../dto/keys.values.data';
-import * as http from 'http';
-
-axios.defaults.httpAgent = new http.Agent({ keepAlive: true });
 
 @injectable()
 export class HttpDataClient {
@@ -175,11 +173,11 @@ export class HttpDataClient {
           userUuid: data.userUuid,
           metadata: JSON.stringify(data.metadata),
         },
-        body: JSON.stringify(form),
+        body: form,
       });
       const result = await response.json();
       console.log(result);
-      return result && result.file;
+      return result && (result as any).file;
     } catch (e) {
       console.error(e);
       throw new SystemError(
