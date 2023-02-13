@@ -3,7 +3,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { DataStoreModule } from './data-store/data-store.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -25,18 +24,5 @@ async function bootstrap() {
     console.error(err);
   });
 }
-async function bootstrapDataStore() {
-  const app = await NestFactory.create(DataStoreModule, {
-    logger: ['error', 'warn'],
-  });
-  const port = 3001;
 
-  await app.listen(port, '127.0.0.1');
-  console.debug(`Application stated on ${port} port...`);
-
-  process.on('uncaughtException', function (err) {
-    console.error(err);
-  });
-}
 bootstrap();
-bootstrapDataStore();

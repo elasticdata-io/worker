@@ -9,6 +9,7 @@ import { AliveModule } from './alive/alive.module';
 import { EnvModule } from './env/env.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './data-store/config';
+import { DataStoreModule } from './data-store/data-store.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import configuration from './data-store/config';
     DocumentationModule,
     EnvModule,
     AliveModule,
+    DataStoreModule,
   ],
   controllers: [],
   providers: [AppService, AppConsumer],
