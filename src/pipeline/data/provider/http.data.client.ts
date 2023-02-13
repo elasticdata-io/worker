@@ -32,11 +32,6 @@ export class HttpDataClient {
    */
   async putAll(context: string, data: KeysValuesData): Promise<void> {
     try {
-      // const config = {
-      //   headers: {
-      //     userUuid: data.userUuid,
-      //   },
-      // };
       const rawResponse = await fetch(
         `${this._serviceUrl}${this._servicePath}/append`,
         {
@@ -48,11 +43,6 @@ export class HttpDataClient {
         },
       );
       await rawResponse.json();
-      // await axios.post(
-      //   `${this._serviceUrl}${this._servicePath}/append`,
-      //   data,
-      //   config,
-      // );
     } catch (e) {
       console.error(e);
       throw new SystemError(
@@ -178,15 +168,18 @@ export class HttpDataClient {
       const form = new FormData();
       const file = data.file;
       form.append('file', file, { filename: 'file' });
-      const config = {
+      const response = await fetch(url.href, {
+        method: 'POST',
         headers: {
           ...form.getHeaders(),
           userUuid: data.userUuid,
           metadata: JSON.stringify(data.metadata),
         },
-      };
-      const result = await axios.post(url.href, form, config);
-      return result.data && result.data.file;
+        body: JSON.stringify(form),
+      });
+      const result = await response.json();
+      console.log(result);
+      return result && result.file;
     } catch (e) {
       console.error(e);
       throw new SystemError(
