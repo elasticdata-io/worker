@@ -32,16 +32,27 @@ export class HttpDataClient {
    */
   async putAll(context: string, data: KeysValuesData): Promise<void> {
     try {
-      const config = {
-        headers: {
-          userUuid: data.userUuid,
-        },
-      };
-      await axios.post(
+      // const config = {
+      //   headers: {
+      //     userUuid: data.userUuid,
+      //   },
+      // };
+      const rawResponse = await fetch(
         `${this._serviceUrl}${this._servicePath}/append`,
-        data,
-        config,
+        {
+          method: 'POST',
+          headers: {
+            userUuid: data.userUuid,
+          },
+          body: JSON.stringify(data),
+        },
       );
+      await rawResponse.json();
+      // await axios.post(
+      //   `${this._serviceUrl}${this._servicePath}/append`,
+      //   data,
+      //   config,
+      // );
     } catch (e) {
       console.error(e);
       throw new SystemError(
