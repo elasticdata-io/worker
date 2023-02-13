@@ -10,11 +10,6 @@ spec:
     - port: {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
-      name: http
-    - port: 3001
-      targetPort: 3001
-      protocol: TCP
-      name: http2
   selector:
     app.kubernetes.io/name: {{ include "scraper-worker.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
