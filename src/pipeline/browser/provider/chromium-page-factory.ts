@@ -1,7 +1,6 @@
 import { BrowserPageFactory } from '../browser-page-factory';
 import { Browser, Page } from 'puppeteer';
 import { executablePath } from 'puppeteer';
-import { getRandom } from 'random-useragent';
 // import * as puppeteer from "puppeteer";
 // import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
 import { PageFactoryOptions } from '../model/page-factory-options';
@@ -83,10 +82,12 @@ export class ChromiumPageFactory implements BrowserPageFactory {
         console.error(err);
         process.exit(1);
       }
-    } else {
-      const args = []
-        .filter((flag) => flag !== '--enable-automation')
-        .filter((flag) => flag !== '--headless');
+    }
+    if (false == headless) {
+      // const args = []
+      //   .filter((flag) => flag !== '--enable-automation')
+      //   .filter((flag) => flag !== '--headless');
+      const args = [];
       if (config.windowWidth && config.windowHeight) {
         args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
       }
@@ -100,7 +101,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
       args.push(`--user-agent=${this._getUserAgent()}`);
       try {
         browser = await puppeteer.use(StealthPlugin()).launch({
-          args: [],
+          args: args,
           executablePath: executablePath(),
           headless: false,
           devtools: false,
@@ -114,12 +115,6 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     }
     try {
       const page = await this._createNewPage(browser);
-      const ua = getRandom(function (ua) {
-        return (
-          ua.browserName === 'Firefox' && parseFloat(ua.browserVersion) >= 20
-        );
-      });
-      console.log(ua);
       await page.setUserAgent(
         `Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:107.0) Gecko/20100101 Firefox/107.0`,
       );
