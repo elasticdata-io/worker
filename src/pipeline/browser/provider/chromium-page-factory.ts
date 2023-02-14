@@ -60,7 +60,7 @@ export class ChromiumPageFactory implements BrowserPageFactory {
       args.push(`--lang=${config.language}`);
     }
     const anonymizedProxy = await proxyChain.anonymizeProxy(
-      `http://customer-bombascter-sessid-0081978784-sesstime-1:!Prisoner31!@pr.oxylabs.io:7777`,
+      `http://bombascter:!Prisoner31!@pr.oxylabs.io:7777`,
     );
     config.proxies = [anonymizedProxy];
     if (config.proxies.length) {
