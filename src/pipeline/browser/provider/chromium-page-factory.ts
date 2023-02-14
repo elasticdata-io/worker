@@ -1,5 +1,6 @@
 import { BrowserPageFactory } from '../browser-page-factory';
 import { Browser, Page } from 'puppeteer';
+import * as proxyChain from 'proxy-chain';
 import { executablePath } from 'puppeteer';
 // import * as puppeteer from "puppeteer";
 // import RecaptchaPlugin from "puppeteer-extra-plugin-recaptcha";
@@ -58,8 +59,13 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     if (config.language) {
       args.push(`--lang=${config.language}`);
     }
+    const anonymizedProxy = await proxyChain.anonymizeProxy(
+      `http://bombascter:!Prisoner31!@pr.oxylabs.io:7777`,
+    );
+    config.proxies = [anonymizedProxy];
     if (config.proxies.length) {
-      args.push(`--proxy-server=${config.proxies[0]}`);
+      const proxy = config.proxies[0];
+      args.push(`--proxy-server=${proxy}`);
     }
     // args.push(`--user-agent=${this._getUserAgent()}`);
     let browser: Browser;
@@ -89,16 +95,16 @@ export class ChromiumPageFactory implements BrowserPageFactory {
       //   .filter((flag) => flag !== '--headless');
       const args = [];
       if (config.windowWidth && config.windowHeight) {
-        args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
+        // args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
       }
       if (config.language) {
-        args.push(`--lang=${config.language}`);
+        // args.push(`--lang=${config.language}`);
       }
       if (config.proxies.length) {
         args.push(`--proxy-server=${config.proxies[0]}`);
       }
-      args.push(`-–disable-images`);
-      args.push(`--user-agent=${this._getUserAgent()}`);
+      // args.push(`-–disable-images`);
+      // args.push(`--user-agent=${this._getUserAgent()}`);
       try {
         browser = await puppeteer.use(StealthPlugin()).launch({
           args: args,
@@ -115,6 +121,10 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     }
     try {
       const page = await this._createNewPage(browser);
+      await page.authenticate({
+        username: 'bombascter',
+        password: '!Priosner31!',
+      });
       await page.setUserAgent(
         `Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:107.0) Gecko/20100101 Firefox/107.0`,
       );

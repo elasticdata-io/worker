@@ -44,6 +44,7 @@
     "moment": "^2.24.0",
     "nestjs-i18n": "^8.0.6",
     "node-fetch": "^2.6.1",
+    "proxy-chain": "^2.2.0",
     "puppeteer": "^19.6.3",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-recaptcha": "^3.6.6",
