@@ -12,7 +12,7 @@ import puppeteer from 'puppeteer-extra';
 // @ts-ignore
 import * as StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
-export class ChromiumPageFactory implements BrowserPageFactory {
+export class PuppeteerPageFactory implements BrowserPageFactory {
   private static USER_AGENT = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36`;
 
   constructor(private _config: PageFactoryOptions, private _env: Environment) {}
@@ -59,10 +59,6 @@ export class ChromiumPageFactory implements BrowserPageFactory {
     if (config.language) {
       args.push(`--lang=${config.language}`);
     }
-    const anonymizedProxy = await proxyChain.anonymizeProxy(
-      `http://bombascter:!Prisoner31!@pr.oxylabs.io:7777`,
-    );
-    config.proxies = [anonymizedProxy];
     if (config.proxies.length) {
       const proxy = config.proxies[0];
       args.push(`--proxy-server=${proxy}`);
@@ -95,10 +91,10 @@ export class ChromiumPageFactory implements BrowserPageFactory {
       //   .filter((flag) => flag !== '--headless');
       const args = [];
       if (config.windowWidth && config.windowHeight) {
-        // args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
+        args.push(`--window-size=${config.windowWidth},${config.windowHeight}`);
       }
       if (config.language) {
-        // args.push(`--lang=${config.language}`);
+        args.push(`--lang=${config.language}`);
       }
       if (config.proxies.length) {
         args.push(`--proxy-server=${config.proxies[0]}`);
@@ -195,6 +191,6 @@ export class ChromiumPageFactory implements BrowserPageFactory {
   }
 
   private _getUserAgent(): string {
-    return `${ChromiumPageFactory.USER_AGENT}==${this._env.taskId}`;
+    return `${PuppeteerPageFactory.USER_AGENT}==${this._env.taskId}`;
   }
 }

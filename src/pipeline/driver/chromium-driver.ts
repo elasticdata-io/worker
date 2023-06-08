@@ -165,6 +165,7 @@ export class ChromiumDriver implements Driver {
       const targetUrl = new URL(url);
       const page = await this._resolvePage(command);
       const response = await page.goto(targetUrl.href, {
+        waitUntil: 'domcontentloaded',
         timeout: timeoutSec * 1000,
       });
       console.log(targetUrl.href + ' FROM_CACHE:', response.fromCache());

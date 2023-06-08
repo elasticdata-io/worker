@@ -6,7 +6,7 @@ import { inject } from 'inversify';
 import { TYPES as ROOT_TYPES } from '../../types';
 import { PipelineIoc } from '../../pipeline-ioc';
 import * as genericPool from 'generic-pool';
-import { ChromiumPageFactory } from './chromium-page-factory';
+import { PuppeteerPageFactory } from './puppeteer-page-factory';
 import { PageFactoryOptions } from '../model/page-factory-options';
 import { Pool } from 'generic-pool';
 import { Browser, Page } from 'puppeteer';
@@ -32,7 +32,7 @@ export class ChromiumPuppeteer extends AbstractBrowser {
       } as PageFactoryOptions;
       console.info(options);
       const env = this._ioc.get<Environment>(ROOT_TYPES.Environment);
-      const pageFactory = new ChromiumPageFactory(options, env);
+      const pageFactory = new PuppeteerPageFactory(options, env);
       const maxTabs: number = parseInt(process.env.MAX_CHROME_TABS) || 3;
       const opts = {
         max: maxTabs,
