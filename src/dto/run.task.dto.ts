@@ -39,9 +39,9 @@ export class RunTaskDto {
 
   public static fillEmpty(dto: RunTaskDto): RunTaskDto {
     dto.taskId = dto.taskId ?? uuidv4();
-    dto.pipelineId = dto.pipelineId ?? 'empty';
+    dto.pipelineId = dto.pipelineId ?? '0637bfd9-7cc0-40ce-815a-86c00c1ba4f1';
     dto.pipelineSettings = dto.pipelineSettings ?? ({} as PipelineSettings);
-    dto.userUuid = dto.userUuid ?? 'empty';
+    dto.userUuid = dto.userUuid ?? '0637bfd9-7cc0-40ce-815a-86c00c1ba4f1';
     dto.proxies = dto.proxies ?? [];
     return dto;
   }

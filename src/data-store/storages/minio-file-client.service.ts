@@ -1,6 +1,6 @@
-import { AbstractFileClientService } from './abstract-file-client.service';
+import { AbstractFileClientService } from '../abstract-file-client.service';
 import * as Minio from 'minio';
-import { EnvConfiguration } from '../env/env.configuration';
+import { EnvConfiguration } from '../../env/env.configuration';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

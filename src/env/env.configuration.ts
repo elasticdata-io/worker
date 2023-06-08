@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export abstract class EnvConfiguration {
   abstract get USE_ALIVE_PROBE(): boolean;
+  abstract get USE_INNER_PERSISTENCE(): boolean;
   abstract get USE_ISOLATION_MODE(): boolean;
   abstract get APP_MINIO_END_POINT(): string;
   abstract get APP_MINIO_PORT(): number;

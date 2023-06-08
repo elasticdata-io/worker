@@ -1,4 +1,4 @@
-import { AbstractFileClientService } from './abstract-file-client.service';
+import { AbstractFileClientService } from '../abstract-file-client.service';
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';

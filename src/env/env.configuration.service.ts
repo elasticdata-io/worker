@@ -12,6 +12,10 @@ export class EnvConfigurationService extends EnvConfiguration {
     return this.configService.get<string>('USE_ALIVE_PROBE') !== '0';
   }
 
+  get USE_INNER_PERSISTENCE(): boolean {
+    return this.configService.get<string>('USE_INNER_PERSISTENCE') === '1';
+  }
+
   get USE_ISOLATION_MODE(): boolean {
     return this.configService.get<string>('USE_ISOLATION_MODE') === '1';
   }
