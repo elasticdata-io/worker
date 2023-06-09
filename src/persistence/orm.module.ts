@@ -7,6 +7,7 @@ import { BucketEntity, BucketPersistenceModule } from './bucket';
 import { FileEntity, FilePersistenceModule } from './file';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 import { DataSourceOptions } from 'typeorm';
+import { PipelinePersistenceModule } from "./pipeline/pipeline.module";
 
 const getDbConfig = (): TypeOrmModuleOptions => {
   const dbType: 'postgres' | 'sqlite' = process.env.PSQL_DB_TYPE as
@@ -32,6 +33,7 @@ const getDbConfig = (): TypeOrmModuleOptions => {
       host: process.env.PSQL_DB_HOST,
     });
   }
+  console.info(`INNER DB PERSISTENCE TYPE: ${dbType}`);
   return config;
 };
 
@@ -41,6 +43,7 @@ const getDbConfig = (): TypeOrmModuleOptions => {
     TaskPersistenceModule,
     BucketPersistenceModule,
     FilePersistenceModule,
+    PipelinePersistenceModule,
     TypeOrmModule.forRoot(getDbConfig()),
   ],
 })

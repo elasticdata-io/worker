@@ -12,7 +12,7 @@ import { RunTaskDto, PipelineDto, TaskDto } from '../dto';
 import { TaskResult } from './data/dto/task.result';
 
 @Controller()
-export class PipelineController {
+export class LegacyPipelineController {
   constructor(private readonly taskService: PipelineService) {}
 
   @Post()

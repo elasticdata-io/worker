@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { PipelineBuilderFactory } from './pipeline-builder-factory';
 import { PipelineService } from './pipeline.service';
-import { PipelineController } from './pipeline.controller';
+import { LegacyPipelineController } from './legacy-pipeline.controller';
 import { TaskSdkModule } from '../sdk/task/task.sdk.module';
 import { EnvModule } from '../env/env.module';
+import { PipelineController } from './controller/pipeline.controller';
+import { PipelinePersistenceModule } from '../persistence/pipeline/pipeline.module';
 
 @Module({
-  imports: [TaskSdkModule, EnvModule],
+  imports: [TaskSdkModule, EnvModule, PipelinePersistenceModule],
   providers: [
     {
       provide: PipelineBuilderFactory,
@@ -14,7 +16,7 @@ import { EnvModule } from '../env/env.module';
     },
     PipelineService,
   ],
-  controllers: [PipelineController],
+  controllers: [LegacyPipelineController, PipelineController],
   exports: [PipelineService],
 })
 export class PipelineModule {}
