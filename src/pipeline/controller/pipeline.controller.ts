@@ -21,30 +21,7 @@ export class PipelineController {
     @Request() req: any,
     @Headers('useruuid') userUuid: string,
   ): Promise<unknown> {
-    try {
-      if (req.readable) {
-        const raw = await rawbody(req);
-        const pipeline = raw.toString().trim();
-        const dto: PutPipelineDto = {
-          pipeline,
-          userUuid,
-        };
-        return this.pipelineService.put(PutPipelineDto.toEntity(dto));
-      } else {
-        throw new HttpException(
-          `Header: 'Content-Type' must by 'text/plain'`,
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-    } catch (e) {
-      throw new HttpException(
-        {
-          message: e.toString(),
-          stack: e.stack,
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return this.upsert(req, undefined, userUuid);
   }
 
   @Put(':id')
