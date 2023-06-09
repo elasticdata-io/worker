@@ -8,4 +8,4 @@ import { BucketEntity } from './bucket.entity';
   providers: [BucketService],
   exports: [BucketService],
 })
-export class BucketModule {}
+export class BucketPersistenceModule {}

@@ -8,6 +8,10 @@ export class EnvConfigurationService extends EnvConfiguration {
     super();
   }
 
+  get DATA_SERVICE_URL(): string {
+    return this.configService.get<string>('DATA_SERVICE_URL');
+  }
+
   get USE_ALIVE_PROBE(): boolean {
     return this.configService.get<string>('USE_ALIVE_PROBE') !== '0';
   }

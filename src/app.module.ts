@@ -10,11 +10,11 @@ import { EnvModule } from './env/env.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './data-store/config';
 import { DataStoreModule } from './data-store/data-store.module';
-import { OrmModule } from './persistence';
+import { OrmPersistenceModule } from './persistence';
 
 @Module({
   imports: [
-    OrmModule,
+    OrmPersistenceModule,
     ConfigModule.forRoot({
       load: [configuration],
     }),

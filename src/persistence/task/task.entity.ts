@@ -22,7 +22,7 @@ export class TaskEntity {
   user: UserEntity;
 
   @Column({
-    type: 'jsonb',
+    type: process.env.PSQL_DB_TYPE === 'postgres' ? 'jsonb' : 'json',
     array: false,
     default: () => "'[]'",
     nullable: false,

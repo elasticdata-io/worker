@@ -1,14 +1,17 @@
-import { AbstractFileClientService } from '../abstract-file-client.service';
+import { AbstractFileClientService } from '../../abstract-file-client.service';
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
-import { BucketService } from '../../persistence/bucket';
-import { FileService } from '../../persistence/file';
+import { BucketService } from '../../../persistence/bucket';
+import { FilePersistenceService } from '../../../persistence/file';
+import { EnvConfiguration } from '../../../env/env.configuration';
+import { urlencoded } from "express";
 
 @Injectable()
 export class PersistenceFileClientService extends AbstractFileClientService {
   public constructor(
     private readonly bucketService: BucketService,
-    private readonly fileService: FileService,
+    private readonly fileService: FilePersistenceService,
+    private readonly envConfiguration: EnvConfiguration,
   ) {
     super();
   }
@@ -29,8 +32,8 @@ export class PersistenceFileClientService extends AbstractFileClientService {
     userUuid: string,
     objectName: string,
   ): Promise<string> {
-    // todo: get url of file
-    return 'file://' + path.join(userUuid, objectName);
+    const prefix = this.envConfiguration.DATA_SERVICE_URL;
+    return `${prefix}/v1/objects?name=${encodeURIComponent(objectName)}`;
   }
 
   async putObject(

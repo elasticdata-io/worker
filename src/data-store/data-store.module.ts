@@ -8,16 +8,17 @@ import RuleCommandFactory from './rule/rule-command.factory';
 import { PersistenceLinkService } from './persistence-link.service';
 import { StorageService } from './storage-service';
 import { AbstractFileClientService } from './abstract-file-client.service';
-import { MinioFileClientService } from './storages/minio-file-client.service';
+import { MinioFileClientService } from './storages/client-providers/minio-file-client.service';
 import { EnvModule } from '../env/env.module';
 import { AbstractDynamicLinkService } from './abstract-dynamic-link.service';
 import { ModuleRef } from '@nestjs/core';
 import { EnvConfiguration } from '../env/env.configuration';
 import { PlugLinkService } from './plug-link.service';
-import { LocalFileClientService } from './storages/local-file-client.service';
-import { PersistenceFileClientService } from './storages/persistence-file-client.service';
-import { BucketModule } from '../persistence/bucket';
-import { FileModule } from '../persistence/file';
+import { LocalFileClientService } from './storages/client-providers/local-file-client.service';
+import { PersistenceFileClientService } from './storages/client-providers/persistence-file-client.service';
+import { BucketPersistenceModule } from '../persistence/bucket';
+import { FilePersistenceModule } from '../persistence/file';
+import { StoresModule } from './storages/storage.module';
 
 @Module({
   imports: [
@@ -25,8 +26,9 @@ import { FileModule } from '../persistence/file';
       load: [configuration],
     }),
     EnvModule,
-    BucketModule,
-    FileModule,
+    BucketPersistenceModule,
+    FilePersistenceModule,
+    StoresModule,
   ],
   controllers: [DataStoreController],
   providers: [

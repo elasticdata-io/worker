@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { FileEntity } from './file.entity';
 
 @Injectable()
-export class FileService {
+export class FilePersistenceService {
   constructor(
     @InjectRepository(FileEntity)
     private filesRepository: Repository<FileEntity>,
@@ -16,6 +16,10 @@ export class FileService {
 
   findOne(id: string): Promise<FileEntity | null> {
     return this.filesRepository.findOneBy({ id });
+  }
+
+  findOneByName(name: string): Promise<FileEntity | null> {
+    return this.filesRepository.findOneBy({ name });
   }
 
   async create(config: {

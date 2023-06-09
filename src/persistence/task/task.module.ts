@@ -8,4 +8,4 @@ import { TaskEntity } from './task.entity';
   providers: [TaskService],
   exports: [TaskService],
 })
-export class TasksModule {}
+export class TaskPersistenceModule {}
