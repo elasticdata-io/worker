@@ -28,7 +28,7 @@ export class DocumentationService {
       for (const prop of command.props) {
         const propCopy = {
           ...prop,
-          summary: await this.i18n.t(prop.summary, { lang: lang }),
+          summary: await this.i18n.t(prop.summary ?? '', { lang: lang }),
         };
         commandCopy.props.push(propCopy);
       }
