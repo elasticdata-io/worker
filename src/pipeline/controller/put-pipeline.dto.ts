@@ -3,6 +3,7 @@ import { PipelineEntity } from '../../persistence';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PutPipelineDto {
+  @ApiProperty() id?: string;
   @ApiProperty() userUuid: string;
   @ApiProperty() pipeline: string;
 
@@ -13,6 +14,7 @@ export class PutPipelineDto {
       throw new Error(`Pipeline is not like JSON format`);
     }
     return <PipelineEntity>{
+      id: dto.id,
       user: { id: dto.userUuid },
       pipeline: dto.pipeline,
     };

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectLiteral, Repository } from "typeorm";
+import { Repository } from 'typeorm';
 import { PipelineEntity } from './pipeline.entity';
-import { UpsertOptions } from 'typeorm/repository/UpsertOptions';
 
 @Injectable()
 export class PipelineService {
