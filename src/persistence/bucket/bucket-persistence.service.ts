@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { BucketEntity } from './bucket.entity';
 
 @Injectable()
-export class BucketService {
+export class BucketPersistenceService {
   constructor(
     @InjectRepository(BucketEntity)
     private bucketsRepository: Repository<BucketEntity>,

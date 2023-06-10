@@ -6,9 +6,10 @@ import {
   Column,
 } from 'typeorm';
 import { BucketEntity } from '../bucket';
+import { BaseEntity } from '../base.entity';
 
 @Entity({ name: 'File' })
-export class FileEntity {
+export class FileEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

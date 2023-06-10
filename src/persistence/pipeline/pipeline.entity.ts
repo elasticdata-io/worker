@@ -6,9 +6,10 @@ import {
   Column,
 } from 'typeorm';
 import { UserEntity } from '../user';
+import { BaseEntity } from '../base.entity';
 
 @Entity({ name: 'Pipeline' })
-export class PipelineEntity {
+export class PipelineEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

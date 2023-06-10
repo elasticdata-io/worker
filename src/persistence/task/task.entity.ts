@@ -7,15 +7,30 @@ import {
 } from 'typeorm';
 import { PipelineEntity } from '../pipeline';
 import { UserEntity } from '../user';
+import { BaseEntity } from '../base.entity';
+
+export type TaskStatus =
+  | 'pending'
+  | 'running'
+  | 'completed'
+  | 'error'
+  | 'stopped';
 
 @Entity({ name: 'Task' })
-export class TaskEntity {
+export class TaskEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => PipelineEntity)
   @JoinColumn()
-  pipeline: PipelineEntity;
+  parent: PipelineEntity;
+
+  @Column({
+    type: 'text',
+    nullable: false,
+    default: '{}',
+  })
+  pipeline: string;
 
   @ManyToOne(() => UserEntity)
   @JoinColumn()
@@ -28,4 +43,19 @@ export class TaskEntity {
     nullable: false,
   })
   data: Array<Record<string, unknown>>;
+
+  @Column({
+    default: 'pending',
+    nullable: false,
+  })
+  status: TaskStatus;
+
+  @Column({ nullable: true })
+  failReason?: string;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  startedOn?: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  finishedOn?: Date;
 }

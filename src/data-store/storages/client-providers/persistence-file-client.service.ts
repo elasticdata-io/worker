@@ -1,7 +1,7 @@
 import { AbstractFileClientService } from '../../abstract-file-client.service';
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
-import { BucketService } from '../../../persistence/bucket';
+import { BucketPersistenceService } from '../../../persistence/bucket';
 import { FilePersistenceService } from '../../../persistence/file';
 import { EnvConfiguration } from '../../../env/env.configuration';
 import { urlencoded } from "express";
@@ -9,7 +9,7 @@ import { urlencoded } from "express";
 @Injectable()
 export class PersistenceFileClientService extends AbstractFileClientService {
   public constructor(
-    private readonly bucketService: BucketService,
+    private readonly bucketService: BucketPersistenceService,
     private readonly fileService: FilePersistenceService,
     private readonly envConfiguration: EnvConfiguration,
   ) {

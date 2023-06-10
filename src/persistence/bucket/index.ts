@@ -1,3 +1,3 @@
 export * from './bucket.module';
-export * from './bucket.service';
+export * from './bucket-persistence.service';
 export * from './bucket.entity';

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FilePersistenceService } from './file.service';
+import { FilePersistenceService } from './file-persistence.service';
 import { FileEntity } from './file.entity';
 
 @Module({

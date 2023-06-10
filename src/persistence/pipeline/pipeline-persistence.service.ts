@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { PipelineEntity } from './pipeline.entity';
 
 @Injectable()
-export class PipelineService {
+export class PipelinePersistenceService {
   constructor(
     @InjectRepository(PipelineEntity)
     private bucketsRepository: Repository<PipelineEntity>,
@@ -20,7 +20,7 @@ export class PipelineService {
 
   async put(entity: PipelineEntity): Promise<PipelineEntity> {
     const result = await this.bucketsRepository.upsert(entity, ['id']);
-    return result.raw;
+    return result?.raw?.pop();
   }
 
   async remove(id: number): Promise<void> {

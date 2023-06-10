@@ -7,20 +7,26 @@ import {
   Headers,
   Post,
   Param,
+  NotFoundException,
 } from '@nestjs/common';
 import * as rawbody from 'raw-body';
-import { PutPipelineDto } from './put-pipeline.dto';
-import { PipelineService } from '../../persistence/pipeline/pipeline.service';
+import { PutPipelineDto } from './dto/put-pipeline.dto';
+import { PipelinePersistenceService } from '../../persistence/pipeline/pipeline-persistence.service';
+import { TaskService } from '../../task';
+import { PipelineEntity, TaskEntity } from '../../persistence';
 
 @Controller('v1/pipeline')
 export class PipelineController {
-  constructor(private readonly pipelineService: PipelineService) {}
+  constructor(
+    private readonly pipelineService: PipelinePersistenceService,
+    private readonly taskService: TaskService,
+  ) {}
 
   @Post()
   async add(
     @Request() req: any,
     @Headers('useruuid') userUuid: string,
-  ): Promise<unknown> {
+  ): Promise<PipelineEntity> {
     return this.upsert(req, undefined, userUuid);
   }
 
@@ -29,7 +35,7 @@ export class PipelineController {
     @Request() req: any,
     @Param('id') id: string,
     @Headers('useruuid') userUuid: string,
-  ): Promise<unknown> {
+  ): Promise<PipelineEntity> {
     try {
       if (req.readable) {
         const raw = await rawbody(req);
@@ -55,5 +61,37 @@ export class PipelineController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Post('start/:pipelineId')
+  async startById(
+    @Param('pipelineId') pipelineId: string,
+  ): Promise<TaskEntity> {
+    const pipeline = await this.pipelineService.findOne(pipelineId);
+    if (!pipeline) {
+      throw new NotFoundException(`Pipeline with id:${pipelineId} not present`);
+    }
+    const task = <TaskEntity>{
+      parent: { id: pipelineId },
+      user: { id: pipeline?.user?.id },
+      status: 'pending',
+      pipeline: pipeline.pipeline,
+    };
+    return this.taskService.create(task);
+  }
+
+  @Post('start')
+  async pending(
+    @Request() req: any,
+    @Headers('useruuid') userUuid: string,
+  ): Promise<TaskEntity> {
+    const pipeline = await this.upsert(req, undefined, userUuid);
+    const task = <TaskEntity>{
+      parent: { id: pipeline.id },
+      user: { id: pipeline?.user?.id },
+      status: 'pending',
+      pipeline: pipeline.pipeline,
+    };
+    return this.taskService.create(task);
   }
 }

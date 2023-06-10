@@ -1,5 +1,5 @@
 import * as jsonminify from 'jsonminify';
-import { PipelineEntity } from '../../persistence';
+import { PipelineEntity } from '../../../persistence';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PutPipelineDto {

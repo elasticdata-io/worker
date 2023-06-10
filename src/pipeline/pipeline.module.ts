@@ -6,9 +6,10 @@ import { TaskSdkModule } from '../sdk/task/task.sdk.module';
 import { EnvModule } from '../env/env.module';
 import { PipelineController } from './controller/pipeline.controller';
 import { PipelinePersistenceModule } from '../persistence/pipeline/pipeline.module';
+import { TaskModule } from '../task';
 
 @Module({
-  imports: [TaskSdkModule, EnvModule, PipelinePersistenceModule],
+  imports: [TaskSdkModule, EnvModule, PipelinePersistenceModule, TaskModule],
   providers: [
     {
       provide: PipelineBuilderFactory,

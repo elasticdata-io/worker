@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './data-store/config';
 import { DataStoreModule } from './data-store/data-store.module';
 import { OrmPersistenceModule } from './persistence';
+import { TaskModule } from './task';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { OrmPersistenceModule } from './persistence';
       },
     }),
     PipelineModule,
+    TaskModule,
     DocumentationModule,
     EnvModule,
     AliveModule,
